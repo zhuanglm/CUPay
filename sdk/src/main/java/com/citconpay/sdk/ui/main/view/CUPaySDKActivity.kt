@@ -26,8 +26,6 @@ class CUPaySDKActivity : BaseActivity() {
     private lateinit var mDropInViewModel: DropinViewModel
     private lateinit var mLifecycleObserver: DropinLifecycleObserver
 
-    private val DROP_IN_REQUEST = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
