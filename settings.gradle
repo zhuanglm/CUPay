@@ -1,0 +1,5 @@
+include ':BT-Drop-In'
+include ':CardForm'
+include ':sdk'
+include ':demo_app'
+rootProject.name = "CUPay"

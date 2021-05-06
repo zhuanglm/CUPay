@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+        <variable
+            name="vm"
+            type="com.citconpay.sdk.ui.main.viewmodel.DropinViewModel"/>
+
+        <variable
+            name="result"
+            type="String" />
+    </data>
+
+    <!--<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:onRefreshListener="@{()->vm.loadData()}"
+        app:refreshing="@{vm.MLoading}">-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bt_black_54"
+        android:visibility="invisible"
+        tools:context=".ui.main.view.ConfirmPaymentFragment">
+
+        <TextView
+            android:id="@+id/tv_nonce_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginEnd="50dp"
+            android:background="@android:color/background_light"
+            android:text="@{result}"
+            android:textAlignment="textStart"
+            android:textColor="@color/bt_color_primary_dark"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_order"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/bt_blue"
+            android:text="@string/place_order"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="@+id/tv_nonce_details"
+            app:layout_constraintStart_toStartOf="@+id/tv_nonce_details"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nonce_details" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+</layout>

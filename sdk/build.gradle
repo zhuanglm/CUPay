@@ -1,0 +1,90 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 30
+        versionCode 11
+        versionName "3.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        dataBinding true
+    }
+}
+
+def visaCheckoutDependencies = [
+        'com.braintreepayments.api:visa-checkout:2.0.0',
+        'com.visa.checkout:visacheckout-android-sdk:6.6.0@aar',
+        'com.squareup.okio:okio:1.13.0',
+        'com.squareup.okhttp3:okhttp:3.8.1',
+        'com.google.code.gson:gson:2.8.1',
+        'de.greenrobot:eventbus:2.4.1',
+        'androidx.appcompat:appcompat:1.0.1',
+        'androidx.preference:preference:1.0.0',
+        'com.google.android.material:material:1.0.0',
+        'androidx.cardview:cardview:1.0.0',
+        'androidx.multidex:multidex:2.0.0'
+]
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.6'
+    implementation 'com.kaopiz:kprogresshud:1.2.0'
+
+    // Braintree dependencies
+    implementation 'com.braintreepayments.api:braintree:3.17.0'
+    implementation 'com.braintreepayments.api:google-payment:3.5.0'
+    //implementation('com.braintreepayments.api:drop-in:5.2.0')
+    implementation project(':BT-Drop-In')
+    implementation project(':CardForm')
+
+    // Google dependencies
+    implementation 'com.google.android.gms:play-services-wallet:18.1.2'
+
+    components.all {
+        allVariants {
+            withDependencies { deps ->
+                deps.each { dep ->
+                    if (dep.group == 'net.minidev' && dep.name =='json-smart') {
+                        dep.version {
+                            prefer "2.3"
+                        }
+                        dep.because "resolving dependencies issue"
+                    }
+                }
+            }
+        }
+    }
+
+}

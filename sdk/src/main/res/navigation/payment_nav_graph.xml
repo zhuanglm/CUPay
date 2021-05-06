@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/payment_nav_graph"
+    app:startDestination="@id/paymentResultFragment">
+
+    <fragment
+        android:id="@+id/paymentResultFragment"
+        android:name="com.citconpay.sdk.ui.main.view.ConfirmPaymentFragment"
+        android:label="payment_list_fragment"
+        tools:layout="@layout/payment_result_fragment" />
+</navigation>

@@ -1,0 +1,7 @@
+<resources>
+    <string name="tokenization_key" translatable="false">Tokenization Key</string>
+    <string name="client_token" translatable="false">Client Token</string>
+    <string name="paypal_intent_authorize" translatable="false">Authorize</string>
+    <string name="none">None</string>
+    <string name="place_order">Place Order</string>
+</resources>
