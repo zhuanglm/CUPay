@@ -14,11 +14,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.braintreepayments.api.dropin.DropInResult
 import com.citconpay.sdk.R
 import com.citconpay.sdk.data.config.CPayDropInRequest
-import com.citconpay.sdk.data.model.PaymentMethod
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
 import com.citconpay.sdk.ui.base.BaseActivity
 import com.citconpay.sdk.ui.base.ViewModelFactory
+import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.state.DropinLifecycleObserver
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 
@@ -34,9 +34,10 @@ class CUPaySDKActivity : BaseActivity() {
 
         mDropInViewModel = ViewModelProvider(this, ViewModelFactory(ApiRepository(),application))
                 .get(DropinViewModel::class.java)
-        mDropInViewModel.mTextViewMsg.observe(this) {
+        /*mDropInViewModel.mTextViewMsg.observe(this) {
             binding.payment = PaymentMethod(it)
-        }
+        }*/
+        mDropInViewModel.mLoading.observe(this,LoadingObserver(binding.pbLoadingParameter))
 
         mDropInViewModel.mDropInRequest = intent.getParcelableExtra(CPayDropInRequest.EXTRA_CHECKOUT_REQUEST)!!
 
@@ -66,6 +67,7 @@ class CUPaySDKActivity : BaseActivity() {
                 val result: DropInResult? = data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
                 result?.let { it -> mDropInViewModel.getDropInResult(it) }
                 //result?.let{ result.paymentMethodNonce?.let { it1 -> displayNonce(it1, result.deviceData) } }
+                //finish()
             } /*else {
                 val returnedData = data!!.getParcelableExtra<Parcelable>(EXTRA_PAYMENT_RESULT)
                 val deviceData = data!!.getStringExtra(EXTRA_DEVICE_DATA)
@@ -76,7 +78,11 @@ class CUPaySDKActivity : BaseActivity() {
             }*/
         } else if (resultCode != RESULT_CANCELED) {
             //showDialog((data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?)!!.message)
+            finish()
+        } else {
+            finish()
         }
+
     }
 
 

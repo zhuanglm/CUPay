@@ -1,8 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext {
-        kotlin_version = '1.4.31'
-
         compileSdkVersion = 30
         minSdkVersion = 21
         targetSdkVersion = 30
@@ -11,12 +9,12 @@ buildscript {
     }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
         classpath 'com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
 
@@ -40,7 +38,7 @@ nexusStaging {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         maven {
             url  "https://cardinalcommerce.bintray.com/android"
             credentials {

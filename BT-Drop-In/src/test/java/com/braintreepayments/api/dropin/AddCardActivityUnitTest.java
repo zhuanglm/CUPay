@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
@@ -284,8 +286,8 @@ public class AddCardActivityUnitTest {
         mEditCardView.findViewById(R.id.bt_button).performClick();
 
         assertThat(mEditCardView).isVisible();
-        assertThat(mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
-        assertThat(mEditCardView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mEditCardView.findViewById(R.id.bt_button)).isGone();
         assertEquals(1, ((ViewSwitcher) mActivity.findViewById(R.id.bt_loading_view_switcher))
                 .getDisplayedChild());
         assertThat(mAddCardView).isGone();
@@ -652,8 +654,8 @@ public class AddCardActivityUnitTest {
         mAddCardView.findViewById(R.id.bt_button).performClick();
 
         assertThat(mEditCardView).isVisible();
-        assertThat(mEditCardView.findViewById(R.id.bt_card_form_country_code)).isVisible();
-        assertThat(mEditCardView.findViewById(R.id.bt_card_form_mobile_number)).isVisible();
+        assertThat((EditText)mEditCardView.findViewById(R.id.bt_card_form_country_code)).isVisible();
+        assertThat((EditText)mEditCardView.findViewById(R.id.bt_card_form_mobile_number)).isVisible();
     }
 
     @Test
@@ -860,8 +862,8 @@ public class AddCardActivityUnitTest {
         mEnrollmentCardView.findViewById(R.id.bt_button).performClick();
 
         assertThat(mEnrollmentCardView).isVisible();
-        assertThat(mEnrollmentCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
-        assertThat(mEnrollmentCardView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mEnrollmentCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mEnrollmentCardView.findViewById(R.id.bt_button)).isGone();
         assertThat(mAddCardView).isGone();
         assertThat(mEditCardView).isGone();
     }
@@ -941,13 +943,13 @@ public class AddCardActivityUnitTest {
         assertEquals(Intent.ACTION_VIEW, nextStartedActivity.getAction());
         assertTrue(nextStartedActivity.getDataString().contains("com.braintreepayments.api.dropin.test.braintree"));
 
-        assertThat(mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
-        assertThat(mEditCardView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar)mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mEditCardView.findViewById(R.id.bt_button)).isGone();
 
         mActivity.onCancel(BraintreeRequestCodes.THREE_D_SECURE);
 
-        assertThat(mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
-        assertThat(mEditCardView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar)mEditCardView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mEditCardView.findViewById(R.id.bt_button)).isVisible();
     }
 
     private void setup(BraintreeFragment fragment) {

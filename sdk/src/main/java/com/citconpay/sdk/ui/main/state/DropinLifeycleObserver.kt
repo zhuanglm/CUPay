@@ -18,7 +18,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        mViewModel.mLoading.observe(mLifecycleOwner, LoadingObserver(mContext))
+        //mViewModel.mLoading.observe(mLifecycleOwner, LoadingObserver(mActivity))
 
         mViewModel.loadClientToken().observe(mLifecycleOwner, Observer {
             it?.let { resource ->
@@ -46,7 +46,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
-        mViewModel.getTextView("CitconPay")
+        //mViewModel.getTextView("CitconPay")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)

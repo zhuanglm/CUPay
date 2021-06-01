@@ -1,6 +1,8 @@
 package com.braintreepayments.api.dropin;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -9,6 +11,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -45,11 +49,13 @@ import com.braintreepayments.api.models.GooglePaymentCardNonce;
 import com.braintreepayments.api.models.PayPalRequest;
 import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.ThreeDSecureRequest;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -84,7 +90,8 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     protected ListView mSupportedPaymentMethodListView;
     private View mVaultedPaymentMethodsContainer;
     private RecyclerView mVaultedPaymentMethodsView;
-    private Button mVaultManagerButton,mAddNewPayment;
+    private ImageView mVaultManagerButton;
+    private FloatingActionButton mAddNewPayment;
 
     private boolean mSheetSlideUpPerformed;
     private boolean mSheetSlideDownPerformed;
@@ -93,7 +100,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bt_drop_in_activity);
+        setContentView(R.layout.ct_drop_in_activity);
 
         mBottomSheet = findViewById(R.id.bt_dropin_bottom_sheet);
         mLoadingViewSwitcher = findViewById(R.id.bt_loading_view_switcher);
@@ -103,7 +110,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         mVaultedPaymentMethodsView = findViewById(R.id.bt_vaulted_payment_methods);
         mVaultManagerButton = findViewById(R.id.bt_vault_edit_button);
         mVaultedPaymentMethodsView.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false));
+                LinearLayoutManager.VERTICAL, false));
         new LinearSnapHelper().attachToRecyclerView(mVaultedPaymentMethodsView);
 
         mAddNewPayment = findViewById(R.id.bt_new_payment);
@@ -127,6 +134,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
             mDeviceData = savedInstanceState.getString(EXTRA_DEVICE_DATA);
         }
 
+        slideUp();
     }
 
     @Override
@@ -146,11 +154,11 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
             GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                 @Override
                 public void onResponse(Boolean isReadyToPay) {
-                    /*if(mPaymentMethod == null)*/ showSupportedPaymentMethods(isReadyToPay);
+                    showSupportedPaymentMethods(isReadyToPay);
                 }
             });
         } else {
-            /*if(mPaymentMethod == null)*/ showSupportedPaymentMethods(false);
+            showSupportedPaymentMethods(false);
         }
     }
 
@@ -341,7 +349,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
                 fetchPaymentMethodNonces(true);
             }
 
-            //mLoadingViewSwitcher.setDisplayedChild(1);
+            mLoadingViewSwitcher.setDisplayedChild(1);
         } else if (requestCode == ADD_CARD_REQUEST_CODE) {
             final Intent response;
             if (resultCode == RESULT_OK) {
@@ -379,7 +387,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
                 fetchPaymentMethodNonces(true);
             }
-            //mLoadingViewSwitcher.setDisplayedChild(1);
+            mLoadingViewSwitcher.setDisplayedChild(1);
         }
     }
 
@@ -438,12 +446,14 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     }
 
     public void onVaultEditButtonClick(View view) {
-        ArrayList<Parcelable> parcelableArrayList = new ArrayList<Parcelable>(mBraintreeFragment.getCachedPaymentMethodNonces());
+        /*ArrayList<Parcelable> parcelableArrayList = new ArrayList<Parcelable>(mBraintreeFragment.getCachedPaymentMethodNonces());
 
         Intent intent = new Intent(DropInActivity.this, VaultManagerActivity.class)
                 .putExtra(EXTRA_CHECKOUT_REQUEST, mDropInRequest)
                 .putParcelableArrayListExtra(EXTRA_PAYMENT_METHOD_NONCES, parcelableArrayList);
-        startActivityForResult(intent, DELETE_PAYMENT_METHOD_NONCE_CODE);
+        startActivityForResult(intent, DELETE_PAYMENT_METHOD_NONCE_CODE);*/
+        VaultedPaymentMethodsAdapter adapter = (VaultedPaymentMethodsAdapter) mVaultedPaymentMethodsView.getAdapter();
+        adapter.showDeleteButton();
 
         mBraintreeFragment.sendAnalyticsEvent("manager.appeared");
     }
@@ -456,16 +466,12 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         VaultedPaymentMethodsAdapter vaultedPaymentMethodsAdapter = new VaultedPaymentMethodsAdapter(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
-                if (paymentMethodNonce instanceof CardNonce) {
-                    mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
-                }
-
-                DropInActivity.this.onPaymentMethodNonceCreated(paymentMethodNonce);
+                confirmSubmitCardForm(paymentMethodNonce);
             }
         }, paymentMethodNonces);
 
-        vaultedPaymentMethodsAdapter.setup(
-                this, mConfiguration, mDropInRequest, googlePayEnabled, mClientTokenPresent);
+        vaultedPaymentMethodsAdapter.setup(this, mConfiguration, mDropInRequest,
+                googlePayEnabled, mClientTokenPresent);
         mVaultedPaymentMethodsView.setAdapter(vaultedPaymentMethodsAdapter);
 
         if (mDropInRequest.isVaultManagerEnabled()) {
@@ -475,5 +481,30 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         if (vaultedPaymentMethodsAdapter.hasCardNonce()) {
             mBraintreeFragment.sendAnalyticsEvent("vaulted-card.appear");
         }
+    }
+
+    private void confirmSubmitCardForm(PaymentMethodNonce paymentMethodNonce) {
+        Resources resources = getResources();
+        new AlertDialog.Builder(this,
+                R.style.Theme_AppCompat_Light_Dialog_Alert)
+                .setTitle(R.string.bt_add_new_card_confirmation_title)
+                .setMessage(R.string.bt_add_new_card_confirmation_description)
+                .setPositiveButton(R.string.bt_yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (paymentMethodNonce instanceof CardNonce) {
+                            mBraintreeFragment.sendAnalyticsEvent("vaulted-card.select");
+                        }
+
+                        DropInActivity.this.onPaymentMethodNonceCreated(paymentMethodNonce);
+                    }
+                })
+                .setNegativeButton(R.string.bt_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .create()
+                .show();
     }
 }

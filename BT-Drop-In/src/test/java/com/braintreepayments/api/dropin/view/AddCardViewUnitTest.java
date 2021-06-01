@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.braintreepayments.api.test.Fixtures;
 import com.braintreepayments.api.dropin.R;
@@ -75,7 +76,7 @@ public class AddCardViewUnitTest {
     public void setup_hidesNextButtonIfUnionPayIsNotEnabled() {
         mView.setup(mActivity, (Configuration) basicConfig(), true);
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_view)).isGone();
+        assertThat((AnimatedButtonView)mView.findViewById(R.id.bt_animated_button_view)).isGone();
     }
 
     @Test
@@ -87,7 +88,7 @@ public class AddCardViewUnitTest {
 
         mView.setup(mActivity, configuration, true);
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_view)).isVisible();
+        assertThat((AnimatedButtonView)mView.findViewById(R.id.bt_animated_button_view)).isVisible();
     }
 
     @Test
@@ -176,11 +177,11 @@ public class AddCardViewUnitTest {
     public void setVisibility_toVisibleClearsButtonLoadingView() {
         mView.getCardForm().getCardEditText().setText(VISA);
         mView.onCardFormSubmit();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
 
         mView.setVisibility(View.VISIBLE);
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -196,15 +197,15 @@ public class AddCardViewUnitTest {
     public void showCardNotSupportedError_showsErrorMessage() {
         mView.getCardForm().getCardEditText().setText(VISA);
         mView.findViewById(R.id.bt_button).performClick();
-        assertThat(mView.findViewById(R.id.bt_button)).isGone();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
 
         mView.showCardNotSupportedError();
 
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_not_accepted),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -227,13 +228,13 @@ public class AddCardViewUnitTest {
 
         mView.getCardForm().getCardEditText().setText(VISA);
         mView.findViewById(R.id.bt_button).performClick();
-        assertThat(mView.findViewById(R.id.bt_button)).isGone();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
 
         mView.setErrors(errorWithResponse);
 
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
         assertNull(mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
     }
 
@@ -243,13 +244,13 @@ public class AddCardViewUnitTest {
 
         mView.getCardForm().getCardEditText().setText(VISA);
         mView.findViewById(R.id.bt_button).performClick();
-        assertThat(mView.findViewById(R.id.bt_button)).isGone();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
 
         mView.setErrors(errorWithResponse);
 
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_number_invalid),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
     }
@@ -311,8 +312,8 @@ public class AddCardViewUnitTest {
         verifyZeroInteractions(listener);
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_number_invalid),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -326,8 +327,8 @@ public class AddCardViewUnitTest {
         verifyZeroInteractions(listener);
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_not_accepted),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -336,8 +337,8 @@ public class AddCardViewUnitTest {
 
         mView.findViewById(R.id.bt_button).performClick();
 
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -376,7 +377,7 @@ public class AddCardViewUnitTest {
 
         mView.getCardForm().getCardEditText().setText(VISA);
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
         verify(listener).onPaymentUpdated(mView);
     }
 
@@ -388,7 +389,7 @@ public class AddCardViewUnitTest {
 
         mView.onCardFormValid(false);
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
         verifyZeroInteractions(listener);
     }
 
@@ -400,7 +401,7 @@ public class AddCardViewUnitTest {
 
         mView.onCardFormSubmit();
 
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
         verify(listener, times(2)).onPaymentUpdated(mView);
     }
 
@@ -413,7 +414,7 @@ public class AddCardViewUnitTest {
         mView.onCardFormSubmit();
 
         verifyZeroInteractions(listener);
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_number_invalid),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
     }
@@ -429,7 +430,7 @@ public class AddCardViewUnitTest {
         verifyZeroInteractions(listener);
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_card_not_accepted),
                 mView.getCardForm().getCardEditText().getTextInputLayoutParent().getError());
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 }

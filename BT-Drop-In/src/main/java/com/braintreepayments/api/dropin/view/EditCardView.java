@@ -2,6 +2,8 @@ package com.braintreepayments.api.dropin.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -22,6 +24,7 @@ import com.cupay.cardform.OnCardFormSubmitListener;
 import com.cupay.cardform.view.CardEditText;
 import com.cupay.cardform.view.CardForm;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EditCardView extends LinearLayout implements OnCardFormFieldFocusedListener, OnClickListener,
@@ -177,14 +180,35 @@ public class EditCardView extends LinearLayout implements OnCardFormFieldFocused
     @Override
     public void onCardFormSubmit() {
         if (mCardForm.isValid()) {
-            mAnimatedButtonView.showLoading();
-
-            if (mListener != null) {
-                mListener.onPaymentUpdated(this);
-            }
+            Resources resources = getResources();
+            new AlertDialog.Builder(this.getContext(),
+                    R.style.Theme_AppCompat_Light_Dialog_Alert)
+                    .setTitle(R.string.bt_add_new_card_confirmation_title)
+                    .setMessage(R.string.bt_add_new_card_confirmation_description)
+                    .setPositiveButton(R.string.bt_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            submitCardForm();
+                        }
+                    })
+                    .setNegativeButton(R.string.bt_cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                        }
+                    })
+                    .create()
+                    .show();
         } else {
             mAnimatedButtonView.showButton();
             mCardForm.validate();
+        }
+    }
+
+    private void submitCardForm() {
+        mAnimatedButtonView.showLoading();
+
+        if (mListener != null) {
+            mListener.onPaymentUpdated(this);
         }
     }
 

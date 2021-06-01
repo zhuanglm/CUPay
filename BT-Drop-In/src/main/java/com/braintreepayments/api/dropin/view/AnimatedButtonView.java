@@ -61,7 +61,7 @@ public class AnimatedButtonView extends RelativeLayout implements OnClickListene
 
     @Override
     public void onClick(View view) {
-        showLoading();
+        //showLoading();
         if (mOnClickListener != null) {
             mOnClickListener.onClick(this);
         }

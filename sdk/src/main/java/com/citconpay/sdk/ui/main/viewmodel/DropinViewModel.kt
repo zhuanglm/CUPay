@@ -19,14 +19,14 @@ import com.citconpay.sdk.utils.Resource
 import kotlinx.coroutines.Dispatchers
 
 class DropinViewModel(private val apiRepository: ApiRepository, application: Application) : AndroidViewModel(application) {
-    val mTextViewMsg = MutableLiveData<String>()
+    //val mTextViewMsg = MutableLiveData<String>()
     lateinit var mDropInRequest: CPayDropInRequest
     val mLoading = MutableLiveData<Boolean>()
     val mResultString = MutableLiveData<String>()
 
-    fun getTextView(message: String) {
+    /*fun getTextView(message: String) {
         mTextViewMsg.postValue(message)
-    }
+    }*/
 
     fun getDropInResult(result: DropInResult) {
         mResultString.postValue(displayNonce(result))

@@ -1,5 +1,6 @@
 package com.braintreepayments.api.dropin;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.ViewSwitcher;
 
 import com.braintreepayments.api.Card;
+import com.braintreepayments.api.PaymentMethod;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.dropin.interfaces.AddPaymentUpdateListener;
@@ -43,6 +45,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
 import static android.view.View.GONE;

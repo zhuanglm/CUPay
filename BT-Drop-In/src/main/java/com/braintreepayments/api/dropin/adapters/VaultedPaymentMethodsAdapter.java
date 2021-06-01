@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.braintreepayments.api.PaymentMethod;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.R;
 import com.braintreepayments.api.dropin.utils.PaymentMethodType;
@@ -19,8 +20,6 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 
 import java.util.List;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 // NEXT MAJOR VERSION make this class package private
 public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPaymentMethodsAdapter.ViewHolder> {
 
@@ -28,6 +27,7 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
 
     private final List<PaymentMethodNonce> mPaymentMethodNonces;
     private AvailablePaymentMethodNonceList mAvailablePaymentMethodNonces;
+    private boolean mIsShowDelete = false;
 
     public VaultedPaymentMethodsAdapter(PaymentMethodNonceCreatedListener listener,
                                         List<PaymentMethodNonce> paymentMethodNonces) {
@@ -35,14 +35,15 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
         mPaymentMethodNonces = paymentMethodNonces;
     }
 
-    public void setup(Context context, Configuration configuration, DropInRequest dropInRequest, boolean googlePayEnabled, boolean unionpaySupported) {
+    public void setup(Context context, Configuration configuration, DropInRequest dropInRequest,
+                      boolean googlePayEnabled, boolean unionpaySupported) {
         mAvailablePaymentMethodNonces = new AvailablePaymentMethodNonceList(
                 context, configuration, mPaymentMethodNonces, dropInRequest, googlePayEnabled);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.bt_vaulted_payment_method_card,
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.ct_vaulted_payment_method_item,
                 parent, false));
     }
 
@@ -53,6 +54,11 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
 
         holder.icon.setImageResource(paymentMethodType.getVaultedDrawable());
         holder.title.setText(paymentMethodType.getLocalizedName());
+        if (mIsShowDelete) {
+            holder.deleteIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.deleteIcon.setVisibility(View.INVISIBLE);
+        }
 
         if (paymentMethodNonce instanceof CardNonce) {
             holder.description.setText("••• ••" + ((CardNonce) paymentMethodNonce).getLastTwo());
@@ -77,11 +83,17 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
         return mAvailablePaymentMethodNonces.hasCardNonce();
     }
 
+    public void showDeleteButton() {
+        mIsShowDelete = !mIsShowDelete;
+        notifyDataSetChanged();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView icon;
         public TextView title;
         public TextView description;
+        public View deleteIcon;
 
         ViewHolder(View view) {
             super(view);
@@ -89,6 +101,7 @@ public class VaultedPaymentMethodsAdapter extends RecyclerView.Adapter<VaultedPa
             icon = view.findViewById(R.id.bt_payment_method_icon);
             title = view.findViewById(R.id.bt_payment_method_title);
             description = view.findViewById(R.id.bt_payment_method_description);
+            deleteIcon = view.findViewById(R.id.bt_payment_method_delete_icon);
         }
     }
 }

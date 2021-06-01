@@ -32,37 +32,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchGooglePay(View v) {
-        startActivityForResult(getDropInRequest().paymentMethod(CitconPaymentMethodType.GOOGLE_PAYMENT)
+        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.GOOGLE_PAYMENT)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchCreditCard(View v) {
-        startActivityForResult(getDropInRequest().getIntent(this), DROP_IN_REQUEST);
+        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.UNKNOWN)
+                .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchVenmo(View v) {
-        startActivityForResult(getDropInRequest().paymentMethod(CitconPaymentMethodType.PAY_WITH_VENMO)
+        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.PAY_WITH_VENMO)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchPaypal(View v) {
-        startActivityForResult(getDropInRequest().paymentMethod(CitconPaymentMethodType.PAYPAL)
+        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
-    private CPayDropInRequest getDropInRequest() {
-        return new CPayDropInRequest()
-                .collectDeviceData(false)
-                .vaultManager(true)
-                .maskCardNumber(true)
-                .maskSecurityCode(true)
-                .paymentMethod(CitconPaymentMethodType.UNKNOWN)
-                .request3DSecureVerification(true)
-                .threeDSecureRequest(demoThreeDSecureRequest())
+    public void launchManagement(View v) {
+        startActivityForResult(CPayDropInRequest.ManagerBuilder.INSTANCE
+                        .accessToken("abcedf")
+                        .build()
+                        .getIntent(this),
+                DROP_IN_REQUEST);
+    }
+
+    private CPayDropInRequest buildDropInRequest() {
+        return CPayDropInRequest.PaymentBuilder.INSTANCE
                 .accessToken("abcdef")
                 .chargeToken("dfddfd")
-                .citconPaymentRequest(getPaymentRequest());
-
+                .customerID("zzzzz")
+                .request3DSecureVerification(true)
+                .threeDSecureRequest(demoThreeDSecureRequest())
+                .citconPaymentRequest(getPaymentRequest())
+                .build();
     }
 
     private CitconPaymentRequest getPaymentRequest() {

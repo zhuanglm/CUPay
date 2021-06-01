@@ -5,20 +5,19 @@
 
     <data>
         <variable
-            name="payment"
-            type="com.citconpay.sdk.data.model.PaymentMethod" />
+            name="dropinModel"
+            type="com.citconpay.sdk.ui.main.viewmodel.DropinViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <TextView
-            android:id="@+id/textView"
+        <ProgressBar
+            android:id="@+id/pb_loading_parameter"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{payment.mPaymentName,default = paypal}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

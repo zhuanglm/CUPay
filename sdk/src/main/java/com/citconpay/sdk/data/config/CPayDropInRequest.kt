@@ -2,7 +2,6 @@ package com.citconpay.sdk.data.config
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import com.braintreepayments.api.DataCollector
@@ -15,22 +14,95 @@ import com.citconpay.sdk.data.model.CitconPaymentMethodType
 import com.cupay.cardform.view.CardForm
 
 open class CPayDropInRequest() : Parcelable {
-    private lateinit var mPaymentMethodType: CitconPaymentMethodType
+    private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
     private lateinit var mAccessToken: String
-    private lateinit var mChargeToken: String
-    private var mConsumerID: String? = null
-
-    //val EXTRA_CHECKOUT_REQUEST = "com.citconpay.sdk.data.api.EXTRA_CHECKOUT_REQUEST"
+    private var mChargeToken: String = ""
+    private var mConsumerID: String = ""
     private var mBrainTreeDropInRequest: DropInRequest =  DropInRequest()
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
 
-    private var mThemeColor: Int = Color.BLUE
+    object ManagerBuilder {
+        private lateinit var accessToken: String
+
+        fun accessToken(token: String): ManagerBuilder {
+            accessToken = token
+            return this
+        }
+
+        fun build(): CPayDropInRequest {
+            return CPayDropInRequest().accessToken(accessToken)
+                .vaultManager(true)
+                .paymentMethod(CitconPaymentMethodType.NONE)
+        }
+
+    }
+
+    object PaymentBuilder {
+        private lateinit var accessToken: String
+        private lateinit var chargeToken: String
+        private lateinit var customerID: String
+        private var paymentRequest: CitconPaymentRequest? = null
+        private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
+        private var isRequest3DSecure = false
+
+        fun accessToken(token: String): PaymentBuilder {
+            accessToken = token
+            return this
+        }
+
+        fun chargeToken(token: String): PaymentBuilder {
+            chargeToken = token
+            return this
+        }
+
+        fun customerID(id: String): PaymentBuilder {
+            customerID = id
+            return this
+        }
+
+        fun citconPaymentRequest(citconPaymentRequest: CitconPaymentRequest): PaymentBuilder {
+            paymentRequest = citconPaymentRequest
+            return this
+        }
+
+        fun threeDSecureRequest(request: Citcon3DSecureRequest): PaymentBuilder {
+            citcon3DSecureRequest = request
+            return this
+        }
+
+        fun request3DSecureVerification(requestThreeDSecure: Boolean): PaymentBuilder {
+            isRequest3DSecure = requestThreeDSecure
+            return this
+        }
+
+        fun build(): CPayDropInRequest {
+            val dropInRequest = CPayDropInRequest()
+                .collectDeviceData(true)
+                .vaultManager(false)
+                .maskCardNumber(true)
+                .maskSecurityCode(true)
+                .request3DSecureVerification(isRequest3DSecure)
+                .accessToken("abcdef")
+                .chargeToken("dfddfd")
+                .customerID(customerID)
+
+            if(isRequest3DSecure && citcon3DSecureRequest != null)
+                dropInRequest.threeDSecureRequest(citcon3DSecureRequest!!)
+
+            if(paymentRequest != null) {
+                dropInRequest.citconPaymentRequest(paymentRequest!!)
+            }
+
+            return dropInRequest
+        }
+
+    }
 
     constructor(parcel: Parcel) : this() {
         mPaymentMethodType = parcel.readSerializable() as CitconPaymentMethodType
         mAccessToken = parcel.readString()!!
         mChargeToken = parcel.readString()!!
-        mConsumerID = parcel.readString()
+        mConsumerID = parcel.readString()!!
         mBrainTreeDropInRequest = parcel.readParcelable(DropInRequest::class.java.classLoader)!!
         mGooglePaymentRequest = parcel.readParcelable(GooglePaymentRequest::class.java.classLoader)
     }
@@ -65,7 +137,12 @@ open class CPayDropInRequest() : Parcelable {
         return mBrainTreeDropInRequest
     }
 
-    fun citconPaymentRequest(citconPaymentRequest: CitconPaymentRequest): CPayDropInRequest {
+    /**
+     * This method is optional. customer id is used to set PaymentRequest.
+     *
+     * @param citconPaymentRequest [CitconPaymentRequest] is specify citcon PaymentRequest.
+     */
+    private fun citconPaymentRequest(citconPaymentRequest: CitconPaymentRequest): CPayDropInRequest {
         mGooglePaymentRequest = citconPaymentRequest.googlePaymentRequest
         //Todo: setup Payment request depends on Gateway type
         mBrainTreeDropInRequest.googlePaymentRequest(mGooglePaymentRequest)
@@ -94,6 +171,7 @@ open class CPayDropInRequest() : Parcelable {
             CitconPaymentMethodType.UNIONPAY -> TODO()
             CitconPaymentMethodType.HIPER -> TODO()
             CitconPaymentMethodType.HIPERCARD -> TODO()
+            CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.NONE)
         }
         return this
     }
@@ -103,7 +181,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param token is applied from backend server.
      */
-    fun accessToken(token: String): CPayDropInRequest {
+    private fun accessToken(token: String): CPayDropInRequest {
         mAccessToken = token
         return this
     }
@@ -113,7 +191,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param token is applied from backend server.
      */
-    fun chargeToken(token: String): CPayDropInRequest {
+    private fun chargeToken(token: String): CPayDropInRequest {
         mChargeToken = token
         return this
     }
@@ -123,7 +201,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param id is current customer id.
      */
-    fun customerID(id: String): CPayDropInRequest {
+    private fun customerID(id: String): CPayDropInRequest {
         mConsumerID = id
         return this
     }
@@ -135,7 +213,7 @@ open class CPayDropInRequest() : Parcelable {
      * fraud prevention.
      * @see DataCollector
      */
-    fun collectDeviceData(collectDeviceData: Boolean): CPayDropInRequest {
+    private fun collectDeviceData(collectDeviceData: Boolean): CPayDropInRequest {
         mBrainTreeDropInRequest.collectDeviceData(collectDeviceData)
         return this
     }
@@ -144,7 +222,7 @@ open class CPayDropInRequest() : Parcelable {
      * @param vaultManager `true` to allow customers to manage their vaulted payment methods.
      * Defaults to `false`.
      */
-    fun vaultManager(vaultManager: Boolean): CPayDropInRequest {
+    private fun vaultManager(vaultManager: Boolean): CPayDropInRequest {
         mBrainTreeDropInRequest.vaultManager(vaultManager)
         return this
     }
@@ -154,7 +232,7 @@ open class CPayDropInRequest() : Parcelable {
      * See [com.cupay.cardform.view.CardEditText] for more details. Defaults to
      * `false`.
      */
-    fun maskCardNumber(maskCardNumber: Boolean): CPayDropInRequest {
+    private fun maskCardNumber(maskCardNumber: Boolean): CPayDropInRequest {
         mBrainTreeDropInRequest.maskCardNumber(maskCardNumber)
         return this
     }
@@ -162,7 +240,7 @@ open class CPayDropInRequest() : Parcelable {
     /**
      * @param maskSecurityCode `true` to mask the security code during input. Defaults to `false`.
      */
-    fun maskSecurityCode(maskSecurityCode: Boolean): CPayDropInRequest {
+    private fun maskSecurityCode(maskSecurityCode: Boolean): CPayDropInRequest {
         mBrainTreeDropInRequest.maskSecurityCode(maskSecurityCode)
         return this
     }
@@ -175,7 +253,7 @@ open class CPayDropInRequest() : Parcelable {
      * @param requestThreeDSecure `true` to request a 3D Secure verification as part of Drop-In, `false` to not request a 3D Secure verification. Defaults to `false`.
      * @return the drop in request
      */
-     fun request3DSecureVerification(requestThreeDSecure: Boolean): CPayDropInRequest {
+     private fun request3DSecureVerification(requestThreeDSecure: Boolean): CPayDropInRequest {
         mBrainTreeDropInRequest.requestThreeDSecureVerification(requestThreeDSecure)
         return this
     }
@@ -183,17 +261,17 @@ open class CPayDropInRequest() : Parcelable {
     /**
      * This method is optional.
      *
-     * @param threeDSecureRequest [ThreeDSecureRequest] to specify options and additional information for 3D Secure. To encourage 3DS 2.0 flows, set [ThreeDSecureRequest.billingAddress], [ThreeDSecureRequest.email], and [ThreeDSecureRequest.mobilePhoneNumber] for best results. If no amount is set, the [DropInRequest.amount] will be used.
+     * @param request [ThreeDSecureRequest] to specify options and additional information for 3D Secure. To encourage 3DS 2.0 flows, set [ThreeDSecureRequest.billingAddress], [ThreeDSecureRequest.email], and [ThreeDSecureRequest.mobilePhoneNumber] for best results. If no amount is set, the [DropInRequest.amount] will be used.
      * @return the drop in request
      */
-    fun threeDSecureRequest(request: Citcon3DSecureRequest): CPayDropInRequest {
+    private fun threeDSecureRequest(request: Citcon3DSecureRequest): CPayDropInRequest {
         //Todo: setup 3DS request depends on Gateway type
         mBrainTreeDropInRequest.threeDSecureRequest(request.threeDSecureRequest)
         return this
     }
 
     companion object CREATOR : Parcelable.Creator<CPayDropInRequest> {
-        val EXTRA_CHECKOUT_REQUEST: String? = "com.citconpay.sdk.data.api.EXTRA_CHECKOUT_REQUEST"
+        const val EXTRA_CHECKOUT_REQUEST: String = "com.citconpay.sdk.data.api.EXTRA_CHECKOUT_REQUEST"
 
         override fun createFromParcel(parcel: Parcel): CPayDropInRequest {
             return CPayDropInRequest(parcel)

@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">CUPay</string>
-    <string name="button_checkout">Check Out</string>
+    <string name="bt_checkout">Check Out</string>
     <string name="credit_card">Credit</string>
     <string name="paypal">Paypal</string>
-    <string name="button_venmo">Venmo</string>
-    <string name="button_google">Google Pay</string>
+    <string name="bt_venmo">Venmo</string>
+    <string name="bt_google">Google Pay</string>
+    <string name="bt_wx">WX Pay</string>
+    <string name="bt_ali">Ali Pay</string>
+    <string name="bt_my_wallet">My Wallet</string>
 </resources>

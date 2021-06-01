@@ -15,6 +15,19 @@
         <item name="android:windowExitAnimation">@anim/bt_slide_out_down</item>
     </style>
 
+    <style name="ct_drop_in_activity_theme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/bt_base_background</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowTranslucentStatus" tools:targetApi="kitkat">true</item>
+        <item name="android:windowAnimationStyle">@style/bt_fade_activity_animation</item>
+        <item name="colorPrimary">@color/bt_color_primary</item>
+        <item name="colorPrimaryDark">@color/bt_color_primary_dark</item>
+        <item name="colorAccent">@color/bt_blue</item>
+    </style>
+
     <style name="bt_drop_in_activity_theme" parent="Theme.AppCompat.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>

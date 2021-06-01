@@ -1,9 +1,12 @@
 package com.braintreepayments.api.dropin.view;
 
 import android.graphics.drawable.Drawable;
+import android.preference.EditTextPreference;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.braintreepayments.api.test.Fixtures;
@@ -108,8 +111,8 @@ public class EnrollmentCardViewUnitTest {
 
         assertEquals(RuntimeEnvironment.application.getString(R.string.bt_unionpay_sms_code_invalid),
                 ((ErrorEditText) mView.findViewById(R.id.bt_sms_code)).getTextInputLayoutParent().getError());
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
     }
 
     @Test
@@ -127,8 +130,8 @@ public class EnrollmentCardViewUnitTest {
         ((EditText) mView.findViewById(R.id.bt_sms_code)).setText("123456");
         mView.onEditorAction(null, 0, null);
 
-        assertThat(mView.findViewById(R.id.bt_button)).isGone();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
+        assertThat((Button) mView.findViewById(R.id.bt_button)).isGone();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isVisible();
     }
 
     @Test
@@ -163,19 +166,19 @@ public class EnrollmentCardViewUnitTest {
     public void onClick_showsErrorWhenEditTextIsEmpty() {
         mView.onClick(mView.findViewById(R.id.bt_animated_button_view));
 
-        assertThat(mView.findViewById(R.id.bt_button)).isVisible();
-        assertThat(mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
+        assertThat((Button)mView.findViewById(R.id.bt_button)).isVisible();
+        assertThat((ProgressBar) mView.findViewById(R.id.bt_animated_button_loading_indicator)).isGone();
         assertTrue(((ErrorEditText) mView.findViewById(R.id.bt_sms_code)).isError());
     }
 
     @Test
     public void setVisibility_toVisibleFocusesSmsCode() {
         mView.setup(mActivity);
-        assertThat(mView.findViewById(R.id.bt_sms_code)).isNotFocused();
+        assertThat((EditText)mView.findViewById(R.id.bt_sms_code)).isNotFocused();
 
         mView.setVisibility(VISIBLE);
 
-        assertThat(mView.findViewById(R.id.bt_sms_code)).isFocused();
+        assertThat((EditText) mView.findViewById(R.id.bt_sms_code)).isFocused();
     }
 
     @Test
