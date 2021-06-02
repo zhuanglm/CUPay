@@ -75,7 +75,7 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(): CPayDropInRequest {
+        fun build(type: CitconPaymentMethodType): CPayDropInRequest {
             val dropInRequest = CPayDropInRequest()
                 .collectDeviceData(true)
                 .vaultManager(false)
@@ -93,7 +93,7 @@ open class CPayDropInRequest() : Parcelable {
                 dropInRequest.citconPaymentRequest(paymentRequest!!)
             }
 
-            return dropInRequest
+            return dropInRequest.paymentMethod(type)
         }
 
     }
@@ -154,26 +154,30 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param type Type of the payment method.
      */
-    fun paymentMethod(type: CitconPaymentMethodType): CPayDropInRequest {
+    private fun paymentMethod(type: CitconPaymentMethodType): CPayDropInRequest {
         this.mPaymentMethodType = type
         when(type) {
             CitconPaymentMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.PAYPAL)
             CitconPaymentMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.UNKNOWN)
             CitconPaymentMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.PAY_WITH_VENMO)
-            CitconPaymentMethodType.AMEX -> TODO()
+            CitconPaymentMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.AMEX)
             CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.GOOGLE_PAYMENT)
             CitconPaymentMethodType.DINERS -> TODO()
             CitconPaymentMethodType.DISCOVER -> TODO()
             CitconPaymentMethodType.JCB -> TODO()
             CitconPaymentMethodType.MAESTRO -> TODO()
-            CitconPaymentMethodType.MASTERCARD -> TODO()
-            CitconPaymentMethodType.VISA -> TODO()
-            CitconPaymentMethodType.UNIONPAY -> TODO()
+            CitconPaymentMethodType.MASTERCARD -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.MASTERCARD)
+            CitconPaymentMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.VISA)
+            CitconPaymentMethodType.UNIONPAY -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.UNIONPAY)
             CitconPaymentMethodType.HIPER -> TODO()
             CitconPaymentMethodType.HIPERCARD -> TODO()
             CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.NONE)
         }
         return this
+    }
+
+    fun getPaymentMethod(): CitconPaymentMethodType {
+        return mPaymentMethodType
     }
 
     /**

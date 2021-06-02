@@ -4,4 +4,5 @@
     <string name="paypal_intent_authorize" translatable="false">Authorize</string>
     <string name="none">None</string>
     <string name="place_order">Place Order</string>
+    <string name="loading_message">%1$s is loading…</string>
 </resources>

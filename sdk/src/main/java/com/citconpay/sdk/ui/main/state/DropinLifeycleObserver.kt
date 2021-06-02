@@ -26,7 +26,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     //Todo: load config to fill up related Request by payment method type
                     Status.SUCCESS -> {
                         resource.data?.let { response ->
-                            mViewModel.mDropInRequest.getBrainTreeDropInRequest()
+                            mViewModel.getDropInRequest().getBrainTreeDropInRequest()
                                     //.clientToken(SANDBOX_TOKENIZATION_KEY)
                                     .clientToken(response.data?.token)
                                     .cardholderNameStatus(CardForm.FIELD_REQUIRED)

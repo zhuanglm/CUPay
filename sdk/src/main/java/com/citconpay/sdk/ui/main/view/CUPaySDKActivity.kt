@@ -34,12 +34,14 @@ class CUPaySDKActivity : BaseActivity() {
 
         mDropInViewModel = ViewModelProvider(this, ViewModelFactory(ApiRepository(),application))
                 .get(DropinViewModel::class.java)
-        /*mDropInViewModel.mTextViewMsg.observe(this) {
-            binding.payment = PaymentMethod(it)
-        }*/
-        mDropInViewModel.mLoading.observe(this,LoadingObserver(binding.pbLoadingParameter))
 
-        mDropInViewModel.mDropInRequest = intent.getParcelableExtra(CPayDropInRequest.EXTRA_CHECKOUT_REQUEST)!!
+        mDropInViewModel.mLoading.observe(this,LoadingObserver(binding.pbLoadingParameter, binding.tvLoadingMessage))
+
+        mDropInViewModel.mTextViewMsg.observe(this) {
+            binding.tvLoadingMessage.text = getString(R.string.loading_message,it)
+        }
+
+        mDropInViewModel.setDropInRequest(intent.getParcelableExtra(CPayDropInRequest.EXTRA_CHECKOUT_REQUEST)!!)
 
         mLifecycleObserver = DropinLifecycleObserver(this,mDropInViewModel)
         lifecycle.addObserver(mLifecycleObserver)
@@ -65,7 +67,7 @@ class CUPaySDKActivity : BaseActivity() {
         if (resultCode == RESULT_OK) {
             if (requestCode == DROP_IN_REQUEST) {
                 val result: DropInResult? = data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
-                result?.let { it -> mDropInViewModel.getDropInResult(it) }
+                result?.let { it -> mDropInViewModel.displayDropInResult(it) }
                 //result?.let{ result.paymentMethodNonce?.let { it1 -> displayNonce(it1, result.deviceData) } }
                 //finish()
             } /*else {

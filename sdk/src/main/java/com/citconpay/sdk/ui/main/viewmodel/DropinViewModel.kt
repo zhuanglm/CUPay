@@ -19,8 +19,8 @@ import com.citconpay.sdk.utils.Resource
 import kotlinx.coroutines.Dispatchers
 
 class DropinViewModel(private val apiRepository: ApiRepository, application: Application) : AndroidViewModel(application) {
-    //val mTextViewMsg = MutableLiveData<String>()
-    lateinit var mDropInRequest: CPayDropInRequest
+    val mTextViewMsg = MutableLiveData<String>()
+    private lateinit var mDropInRequest: CPayDropInRequest
     val mLoading = MutableLiveData<Boolean>()
     val mResultString = MutableLiveData<String>()
 
@@ -28,7 +28,16 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         mTextViewMsg.postValue(message)
     }*/
 
-    fun getDropInResult(result: DropInResult) {
+    fun setDropInRequest(request: CPayDropInRequest) {
+        mDropInRequest = request
+        mTextViewMsg.postValue(request.getPaymentMethod().name)
+    }
+
+    fun getDropInRequest(): CPayDropInRequest {
+        return mDropInRequest
+    }
+
+    fun displayDropInResult(result: DropInResult) {
         mResultString.postValue(displayNonce(result))
     }
 
@@ -45,31 +54,12 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
     }
 
     fun loadClientToken() : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
-        //mLoading.value = true
         return getClientToken()
     }
 
     fun getBTDropInRequest(): DropInRequest {
         return mDropInRequest.getBrainTreeDropInRequest()
     }
-
-    /*private val refreshTrigger = MutableLiveData<Boolean>()
-    val mLoading = MutableLiveData<Boolean>()
-    private val api = WanApi.get()
-    private val bannerList: LiveData<ApiResponse<List<BannerVO>>> =
-            Transformations.switchMap(refreshTrigger) {
-                api.bannerList()
-            }
-
-    val banners: LiveData<List<BannerVO>> = Transformations.map(bannerList) {
-        mLoading.value = false
-        it.data ?: ArrayList()
-    }
-
-    fun loadData() {
-        refreshTrigger.postValue(true)
-        mLoading.value = true
-    }*/
 
     private lateinit var mNonce: PaymentMethodNonce
 

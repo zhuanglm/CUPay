@@ -32,22 +32,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchGooglePay(View v) {
-        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.GOOGLE_PAYMENT)
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchCreditCard(View v) {
-        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.UNKNOWN)
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchVenmo(View v) {
-        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.PAY_WITH_VENMO)
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchPaypal(View v) {
-        startActivityForResult(buildDropInRequest().paymentMethod(CitconPaymentMethodType.PAYPAL)
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);
     }
 
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 DROP_IN_REQUEST);
     }
 
-    private CPayDropInRequest buildDropInRequest() {
+    private CPayDropInRequest buildDropInRequest(CitconPaymentMethodType type) {
         return CPayDropInRequest.PaymentBuilder.INSTANCE
                 .accessToken("abcdef")
                 .chargeToken("dfddfd")
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 .request3DSecureVerification(true)
                 .threeDSecureRequest(demoThreeDSecureRequest())
                 .citconPaymentRequest(getPaymentRequest())
-                .build();
+                .build(type);
     }
 
     private CitconPaymentRequest getPaymentRequest() {
@@ -100,15 +100,13 @@ public class MainActivity extends AppCompatActivity {
         CPay3DSecureAdditionalInfo additionalInformation = new CPay3DSecureAdditionalInfo()
                 .accountId("account-id");
 
-        Citcon3DSecureRequest threeDSecureRequest = new Citcon3DSecureRequest()
+        return new Citcon3DSecureRequest()
                 .amount("1.00")
                 .versionRequested(Citcon3DSecureRequest.VERSION_2)
                 .email("test@email.com")
                 .mobilePhoneNumber("3125551234")
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation);
-
-        return threeDSecureRequest;
     }
 
 
