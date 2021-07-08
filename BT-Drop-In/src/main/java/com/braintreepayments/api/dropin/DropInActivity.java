@@ -10,12 +10,16 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.braintreepayments.api.DataCollector;
 import com.braintreepayments.api.GooglePayment;
@@ -23,6 +27,7 @@ import com.braintreepayments.api.PayPal;
 import com.braintreepayments.api.PaymentMethod;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.Venmo;
+import com.braintreepayments.api.dropin.adapters.AvailablePaymentMethodNonceList;
 import com.braintreepayments.api.dropin.adapters.SupportedPaymentMethodsAdapter;
 import com.braintreepayments.api.dropin.adapters.SupportedPaymentMethodsAdapter.PaymentMethodSelectedListener;
 import com.braintreepayments.api.dropin.adapters.VaultedPaymentMethodsAdapter;
@@ -54,18 +59,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-
 import static android.view.animation.AnimationUtils.loadAnimation;
 import static com.braintreepayments.api.dropin.DropInRequest.EXTRA_CHECKOUT_REQUEST;
 
 public class DropInActivity extends BaseActivity implements ConfigurationListener, BraintreeCancelListener,
         BraintreeErrorListener, PaymentMethodSelectedListener, PaymentMethodNoncesUpdatedListener,
-        PaymentMethodNonceCreatedListener {
+        PaymentMethodNonceCreatedListener{
 
     /**
      * Errors are returned as the serializable value of this key in the data intent in
@@ -97,6 +96,8 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     private boolean mSheetSlideDownPerformed;
     private boolean mPerformedThreeDSecureVerification;
 
+    private AvailablePaymentMethodNonceList mAvailablePaymentMethodNonces;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +111,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         mVaultedPaymentMethodsView = findViewById(R.id.bt_vaulted_payment_methods);
         mVaultManagerButton = findViewById(R.id.bt_vault_edit_button);
         mVaultedPaymentMethodsView.setLayoutManager(new LinearLayoutManager(this,
-                LinearLayoutManager.VERTICAL, false));
+                LinearLayoutManager.HORIZONTAL, false));
         new LinearSnapHelper().attachToRecyclerView(mVaultedPaymentMethodsView);
 
         mAddNewPayment = findViewById(R.id.bt_new_payment);
@@ -135,6 +136,16 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         }
 
         slideUp();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //return from other page
+        if(mAvailablePaymentMethodNonces != null && mAvailablePaymentMethodNonces.size() <= 0) {
+            finish();
+        }
     }
 
     @Override
@@ -311,22 +322,26 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
 
     @Override
     public void onPaymentMethodNoncesUpdated(List<PaymentMethodNonce> paymentMethodNonces) {
-        final List<PaymentMethodNonce> noncesRef = paymentMethodNonces;
-        if (paymentMethodNonces.size() > 0) {
+        //final List<PaymentMethodNonce> noncesRef = paymentMethodNonces;
+        mAvailablePaymentMethodNonces = new AvailablePaymentMethodNonceList(
+                this, mConfiguration, paymentMethodNonces, mDropInRequest, false);
+        if (mAvailablePaymentMethodNonces.size() > 0) {
             if (mDropInRequest.isGooglePaymentEnabled()) {
                 GooglePayment.isReadyToPay(mBraintreeFragment, new BraintreeResponseListener<Boolean>() {
                     @Override
                     public void onResponse(Boolean isReadyToPay) {
-                        showVaultedPaymentMethods(noncesRef, isReadyToPay);
+                        showVaultedPaymentMethods(mAvailablePaymentMethodNonces, isReadyToPay);
+                        //showVaultedPaymentMethods(noncesRef, isReadyToPay);
                     }
                 });
             } else {
-                showVaultedPaymentMethods(paymentMethodNonces, false);
+                showVaultedPaymentMethods(mAvailablePaymentMethodNonces, false);
+                //showVaultedPaymentMethods(paymentMethodNonces, false);
             }
         } else {
             mSupportedPaymentMethodsHeader.setText(R.string.bt_select_payment_method);
             mVaultedPaymentMethodsContainer.setVisibility(View.GONE);
-            mAddNewPayment.setVisibility(View.GONE);
+            mAddNewPayment.setVisibility(View.INVISIBLE);
             onPaymentMethodSelected(mDropInRequest.getPaymentMethodType());
         }
     }
@@ -446,35 +461,37 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     }
 
     public void onVaultEditButtonClick(View view) {
-        /*ArrayList<Parcelable> parcelableArrayList = new ArrayList<Parcelable>(mBraintreeFragment.getCachedPaymentMethodNonces());
+        //ArrayList<Parcelable> parcelableArrayList = new ArrayList<Parcelable>(mBraintreeFragment.getCachedPaymentMethodNonces());
+        ArrayList<Parcelable> parcelableArrayList = new ArrayList<>(mAvailablePaymentMethodNonces.getPaymentMethodNonceList());
 
         Intent intent = new Intent(DropInActivity.this, VaultManagerActivity.class)
                 .putExtra(EXTRA_CHECKOUT_REQUEST, mDropInRequest)
                 .putParcelableArrayListExtra(EXTRA_PAYMENT_METHOD_NONCES, parcelableArrayList);
-        startActivityForResult(intent, DELETE_PAYMENT_METHOD_NONCE_CODE);*/
-        VaultedPaymentMethodsAdapter adapter = (VaultedPaymentMethodsAdapter) mVaultedPaymentMethodsView.getAdapter();
-        adapter.showDeleteButton();
+        startActivityForResult(intent, DELETE_PAYMENT_METHOD_NONCE_CODE);
 
         mBraintreeFragment.sendAnalyticsEvent("manager.appeared");
     }
 
-    private void showVaultedPaymentMethods(List<PaymentMethodNonce> paymentMethodNonces, boolean googlePayEnabled) {
+    private void showVaultedPaymentMethods(AvailablePaymentMethodNonceList/*List<PaymentMethodNonce>*/ paymentMethodNonces, boolean googlePayEnabled) {
         mSupportedPaymentMethodsHeader.setText(R.string.bt_other);
         mVaultedPaymentMethodsContainer.setVisibility(View.VISIBLE);
-        mAddNewPayment.setVisibility(View.VISIBLE);
+        if (mDropInRequest.getPaymentMethodType() == PaymentMethodType.NONE ||
+                mDropInRequest.getPaymentMethodType() == PaymentMethodType.UNKNOWN) {
+            mAddNewPayment.setVisibility(View.VISIBLE);
+        }
 
         VaultedPaymentMethodsAdapter vaultedPaymentMethodsAdapter = new VaultedPaymentMethodsAdapter(new PaymentMethodNonceCreatedListener() {
             @Override
             public void onPaymentMethodNonceCreated(PaymentMethodNonce paymentMethodNonce) {
                 confirmSubmitCardForm(paymentMethodNonce);
             }
-        }, paymentMethodNonces);
+        }, paymentMethodNonces, mDropInRequest);
 
-        vaultedPaymentMethodsAdapter.setup(this, mConfiguration, mDropInRequest,
-                googlePayEnabled, mClientTokenPresent);
         mVaultedPaymentMethodsView.setAdapter(vaultedPaymentMethodsAdapter);
 
         if (mDropInRequest.isVaultManagerEnabled()) {
+            mVaultManagerButton.setVisibility(View.VISIBLE);
+        } else {
             mVaultManagerButton.setVisibility(View.VISIBLE);
         }
 
@@ -484,7 +501,7 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     }
 
     private void confirmSubmitCardForm(PaymentMethodNonce paymentMethodNonce) {
-        Resources resources = getResources();
+        //Resources resources = getResources();
         new AlertDialog.Builder(this,
                 R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setTitle(R.string.bt_add_new_card_confirmation_title)

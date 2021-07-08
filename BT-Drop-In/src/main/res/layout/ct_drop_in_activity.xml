@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:layout_margin="0dp"
     android:onClick="onBackgroundClicked"
-    android:background="@android:color/transparent"
     tools:context=".DropInActivity">
 
     <LinearLayout
@@ -30,7 +29,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
 
@@ -38,7 +37,9 @@
                     android:layout_width="@dimen/bt_progress_bar_diameter"
                     android:layout_height="@dimen/bt_progress_bar_diameter"
                     android:layout_gravity="center"
-                    android:indeterminate="true"/>
+                    android:layout_marginTop="@dimen/bt_form_padding"
+                    android:layout_marginBottom="@dimen/bt_form_padding"
+                    android:indeterminate="true" />
 
             </LinearLayout>
 
@@ -68,7 +69,6 @@
                             android:layout_height="wrap_content"
                             android:onClick="onVaultEditButtonClick"
                             android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
                             android:visibility="invisible"/>
 
                         <TextView
@@ -76,13 +76,11 @@
                             android:layout_alignTop="@id/bt_vault_edit_button"
                             android:layout_alignBottom="@id/bt_vault_edit_button"
                             android:layout_alignParentStart="true"
-                            android:layout_alignParentLeft="true"
                             android:gravity="center_vertical"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
                             android:layout_marginStart="20dp"
-                            android:text="@string/bt_my_wallet" />
+                            android:text="@string/bt_recent" />
 
                     </RelativeLayout>
 
@@ -103,7 +101,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
                     android:layout_margin="@dimen/fab_margin"
-                    app:srcCompat="@android:drawable/ic_input_add" />
+                    android:contentDescription="@string/bt_add_card"
+                    android:visibility="invisible"
+                    app:maxImageSize="36dp"
+                    app:srcCompat="@drawable/bt_ic_baseline_add_24" />
 
                 <TextView
                     style="@style/bt_choose_payment_label"

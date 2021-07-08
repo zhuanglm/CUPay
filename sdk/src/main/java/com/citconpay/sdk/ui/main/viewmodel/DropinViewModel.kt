@@ -22,7 +22,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
     val mTextViewMsg = MutableLiveData<String>()
     private lateinit var mDropInRequest: CPayDropInRequest
     val mLoading = MutableLiveData<Boolean>()
-    val mResultString = MutableLiveData<String>()
+    val mResult = MutableLiveData<DropInResult>()
 
     /*fun getTextView(message: String) {
         mTextViewMsg.postValue(message)
@@ -37,24 +37,40 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         return mDropInRequest
     }
 
-    fun displayDropInResult(result: DropInResult) {
-        mResultString.postValue(displayNonce(result))
+    fun setDropInResult(result: DropInResult) {
+        mResult.postValue(result)
     }
 
     private fun getClientToken() = liveData(Dispatchers.IO) {
         mLoading.postValue(true)
         emit(Resource.loading(data = null))
         try {
-            mLoading.postValue(false)
             emit(Resource.success(data = apiRepository.getClientToken()))
+            mLoading.postValue(false)
         } catch (exception: Exception) {
             mLoading.postValue(false)
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }
     }
 
+    private fun sendNonceToServer(nonce: PaymentMethodNonce) = liveData(Dispatchers.IO) {
+        //mLoading.postValue(true)
+        emit(Resource.loading(data = null))
+        try {
+            emit(Resource.success(data = apiRepository.getClientToken()))
+            //mLoading.postValue(false)
+        } catch (exception: Exception) {
+            //mLoading.postValue(false)
+            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+        }
+    }
+
     fun loadClientToken() : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
         return getClientToken()
+    }
+
+    fun placeOrderByNonce(nonce: PaymentMethodNonce) : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
+        return sendNonceToServer(nonce)
     }
 
     fun getBTDropInRequest(): DropInRequest {
@@ -69,7 +85,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
 //        mNonceIcon.visibility = View.VISIBLE
 //        mNonceString!!.text = "Nonce: ${mNonce!!.nonce}"
 //        mNonceString.visibility = View.VISIBLE
-        var details = ""
+        var details: String
         if (mNonce is CardNonce) {
             details = getDisplayString(mNonce as CardNonce?)
             return details
@@ -130,7 +146,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         return "null"
     }
 
-    fun getDisplayString(binData: BinData): String? {
+    private fun getDisplayString(binData: BinData): String {
         return """Bin Data: 
          - Prepaid: ${binData.healthcare}
          - Healthcare: ${binData.healthcare}

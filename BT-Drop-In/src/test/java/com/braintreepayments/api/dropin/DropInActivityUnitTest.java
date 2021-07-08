@@ -615,7 +615,7 @@ public class DropInActivityUnitTest {
         mActivity.setDropInRequest(new DropInRequest().clientToken(base64EncodedClientTokenFromFixture(Fixtures.CLIENT_TOKEN)));
         setup(httpClient);
 
-        assertThat(mActivity.findViewById(R.id.bt_vaulted_payment_methods)).isShown();
+        assertThat((RecyclerView)mActivity.findViewById(R.id.bt_vaulted_payment_methods)).isShown();
         assertEquals(2, ((RecyclerView) mActivity.findViewById(R.id.bt_vaulted_payment_methods)).getAdapter().getItemCount());
         assertThat((TextView) mActivity.findViewById(R.id.bt_supported_payment_methods_header)).hasText(R.string.bt_other);
     }
@@ -656,7 +656,7 @@ public class DropInActivityUnitTest {
         mActivity.setDropInRequest(new DropInRequest().clientToken(Fixtures.CLIENT_TOKEN));
         setup(httpClient);
 
-        assertThat(mActivity.findViewById(R.id.bt_vaulted_payment_methods)).isNotShown();
+        assertThat((RecyclerView)mActivity.findViewById(R.id.bt_vaulted_payment_methods)).isNotShown();
         assertThat((TextView) mActivity.findViewById(R.id.bt_supported_payment_methods_header)).hasText(R.string.bt_select_payment_method);
     }
 

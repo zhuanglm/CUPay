@@ -13,7 +13,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,10 +23,55 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_consumer_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="consumer ID" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_access_token_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Access Token:" />
+
+            <TextView
+                android:id="@+id/tv_access_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_charge_token_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Charge Token:" />
+
+            <TextView
+                android:id="@+id/tv_charge_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="5" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar_loading"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
@@ -59,21 +104,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchGooglePay"
-                android:text="@string/bt_google" />
+                android:text="@string/bt_google"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchCreditCard"
-                android:text="@string/credit_card" />
+                android:text="@string/credit_card"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchPaypal"
-                android:text="@string/paypal" />
+                android:text="@string/paypal"
+                style="?android:attr/buttonBarButtonStyle" />
 
         </TableRow>
 
@@ -86,19 +134,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchVenmo"
-                android:text="@string/bt_venmo" />
+                android:text="@string/bt_venmo"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/button6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_ali" />
+                android:text="@string/bt_ali"
+                style="?android:attr/buttonBarButtonStyle" />
 
             <Button
                 android:id="@+id/button5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_wx" />
+                android:text="@string/bt_wx"
+                style="?android:attr/buttonBarButtonStyle" />
         </TableRow>
 
     </TableLayout>

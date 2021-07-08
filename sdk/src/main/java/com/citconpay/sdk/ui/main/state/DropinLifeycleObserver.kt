@@ -36,6 +36,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     }
                     Status.ERROR -> {
                         Toast.makeText(mContext, it.message, Toast.LENGTH_LONG).show()
+                        mActivity.finish()
                     }
                     Status.LOADING -> {
                     }

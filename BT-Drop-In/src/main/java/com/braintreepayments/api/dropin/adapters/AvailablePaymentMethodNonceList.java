@@ -12,15 +12,13 @@ import com.braintreepayments.api.models.PaymentMethodNonce;
 import com.braintreepayments.api.models.VenmoAccountNonce;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-class AvailablePaymentMethodNonceList {
+public class AvailablePaymentMethodNonceList {
 
     final private List<PaymentMethodNonce> items;
 
-    AvailablePaymentMethodNonceList(Context context, Configuration configuration,
+    public AvailablePaymentMethodNonceList(Context context, Configuration configuration,
                                     List<PaymentMethodNonce> paymentMethodNonces,
                                     DropInRequest dropInRequest, boolean googlePayEnabled) {
         items = new ArrayList<>();
@@ -31,7 +29,8 @@ class AvailablePaymentMethodNonceList {
             if (paymentMethodNonce instanceof PayPalAccountNonce) {
                 shouldAddPaymentMethod = dropInRequest.isPayPalEnabled() &&
                         configuration.isPayPalEnabled() &&
-                        dropInRequest.getPaymentMethodType() == PaymentMethodType.PAYPAL;
+                        (dropInRequest.getPaymentMethodType() == PaymentMethodType.PAYPAL ||
+                        dropInRequest.getPaymentMethodType() == PaymentMethodType.NONE);
             } else if (paymentMethodNonce instanceof VenmoAccountNonce) {
                 shouldAddPaymentMethod = dropInRequest.isVenmoEnabled() &&
                         configuration.getPayWithVenmo().isEnabled(context) &&
@@ -53,9 +52,11 @@ class AvailablePaymentMethodNonceList {
         }
     }
 
-    int size() {
+    public int size() {
         return items.size();
     }
+
+    public List<PaymentMethodNonce> getPaymentMethodNonceList() { return items; }
 
     PaymentMethodNonce get(int index) {
         return items.get(index);

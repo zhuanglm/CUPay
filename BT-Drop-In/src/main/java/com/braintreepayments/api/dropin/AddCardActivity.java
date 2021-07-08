@@ -1,16 +1,17 @@
 package com.braintreepayments.api.dropin;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ViewSwitcher;
 
+import androidx.annotation.IntDef;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import com.braintreepayments.api.Card;
-import com.braintreepayments.api.PaymentMethod;
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.UnionPay;
 import com.braintreepayments.api.dropin.interfaces.AddPaymentUpdateListener;
@@ -42,11 +43,6 @@ import com.cupay.cardform.view.CardForm;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-
-import androidx.annotation.IntDef;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -100,7 +96,8 @@ public class AddCardActivity extends BaseActivity implements ConfigurationListen
 
         setSupportActionBar((Toolbar) findViewById(R.id.bt_toolbar));
         mActionBar = getSupportActionBar();
-        mActionBar.setDisplayHomeAsUpEnabled(true);
+        if(mActionBar != null)
+            mActionBar.setDisplayHomeAsUpEnabled(true);
         mAddCardView.setAddPaymentUpdatedListener(this);
         mEditCardView.setAddPaymentUpdatedListener(this);
         mEnrollmentCardView.setAddPaymentUpdatedListener(this);

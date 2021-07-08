@@ -51,9 +51,8 @@ class CUPaySDKActivity : BaseActivity() {
     }
 
     override fun finish() {
-        super.finish()
         lifecycle.removeObserver(mLifecycleObserver)
-        setResult(RESULT_OK, Intent())
+        super.finish()
     }
 
     fun launchDropIn() {
@@ -67,7 +66,7 @@ class CUPaySDKActivity : BaseActivity() {
         if (resultCode == RESULT_OK) {
             if (requestCode == DROP_IN_REQUEST) {
                 val result: DropInResult? = data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
-                result?.let { it -> mDropInViewModel.displayDropInResult(it) }
+                result?.let { it -> mDropInViewModel.setDropInResult(it) }
                 //result?.let{ result.paymentMethodNonce?.let { it1 -> displayNonce(it1, result.deviceData) } }
                 //finish()
             } /*else {
@@ -80,8 +79,10 @@ class CUPaySDKActivity : BaseActivity() {
             }*/
         } else if (resultCode != RESULT_CANCELED) {
             //showDialog((data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?)!!.message)
+            setResult(resultCode, Intent())
             finish()
         } else {
+            setResult(resultCode, Intent())
             finish()
         }
 
