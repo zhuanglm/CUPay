@@ -5,4 +5,8 @@ public class CitconApiResponse<T> {
     String app;
     String version;
     T data;
+
+    public String getStatus() {
+        return status;
+    }
 }

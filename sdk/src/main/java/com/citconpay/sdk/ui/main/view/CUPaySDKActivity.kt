@@ -67,16 +67,7 @@ class CUPaySDKActivity : BaseActivity() {
             if (requestCode == DROP_IN_REQUEST) {
                 val result: DropInResult? = data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
                 result?.let { it -> mDropInViewModel.setDropInResult(it) }
-                //result?.let{ result.paymentMethodNonce?.let { it1 -> displayNonce(it1, result.deviceData) } }
-                //finish()
-            } /*else {
-                val returnedData = data!!.getParcelableExtra<Parcelable>(EXTRA_PAYMENT_RESULT)
-                val deviceData = data!!.getStringExtra(EXTRA_DEVICE_DATA)
-                if (returnedData is PaymentMethodNonce) {
-                    displayNonce(returnedData as PaymentMethodNonce?, deviceData)
-                }
-                //mCreateTransactionButton.setEnabled(true)
-            }*/
+            }
         } else if (resultCode != RESULT_CANCELED) {
             //showDialog((data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?)!!.message)
             setResult(resultCode, Intent())

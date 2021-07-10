@@ -8,7 +8,6 @@ import retrofit2.http.POST
 
 
 interface ApiService {
-
     @FormUrlEncoded
     @POST("getBTAccessToken.php")
     suspend fun clientToken(@Field("partner_id") pid: String?,

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.citconpay.cupay.model.Transaction;
 import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
+import com.citconpay.cupay.response.ErrorMessage;
 import com.citconpay.sdk.data.config.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.config.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.config.CPayDropInRequest;
@@ -27,9 +29,18 @@ import com.citconpay.sdk.data.config.Citcon3DSecureRequest;
 import com.citconpay.sdk.data.config.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.CitconPaymentMethodType;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private String   mAccessToken, mChargeToken;
     private ProgressBar mProgressBar;
     private TextInputEditText mEditTextConsumerID;
+    private CheckBox mCheckBox3DS;
+    private View mLayoutPayments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,32 +67,69 @@ public class MainActivity extends AppCompatActivity {
         mTextViewAccessToken = findViewById(R.id.tv_access_token);
         mTextViewChargeToken = findViewById(R.id.tv_charge_token);
         mProgressBar = findViewById(R.id.progressBar_loading);
+        mCheckBox3DS = findViewById(R.id.checkBox_3DS);
+        mLayoutPayments = findViewById(R.id.layout_payments);
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable());
         }
 
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false)
+                .addInterceptor(loggingInterceptor);
+
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(CITCON_SERVER)
+                .client(clientBuilder.build())
                 .build();
 
         CitconUPIAPIService upiapiService = retrofit.create(CitconUPIAPIService.class);
 
-        getClientToken(upiapiService);
+        getAccessToken(upiapiService);
     }
 
-    void getClientToken(CitconUPIAPIService apiService) {
+    void getAccessToken(CitconUPIAPIService apiService) {
         Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken(CITCON_SERVER_AUTH,"client");
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<AccessToken>> call,
                                    @NotNull Response<CitconApiResponse<AccessToken>> response) {
-                if (response.body() != null) {
-                    mAccessToken = response.body().data.getAccessToken();
-                    mTextViewAccessToken.setText(mAccessToken);
-                    getChargeToken(apiService);
+                switch (response.code()) {
+                    case 200:
+                        if (response.body() != null) {
+                            mAccessToken = response.body().data.getAccessToken();
+                            getChargeToken(apiService);
+                        }
+                        break;
+                    case 400:
+                        JSONObject jsonObject = null;
+                        Gson gson = new GsonBuilder().create();
+                        try {
+                            if (response.errorBody() != null) {
+                                jsonObject = new JSONObject(response.errorBody().string());
+                            }
+                            ErrorMessage error = null;
+                            if (jsonObject != null) {
+                                error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
+                            }
+                            if (error != null) {
+                                mAccessToken = error.getMessage() + " (" + error.getDebug() + ")";
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                 }
+
+                mTextViewAccessToken.setText(mAccessToken);
             }
 
             @Override
@@ -119,11 +169,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<ChargeToken>> call,
                                    @NotNull Response<CitconApiResponse<ChargeToken>> response) {
-                if (response.body() != null) {
-                    mProgressBar.setVisibility(View.GONE);
-                    mChargeToken = response.body().data.getChargeToken();
-                    mTextViewChargeToken.setText(mChargeToken);
+                mProgressBar.setVisibility(View.GONE);
+                switch (response.code()) {
+                    case 400:
+                        JSONObject jsonObject = null;
+                        Gson gson = new GsonBuilder().create();
+                        try {
+                            if (response.errorBody() != null) {
+                                jsonObject = new JSONObject(response.errorBody().string());
+                            }
+                            ErrorMessage error = null;
+                            if (jsonObject != null) {
+                                error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
+                            }
+                            if (error != null) {
+                                mChargeToken = error.getMessage() + " (" + error.getDebug() + ")";
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 200:
+                        if (response.body() != null) {
+                            mChargeToken = response.body().data.getChargeToken();
+                            mLayoutPayments.setVisibility(View.VISIBLE);
+                        }
+                        break;
                 }
+
+                mTextViewChargeToken.setText(mChargeToken);
             }
 
             @Override
@@ -168,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
                 .accessToken(mAccessToken)
                 .chargeToken(mChargeToken)
                 .customerID(mEditTextConsumerID.getText().toString())
-                .request3DSecureVerification(true)
+                .request3DSecureVerification(mCheckBox3DS.isChecked())
                 .threeDSecureRequest(demoThreeDSecureRequest())
                 .citconPaymentRequest(getPaymentRequest())
                 .build(type);
