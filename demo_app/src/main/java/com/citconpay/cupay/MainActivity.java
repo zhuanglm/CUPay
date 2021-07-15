@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
+import com.citconpay.cupay.model.RequestAccessToken;
+import com.citconpay.cupay.model.RequestChargeToken;
 import com.citconpay.cupay.model.Transaction;
 import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
@@ -32,6 +34,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int DROP_IN_REQUEST = 1;
     private static final String CITCON_SERVER = "https://api.dev01.citconpay.com/v1/";
     private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
+    private static final String CONTENT_TYPE = "application/json";
     private TextView mTextViewAccessToken, mTextViewChargeToken;
     private String   mAccessToken, mChargeToken;
     private ProgressBar mProgressBar;
@@ -97,36 +101,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void getAccessToken(CitconUPIAPIService apiService) {
-        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken(CITCON_SERVER_AUTH,"client");
+        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_SERVER_AUTH,
+                CONTENT_TYPE,new RequestAccessToken().setTokenType("client"));
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<AccessToken>> call,
                                    @NotNull Response<CitconApiResponse<AccessToken>> response) {
-                switch (response.code()) {
-                    case 200:
-                        if (response.body() != null) {
-                            mAccessToken = response.body().data.getAccessToken();
-                            getChargeToken(apiService);
+                if (response.code() == 200) {
+                    if (response.body() != null) {
+                        mAccessToken = response.body().data.getAccessToken();
+                        getChargeToken(apiService);
+                    }
+                } else {
+                    mProgressBar.setVisibility(View.GONE);
+                    JSONObject jsonObject = null;
+                    Gson gson = new GsonBuilder().create();
+                    try {
+                        if (response.errorBody() != null) {
+                            jsonObject = new JSONObject(response.errorBody().string());
                         }
-                        break;
-                    case 400:
-                        JSONObject jsonObject = null;
-                        Gson gson = new GsonBuilder().create();
-                        try {
-                            if (response.errorBody() != null) {
-                                jsonObject = new JSONObject(response.errorBody().string());
-                            }
-                            ErrorMessage error = null;
-                            if (jsonObject != null) {
-                                error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
-                            }
-                            if (error != null) {
-                                mAccessToken = error.getMessage() + " (" + error.getDebug() + ")";
-                            }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+                        ErrorMessage error = null;
+                        if (jsonObject != null) {
+                            error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
                         }
-                        break;
+                        if (error != null) {
+                            mAccessToken = error.getMessage() + " (" + error.getDebug() + error.getCode() + ")";
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 mTextViewAccessToken.setText(mAccessToken);
@@ -143,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     void getChargeToken(CitconUPIAPIService apiService) {
         Transaction transaction = new Transaction();
-        transaction.setReference("test_braintree_1");
+        transaction.setReference(RandomStringUtils.randomAlphanumeric(10));
         transaction.setAmount(100);
         transaction.setCurrency("USD");
         transaction.setCountry("US");
@@ -164,37 +167,34 @@ public class MainActivity extends AppCompatActivity {
         Ext ext = new Ext(device);
 
         Call<CitconApiResponse<ChargeToken>> call = apiService.getChargeToken("Bearer " + mAccessToken,
-                transaction,urls,ext);
+                CONTENT_TYPE,new RequestChargeToken().setTransaction(transaction).setUrls(urls).setExt(ext));
         call.enqueue(new Callback<CitconApiResponse<ChargeToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<ChargeToken>> call,
                                    @NotNull Response<CitconApiResponse<ChargeToken>> response) {
                 mProgressBar.setVisibility(View.GONE);
-                switch (response.code()) {
-                    case 400:
-                        JSONObject jsonObject = null;
-                        Gson gson = new GsonBuilder().create();
-                        try {
-                            if (response.errorBody() != null) {
-                                jsonObject = new JSONObject(response.errorBody().string());
-                            }
-                            ErrorMessage error = null;
-                            if (jsonObject != null) {
-                                error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
-                            }
-                            if (error != null) {
-                                mChargeToken = error.getMessage() + " (" + error.getDebug() + ")";
-                            }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+                if (response.code() == 200) {
+                    if (response.body() != null) {
+                        mChargeToken = response.body().data.getChargeToken();
+                        mLayoutPayments.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    JSONObject jsonObject = null;
+                    Gson gson = new GsonBuilder().create();
+                    try {
+                        if (response.errorBody() != null) {
+                            jsonObject = new JSONObject(response.errorBody().string());
                         }
-                        break;
-                    case 200:
-                        if (response.body() != null) {
-                            mChargeToken = response.body().data.getChargeToken();
-                            mLayoutPayments.setVisibility(View.VISIBLE);
+                        ErrorMessage error = null;
+                        if (jsonObject != null) {
+                            error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
                         }
-                        break;
+                        if (error != null) {
+                            mChargeToken = error.getMessage() + " (" + error.getDebug() + error.getCode() + ")";
+                        }
+                    } catch (IOException | JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 mTextViewChargeToken.setText(mChargeToken);
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(@NotNull Call<CitconApiResponse<ChargeToken>> call, @NotNull Throwable t) {
-                mTextViewAccessToken.setText(t.getMessage());
+                mTextViewChargeToken.setText(t.getMessage());
                 mProgressBar.setVisibility(View.GONE);
             }
         });

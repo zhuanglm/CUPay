@@ -52,6 +52,7 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:background="@color/bt_blue"
             android:text="@string/place_order"
             android:textColor="@android:color/white"
@@ -60,6 +61,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_nonce_details" />
 
         <LinearLayout
+            android:id="@+id/layout_placing_order"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -78,7 +80,8 @@
                 android:id="@+id/tv_place_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/loading_message" />
+                android:text="@string/place_order"
+                android:textAlignment="center" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

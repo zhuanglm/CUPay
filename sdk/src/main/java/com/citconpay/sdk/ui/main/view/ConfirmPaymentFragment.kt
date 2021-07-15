@@ -53,11 +53,11 @@ class ConfirmPaymentFragment : BaseFragment() {
                         when (resource.status) {
                             Status.SUCCESS -> {
                                 Toast.makeText(context, "paid", Toast.LENGTH_LONG).show()
-                                //close()
+                                close()
                             }
                             Status.ERROR -> {
                                 Toast.makeText(context, "error", Toast.LENGTH_LONG).show()
-                                //close()
+                                close()
                             }
                             Status.LOADING -> {
 

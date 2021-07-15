@@ -12,7 +12,7 @@ public class ChargeToken {
     String currency;
     String time_created;
     String time_captured;
-    int auto_capture;
+    boolean auto_capture;
     String status;
     String country;
     Payment payment;
