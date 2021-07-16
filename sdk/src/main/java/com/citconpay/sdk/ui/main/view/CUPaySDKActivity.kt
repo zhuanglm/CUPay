@@ -55,6 +55,11 @@ class CUPaySDKActivity : BaseActivity() {
         super.finish()
     }
 
+    fun finish(resultCode: Int, message: String?) {
+        setResult(resultCode, Intent().putExtra("Message",message))
+        finish()
+    }
+
     fun launchDropIn() {
         //Todo: start by Gateway type in future
         startActivityForResult(mDropInViewModel.getBTDropInRequest().getIntent(this), DROP_IN_REQUEST)

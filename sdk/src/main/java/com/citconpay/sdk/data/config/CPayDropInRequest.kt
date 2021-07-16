@@ -82,9 +82,9 @@ open class CPayDropInRequest() : Parcelable {
                 .maskCardNumber(true)
                 .maskSecurityCode(true)
                 .request3DSecureVerification(isRequest3DSecure)
-                .accessToken("abcdef")
-                .chargeToken("dfddfd")
-                .customerID(customerID)
+                .accessToken(accessToken)
+                .chargeToken(chargeToken)
+                .consumerID(customerID)
 
             if(isRequest3DSecure && citcon3DSecureRequest != null)
                 dropInRequest.threeDSecureRequest(citcon3DSecureRequest!!)
@@ -190,6 +190,10 @@ open class CPayDropInRequest() : Parcelable {
         return this
     }
 
+    fun getAccessToken() : String {
+        return mAccessToken;
+    }
+
     /**
      * This method is mandatory. charge token is used to finish payment.
      *
@@ -201,13 +205,17 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     /**
-     * This method is optional. customer id is used to vault payment methods.
+     * This method is optional. consumer id is used to vault payment methods.
      *
      * @param id is current customer id.
      */
-    private fun customerID(id: String): CPayDropInRequest {
+    private fun consumerID(id: String): CPayDropInRequest {
         mConsumerID = id
         return this
+    }
+
+    fun getConsumerID(): String {
+        return mConsumerID
     }
 
     /**

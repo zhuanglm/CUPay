@@ -1,8 +1,12 @@
 package com.citconpay.sdk.ui.main.state
 
+import android.app.Activity.RESULT_CANCELED
 import android.content.Context
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
+import com.citconpay.sdk.data.api.response.CitconApiResponse
+import com.citconpay.sdk.data.api.response.ResponseLoadConfig
 import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
@@ -21,22 +25,24 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
         //mViewModel.mLoading.observe(mLifecycleOwner, LoadingObserver(mActivity))
 
         mViewModel.loadClientToken().observe(mLifecycleOwner, Observer {
-            it?.let { resource ->
-                when (resource.status) {
+            it?.let {
+                when (it.status) {
                     //Todo: load config to fill up related Request by payment method type
                     Status.SUCCESS -> {
-                        resource.data?.let { response ->
+                        it.data?.let { response ->
                             mViewModel.getDropInRequest().getBrainTreeDropInRequest()
-                                    //.clientToken(SANDBOX_TOKENIZATION_KEY)
-                                    .clientToken(response.data?.token)
-                                    .cardholderNameStatus(CardForm.FIELD_REQUIRED)
+                                //.clientToken(SANDBOX_TOKENIZATION_KEY)
+                                //.clientToken(response.data?.token)
+                                .clientToken(response.data.payment.client_token)
+                                .cardholderNameStatus(CardForm.FIELD_REQUIRED)
                         }
                         mActivity.launchDropIn()
 
                     }
                     Status.ERROR -> {
-                        Toast.makeText(mContext, it.message, Toast.LENGTH_LONG).show()
-                        mActivity.finish()
+                        it.message?.let { err ->
+                            mActivity.finish(RESULT_CANCELED, "${err.message}(${err.debug} ${err.code})")
+                        }
                     }
                     Status.LOADING -> {
                     }

@@ -12,7 +12,8 @@ object RetrofitBuilder {
     //private const val BASE_URL = "https://5e510330f2c0d300147c034c.mockapi.io/"
     //private const val BASE_URL = "https://www.wanandroid.com/"
     //private const val BASE_URL = "https://braintree-sample-merchant.herokuapp.com"
-    private const val BASE_URL = "https://dev.citconpay.com/fei/bt-demo/"
+    //private const val BASE_URL = "https://dev.citconpay.com/fei/bt-demo/"
+    private const val BASE_URL = "https://api.dev01.citconpay.com/v1/"
 
     private fun getRetrofit(): Retrofit {
         //val apiInterceptor = ApiClientRequestInterceptor()

@@ -1,4 +1,4 @@
-package com.citconpay.cupay.response;
+package com.citconpay.sdk.data.api.response;
 
 public class ErrorMessage {
     String code;

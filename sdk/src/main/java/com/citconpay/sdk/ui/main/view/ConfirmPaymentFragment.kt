@@ -25,7 +25,7 @@ class ConfirmPaymentFragment : BaseFragment() {
     private lateinit var sharedModel: DropinViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         //return inflater.inflate(R.layout.payment_list_fragment, container, false)
         _binding = PaymentResultFragmentBinding.inflate(inflater, container, false)
         _binding?.buttonOrder?.setOnClickListener {
@@ -48,7 +48,7 @@ class ConfirmPaymentFragment : BaseFragment() {
             _binding?.frameLayout?.visibility = View.VISIBLE
 
             it.paymentMethodNonce?.let { nonce ->
-                sharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner, Observer { result ->
+                sharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner, { result ->
                     result?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {

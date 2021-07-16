@@ -21,7 +21,8 @@ import com.citconpay.cupay.model.Transaction;
 import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
-import com.citconpay.cupay.response.ErrorMessage;
+import com.citconpay.sdk.data.api.response.ErrorMessage;
+import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.config.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.config.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.config.CPayDropInRequest;
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
         mLayoutPayments = findViewById(R.id.layout_payments);
 
+        mEditTextConsumerID.setText("115646448");
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable());
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                                    @NotNull Response<CitconApiResponse<AccessToken>> response) {
                 if (response.code() == 200) {
                     if (response.body() != null) {
-                        mAccessToken = response.body().data.getAccessToken();
+                        mAccessToken = response.body().getData().getAccessToken();
                         getChargeToken(apiService);
                     }
                 } else {
@@ -166,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
         device.setFingerprint("");
         Ext ext = new Ext(device);
 
+        //mAccessToken = "UPI_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiM0FENUIxNjVFQzY5NEZDRDhCNEQ4MTVFOTJEQTg2MkUiLCJpYXQiOjE2MjU4NTk2NzUsImV4cCI6MTYyOTA3MTkyMDIwNX0.EMnBqaAWikhmCbLzDdHah1EfjmPH-eeADruwKC_14tA";
         Call<CitconApiResponse<ChargeToken>> call = apiService.getChargeToken("Bearer " + mAccessToken,
                 CONTENT_TYPE,new RequestChargeToken().setTransaction(transaction).setUrls(urls).setExt(ext));
         call.enqueue(new Callback<CitconApiResponse<ChargeToken>>() {
@@ -175,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
                     if (response.body() != null) {
-                        mChargeToken = response.body().data.getChargeToken();
+                        mChargeToken = response.body().getData().getChargeToken();
                         mLayoutPayments.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -292,17 +296,16 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        final AlertDialog alertdialog = new AlertDialog.Builder(this)
-                .setMessage("this is merchant demo APP, payment finished")
-                .setPositiveButton("Quit", null).create();
+        final AlertDialog.Builder alertdialog = new AlertDialog.Builder(this)
+                .setPositiveButton("Quit", null);
 
         if (resultCode == RESULT_OK) {
-            Toast.makeText(this, "received return", Toast.LENGTH_LONG).show();
-            alertdialog.show();
+            alertdialog.setMessage("this is merchant demo APP\n payment finished")
+                    .create().show();
 
         } else if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "payment cancelled", Toast.LENGTH_LONG).show();
-            alertdialog.show();
+            alertdialog.setMessage("this is merchant demo APP\n payment cancelled : \n" + data.getStringExtra("Message"))
+                    .create().show();
         }
     }
 

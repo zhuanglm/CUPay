@@ -11,12 +11,19 @@ import com.braintreepayments.api.models.BinData
 import com.braintreepayments.api.models.CardNonce
 import com.braintreepayments.api.models.PayPalAccountNonce
 import com.braintreepayments.api.models.PaymentMethodNonce
+import com.citconpay.sdk.data.api.response.CitconApiResponse
+import com.citconpay.sdk.data.api.response.ErrorMessage
+import com.citconpay.sdk.data.api.response.ResponseLoadConfig
 import com.citconpay.sdk.data.config.CPayDropInRequest
 import com.citconpay.sdk.data.model.BrainTreeClientToken
 import com.citconpay.sdk.data.model.CPayApiResponse
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.utils.Resource
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
+import org.json.JSONObject
+import retrofit2.HttpException
+
 
 class DropinViewModel(private val apiRepository: ApiRepository, application: Application) : AndroidViewModel(application) {
     val mTextViewMsg = MutableLiveData<String>()
@@ -45,11 +52,24 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         mLoading.postValue(true)
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = apiRepository.getClientToken()))
+            //emit(Resource.success(data = apiRepository.getClientToken()))
+            emit(Resource.success(data = apiRepository.loadConfig(mDropInRequest.getAccessToken(),
+                mDropInRequest.getConsumerID())))
             mLoading.postValue(false)
         } catch (exception: Exception) {
+            lateinit var errorMessage: ErrorMessage
             mLoading.postValue(false)
-            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+            (exception as HttpException).response()?.let {response->
+                response.errorBody()?.let { errorMsg->
+                    JSONObject(errorMsg.string()).let {
+                        errorMessage = GsonBuilder().create().fromJson(
+                            it.getJSONObject("data").toString(),
+                            ErrorMessage::class.java
+                        )
+                    }
+                }
+            }
+            emit(Resource.error(data = null, message = errorMessage))
         }
     }
 
@@ -61,11 +81,15 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
             //mLoading.postValue(false)
         } catch (exception: Exception) {
             //mLoading.postValue(false)
-            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
+            emit(Resource.error(data = null, message = null))
         }
     }
 
-    fun loadClientToken() : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
+    /*fun loadClientToken() : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
+        return getClientToken()
+    }*/
+
+    fun loadClientToken() : LiveData<Resource<CitconApiResponse<ResponseLoadConfig>>> {
         return getClientToken()
     }
 

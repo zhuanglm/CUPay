@@ -4,6 +4,7 @@ import com.citconpay.cupay.model.RequestAccessToken;
 import com.citconpay.cupay.model.RequestChargeToken;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
+import com.citconpay.sdk.data.api.response.CitconApiResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
