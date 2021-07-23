@@ -12,11 +12,10 @@ import com.braintreepayments.api.models.CardNonce
 import com.braintreepayments.api.models.PayPalAccountNonce
 import com.braintreepayments.api.models.PaymentMethodNonce
 import com.citconpay.sdk.data.api.response.CitconApiResponse
-import com.citconpay.sdk.data.api.response.ErrorMessage
-import com.citconpay.sdk.data.api.response.ResponseLoadConfig
+import com.citconpay.sdk.data.api.response.PlacedOrder
+import com.citconpay.sdk.data.model.ErrorMessage
+import com.citconpay.sdk.data.api.response.LoadedConfig
 import com.citconpay.sdk.data.config.CPayDropInRequest
-import com.citconpay.sdk.data.model.BrainTreeClientToken
-import com.citconpay.sdk.data.model.CPayApiResponse
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
@@ -57,9 +56,9 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
                 mDropInRequest.getConsumerID())))
             mLoading.postValue(false)
         } catch (exception: Exception) {
-            lateinit var errorMessage: ErrorMessage
+            //lateinit var errorMessage: ErrorMessage
             mLoading.postValue(false)
-            (exception as HttpException).response()?.let {response->
+            /*(exception as HttpException).response()?.let {response->
                 response.errorBody()?.let { errorMsg->
                     JSONObject(errorMsg.string()).let {
                         errorMessage = GsonBuilder().create().fromJson(
@@ -68,8 +67,8 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
                         )
                     }
                 }
-            }
-            emit(Resource.error(data = null, message = errorMessage))
+            }*/
+            emit(Resource.error(data = null, message = handleErrorMsg(exception)))
         }
     }
 
@@ -77,11 +76,12 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         //mLoading.postValue(true)
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = apiRepository.getClientToken()))
-            //mLoading.postValue(false)
+            emit(Resource.success(data = apiRepository.confirmCharge(mDropInRequest.getAccessToken(),
+            mDropInRequest.getChargeToken(),nonce.nonce)))
+            mLoading.postValue(false)
         } catch (exception: Exception) {
-            //mLoading.postValue(false)
-            emit(Resource.error(data = null, message = null))
+            mLoading.postValue(false)
+            emit(Resource.error(data = null, message = handleErrorMsg(exception)))
         }
     }
 
@@ -89,16 +89,31 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         return getClientToken()
     }*/
 
-    fun loadClientToken() : LiveData<Resource<CitconApiResponse<ResponseLoadConfig>>> {
+    fun loadClientToken() : LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
         return getClientToken()
     }
 
-    fun placeOrderByNonce(nonce: PaymentMethodNonce) : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
+    fun placeOrderByNonce(nonce: PaymentMethodNonce): LiveData<Resource<CitconApiResponse<PlacedOrder>>> {
         return sendNonceToServer(nonce)
     }
 
     fun getBTDropInRequest(): DropInRequest {
         return mDropInRequest.getBrainTreeDropInRequest()
+    }
+
+    private fun handleErrorMsg(exception: Exception): ErrorMessage {
+        lateinit var errorMessage: ErrorMessage
+        (exception as HttpException).response()?.let {response->
+            response.errorBody()?.let { errorMsg->
+                JSONObject(errorMsg.string()).let {
+                    errorMessage = GsonBuilder().create().fromJson(
+                        it.getJSONObject("data").toString(),
+                        ErrorMessage::class.java
+                    )
+                }
+            }
+        }
+        return errorMessage
     }
 
     private lateinit var mNonce: PaymentMethodNonce

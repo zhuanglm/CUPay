@@ -2,7 +2,6 @@ package com.braintreepayments.api.dropin;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -380,10 +379,10 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
                 response = data;
             }
 
+            setResult(resultCode, response);
             slideDown(new AnimationFinishedListener() {
                 @Override
                 public void onAnimationFinished() {
-                    setResult(resultCode, response);
                     finish();
                 }
             });

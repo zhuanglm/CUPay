@@ -1,24 +1,19 @@
 package com.citconpay.sdk.ui.main.state
 
 import android.app.Activity.RESULT_CANCELED
-import android.content.Context
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import androidx.lifecycle.*
-import com.citconpay.sdk.data.api.response.CitconApiResponse
-import com.citconpay.sdk.data.api.response.ResponseLoadConfig
-import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
+import com.citconpay.sdk.utils.Constant
 import com.citconpay.sdk.utils.Status
 import com.cupay.cardform.view.CardForm
 
 class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewModel) : LifecycleObserver {
     private val mViewModel : DropinViewModel by lazy { viewModel }
     private val mLifecycleOwner : LifecycleOwner by lazy { activity }
-    private val mContext : Context by lazy { activity }
     private val mActivity by lazy { activity }
-    private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
+    //private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
@@ -41,7 +36,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     }
                     Status.ERROR -> {
                         it.message?.let { err ->
-                            mActivity.finish(RESULT_CANCELED, "${err.message}(${err.debug} ${err.code})")
+                            mActivity.finish(RESULT_CANCELED, Intent().putExtra(Constant.PAYMENT_ERROR,err))
                         }
                     }
                     Status.LOADING -> {
@@ -54,10 +49,5 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         //mViewModel.getTextView("CitconPay")
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
-
     }
 }

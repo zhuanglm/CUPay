@@ -9,8 +9,8 @@ import com.braintreepayments.api.dropin.DropInRequest
 import com.braintreepayments.api.dropin.utils.PaymentMethodType
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
-import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.data.model.CitconPaymentMethodType
+import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.cupay.cardform.view.CardForm
 
 open class CPayDropInRequest() : Parcelable {
@@ -202,6 +202,10 @@ open class CPayDropInRequest() : Parcelable {
     private fun chargeToken(token: String): CPayDropInRequest {
         mChargeToken = token
         return this
+    }
+
+    fun getChargeToken() : String {
+        return mChargeToken;
     }
 
     /**

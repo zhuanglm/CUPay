@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +20,8 @@ import com.citconpay.cupay.model.Transaction;
 import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
-import com.citconpay.sdk.data.api.response.ErrorMessage;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
+import com.citconpay.sdk.data.api.response.PlacedOrder;
 import com.citconpay.sdk.data.config.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.config.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.config.CPayDropInRequest;
@@ -31,6 +30,8 @@ import com.citconpay.sdk.data.config.CPayTransactionInfo;
 import com.citconpay.sdk.data.config.Citcon3DSecureRequest;
 import com.citconpay.sdk.data.config.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.CitconPaymentMethodType;
+import com.citconpay.sdk.data.model.ErrorMessage;
+import com.citconpay.sdk.utils.Constant;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -56,7 +59,9 @@ public class MainActivity extends AppCompatActivity {
     private static final int DROP_IN_REQUEST = 1;
     private static final String CITCON_SERVER = "https://api.dev01.citconpay.com/v1/";
     private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
+    private static final String CITCON_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
+    private static final String DEFAULT_CONSUMER_ID = "115646448";
     private TextView mTextViewAccessToken, mTextViewChargeToken;
     private String   mAccessToken, mChargeToken;
     private ProgressBar mProgressBar;
@@ -75,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
         mLayoutPayments = findViewById(R.id.layout_payments);
 
-        mEditTextConsumerID.setText("115646448");
+        mEditTextConsumerID.setText(DEFAULT_CONSUMER_ID);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -103,9 +108,10 @@ public class MainActivity extends AppCompatActivity {
         getAccessToken(upiapiService);
     }
 
+    // Access Token should be applied from backend server. here we get it directly is just for demo
     void getAccessToken(CitconUPIAPIService apiService) {
-        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_SERVER_AUTH,
-                CONTENT_TYPE,new RequestAccessToken().setTokenType("client"));
+        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_BT_TEST,
+                CONTENT_TYPE,new RequestAccessToken().setTokenType("server"));
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<AccessToken>> call,
@@ -147,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Charge Token also should be applied from backend server. here we get it directly is just for demo
     void getChargeToken(CitconUPIAPIService apiService) {
         Transaction transaction = new Transaction();
         transaction.setReference(RandomStringUtils.randomAlphanumeric(10));
@@ -241,11 +248,17 @@ public class MainActivity extends AppCompatActivity {
                 DROP_IN_REQUEST);
     }
 
+    /**
+     * access token , charge token and consumer id are the mandatory parameters:
+     * access token and charge token have to be downloaded from merchant Backend
+     * consumer id is unique identity of this merchant for the consumer who are going to pay
+     * @param type is payment method type which was selected by user want to pay with
+     */
     private CPayDropInRequest buildDropInRequest(CitconPaymentMethodType type) {
         return CPayDropInRequest.PaymentBuilder.INSTANCE
                 .accessToken(mAccessToken)
                 .chargeToken(mChargeToken)
-                .customerID(mEditTextConsumerID.getText().toString())
+                .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                 .request3DSecureVerification(mCheckBox3DS.isChecked())
                 .threeDSecureRequest(demoThreeDSecureRequest())
                 .citconPaymentRequest(getPaymentRequest())
@@ -300,11 +313,14 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Quit", null);
 
         if (resultCode == RESULT_OK) {
-            alertdialog.setMessage("this is merchant demo APP\n payment finished")
+            PlacedOrder order = (PlacedOrder) data.getSerializableExtra(Constant.PAYMENT_RESULT);
+            alertdialog.setMessage(String.format(Locale.CANADA,"this is merchant demo APP\n paid %s %d",
+                    order.getCurrency(), order.getAmount()))
                     .create().show();
 
         } else if (resultCode == RESULT_CANCELED) {
-            alertdialog.setMessage("this is merchant demo APP\n payment cancelled : \n" + data.getStringExtra("Message"))
+            ErrorMessage error = (ErrorMessage) data.getSerializableExtra(Constant.PAYMENT_ERROR);
+            alertdialog.setMessage("this is merchant demo APP\n payment cancelled : \n" + error.getDebug())
                     .create().show();
         }
     }

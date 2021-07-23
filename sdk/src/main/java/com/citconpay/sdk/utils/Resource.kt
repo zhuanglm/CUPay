@@ -1,6 +1,6 @@
 package com.citconpay.sdk.utils
 
-import com.citconpay.sdk.data.api.response.ErrorMessage
+import com.citconpay.sdk.data.model.ErrorMessage
 
 data class Resource<out T>(val status: Status, val data: T?, val message: ErrorMessage?) {
     companion object {

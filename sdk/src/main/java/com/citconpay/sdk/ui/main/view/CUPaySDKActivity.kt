@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.braintreepayments.api.dropin.DropInResult
 import com.citconpay.sdk.R
 import com.citconpay.sdk.data.config.CPayDropInRequest
+import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
 import com.citconpay.sdk.ui.base.BaseActivity
@@ -21,6 +22,7 @@ import com.citconpay.sdk.ui.base.ViewModelFactory
 import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.state.DropinLifecycleObserver
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
+import com.citconpay.sdk.utils.Constant.PAYMENT_ERROR
 
 class CUPaySDKActivity : BaseActivity() {
     private lateinit var mDropInViewModel: DropinViewModel
@@ -55,8 +57,8 @@ class CUPaySDKActivity : BaseActivity() {
         super.finish()
     }
 
-    fun finish(resultCode: Int, message: String?) {
-        setResult(resultCode, Intent().putExtra("Message",message))
+    fun finish(resultCode: Int, intent: Intent) {
+        setResult(resultCode, intent)
         finish()
     }
 
@@ -74,12 +76,10 @@ class CUPaySDKActivity : BaseActivity() {
                 result?.let { it -> mDropInViewModel.setDropInResult(it) }
             }
         } else if (resultCode != RESULT_CANCELED) {
-            //showDialog((data!!.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception?)!!.message)
             setResult(resultCode, Intent())
             finish()
         } else {
-            setResult(resultCode, Intent())
-            finish()
+            finish(RESULT_CANCELED, Intent().putExtra(PAYMENT_ERROR,ErrorMessage("","","")))
         }
 
     }
