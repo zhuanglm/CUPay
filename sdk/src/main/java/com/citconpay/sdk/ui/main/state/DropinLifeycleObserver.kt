@@ -3,6 +3,7 @@ package com.citconpay.sdk.ui.main.state
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import androidx.lifecycle.*
+import com.citconpay.sdk.data.model.PaymentResult
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Constant
@@ -36,7 +37,13 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     }
                     Status.ERROR -> {
                         it.message?.let { err ->
-                            mActivity.finish(RESULT_CANCELED, Intent().putExtra(Constant.PAYMENT_ERROR,err))
+                            mActivity.finish(RESULT_CANCELED,Intent().putExtra(
+                                Constant.PAYMENT_RESULT, PaymentResult(
+                                    RESULT_CANCELED,
+                                    mViewModel.getDropInRequest().getPaymentMethod(),
+                                    err
+                                )
+                            ))
                         }
                     }
                     Status.LOADING -> {

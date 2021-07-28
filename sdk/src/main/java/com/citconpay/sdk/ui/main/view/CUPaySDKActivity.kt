@@ -11,10 +11,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.braintreepayments.api.dropin.DropInActivity
 import com.braintreepayments.api.dropin.DropInResult
 import com.citconpay.sdk.R
 import com.citconpay.sdk.data.config.CPayDropInRequest
 import com.citconpay.sdk.data.model.ErrorMessage
+import com.citconpay.sdk.data.model.PaymentResult
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
 import com.citconpay.sdk.ui.base.BaseActivity
@@ -22,7 +24,7 @@ import com.citconpay.sdk.ui.base.ViewModelFactory
 import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.state.DropinLifecycleObserver
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
-import com.citconpay.sdk.utils.Constant.PAYMENT_ERROR
+import com.citconpay.sdk.utils.Constant.PAYMENT_RESULT
 
 class CUPaySDKActivity : BaseActivity() {
     private lateinit var mDropInViewModel: DropinViewModel
@@ -57,8 +59,8 @@ class CUPaySDKActivity : BaseActivity() {
         super.finish()
     }
 
-    fun finish(resultCode: Int, intent: Intent) {
-        setResult(resultCode, intent)
+    fun finish(resultCode: Int, resultIntent: Intent?) {
+        setResult(resultCode, resultIntent)
         finish()
     }
 
@@ -76,10 +78,15 @@ class CUPaySDKActivity : BaseActivity() {
                 result?.let { it -> mDropInViewModel.setDropInResult(it) }
             }
         } else if (resultCode != RESULT_CANCELED) {
-            setResult(resultCode, Intent())
-            finish()
+            //return error message "venmo is not installed" etc.
+            data?.let {
+                val exceptionMsg: Exception = it.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
+                finish(resultCode, Intent().putExtra(PAYMENT_RESULT,PaymentResult(resultCode,
+                    mDropInViewModel.getDropInRequest().getPaymentMethod(),
+                    ErrorMessage("",exceptionMsg.localizedMessage,""))))
+            }
         } else {
-            finish(RESULT_CANCELED, Intent().putExtra(PAYMENT_ERROR,ErrorMessage("","","")))
+            finish(RESULT_CANCELED,data)
         }
 
     }

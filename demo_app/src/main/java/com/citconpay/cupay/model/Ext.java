@@ -1,7 +1,5 @@
 package com.citconpay.cupay.model;
 
-import android.bluetooth.BluetoothClass;
-
 public class Ext {
     Device device;
 

@@ -21,4 +21,8 @@ public class ChargeToken {
     public String getChargeToken() {
         return charge_token;
     }
+
+    public String getReference() {
+        return reference;
+    }
 }

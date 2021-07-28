@@ -138,16 +138,6 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        //return from other page
-        if(mAvailablePaymentMethodNonces != null && mAvailablePaymentMethodNonces.size() <= 0) {
-            finish();
-        }
-    }
-
-    @Override
     public void onConfigurationFetched(Configuration configuration) {
         mConfiguration = configuration;
 
@@ -192,6 +182,11 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
         handleThreeDSecureFailure();
 
         mLoadingViewSwitcher.setDisplayedChild(1);
+
+        //return from other page
+        if(mAvailablePaymentMethodNonces != null && mAvailablePaymentMethodNonces.size() <= 0) {
+            finish();
+        }
     }
 
     @Override
@@ -364,6 +359,11 @@ public class DropInActivity extends BaseActivity implements ConfigurationListene
             }
 
             mLoadingViewSwitcher.setDisplayedChild(1);
+
+            //return from other page
+            if(mAvailablePaymentMethodNonces != null && mAvailablePaymentMethodNonces.size() <= 0) {
+                finish();
+            }
         } else if (requestCode == ADD_CARD_REQUEST_CODE) {
             final Intent response;
             if (resultCode == RESULT_OK) {

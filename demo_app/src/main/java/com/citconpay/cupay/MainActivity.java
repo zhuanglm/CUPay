@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
+import com.citconpay.sdk.data.model.PaymentResult;
 import com.citconpay.cupay.model.RequestAccessToken;
 import com.citconpay.cupay.model.RequestChargeToken;
 import com.citconpay.cupay.model.Transaction;
@@ -21,7 +22,6 @@ import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
-import com.citconpay.sdk.data.api.response.PlacedOrder;
 import com.citconpay.sdk.data.config.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.config.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.config.CPayDropInRequest;
@@ -63,11 +63,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
     private TextView mTextViewAccessToken, mTextViewChargeToken;
-    private String   mAccessToken, mChargeToken;
+    private String mAccessToken, mChargeToken, mReference;
     private ProgressBar mProgressBar;
     private TextInputEditText mEditTextConsumerID;
     private CheckBox mCheckBox3DS;
     private View mLayoutPayments;
+    CitconUPIAPIService mApiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,15 +104,13 @@ public class MainActivity extends AppCompatActivity {
                 .client(clientBuilder.build())
                 .build();
 
-        CitconUPIAPIService upiapiService = retrofit.create(CitconUPIAPIService.class);
-
-        getAccessToken(upiapiService);
+        mApiService = retrofit.create(CitconUPIAPIService.class);
     }
 
     // Access Token should be applied from backend server. here we get it directly is just for demo
     void getAccessToken(CitconUPIAPIService apiService) {
         Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_BT_TEST,
-                CONTENT_TYPE,new RequestAccessToken().setTokenType("server"));
+                CONTENT_TYPE, new RequestAccessToken().setTokenType("client"));
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<AccessToken>> call,
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
         //mAccessToken = "UPI_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiM0FENUIxNjVFQzY5NEZDRDhCNEQ4MTVFOTJEQTg2MkUiLCJpYXQiOjE2MjU4NTk2NzUsImV4cCI6MTYyOTA3MTkyMDIwNX0.EMnBqaAWikhmCbLzDdHah1EfjmPH-eeADruwKC_14tA";
         Call<CitconApiResponse<ChargeToken>> call = apiService.getChargeToken("Bearer " + mAccessToken,
-                CONTENT_TYPE,new RequestChargeToken().setTransaction(transaction).setUrls(urls).setExt(ext));
+                CONTENT_TYPE, new RequestChargeToken().setTransaction(transaction).setUrls(urls).setExt(ext));
         call.enqueue(new Callback<CitconApiResponse<ChargeToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<ChargeToken>> call,
@@ -187,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 if (response.code() == 200) {
                     if (response.body() != null) {
                         mChargeToken = response.body().getData().getChargeToken();
+                        mReference = response.body().getData().getReference();
                         mLayoutPayments.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -218,6 +218,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void newPayment(View v) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        getAccessToken(mApiService);
     }
 
     public void launchGooglePay(View v) {
@@ -252,12 +257,14 @@ public class MainActivity extends AppCompatActivity {
      * access token , charge token and consumer id are the mandatory parameters:
      * access token and charge token have to be downloaded from merchant Backend
      * consumer id is unique identity of this merchant for the consumer who are going to pay
+     *
      * @param type is payment method type which was selected by user want to pay with
      */
     private CPayDropInRequest buildDropInRequest(CitconPaymentMethodType type) {
         return CPayDropInRequest.PaymentBuilder.INSTANCE
                 .accessToken(mAccessToken)
                 .chargeToken(mChargeToken)
+                .reference(mReference)
                 .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                 .request3DSecureVerification(mCheckBox3DS.isChecked())
                 .threeDSecureRequest(demoThreeDSecureRequest())
@@ -313,15 +320,23 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Quit", null);
 
         if (resultCode == RESULT_OK) {
-            PlacedOrder order = (PlacedOrder) data.getSerializableExtra(Constant.PAYMENT_RESULT);
-            alertdialog.setMessage(String.format(Locale.CANADA,"this is merchant demo APP\n paid %s %d",
+            PaymentResult order = (PaymentResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
+            alertdialog.setMessage(String.format(Locale.CANADA, "this is merchant demo APP\n paid %s %d",
                     order.getCurrency(), order.getAmount()))
                     .create().show();
 
-        } else if (resultCode == RESULT_CANCELED) {
-            ErrorMessage error = (ErrorMessage) data.getSerializableExtra(Constant.PAYMENT_ERROR);
-            alertdialog.setMessage("this is merchant demo APP\n payment cancelled : \n" + error.getDebug())
-                    .create().show();
+        } else {
+            String message;
+            if(data != null) {
+                PaymentResult error = (PaymentResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
+                message = "this is merchant demo APP\n payment cancelled : \n" + error.getMessage()
+                        + " - " + error.getCode();
+
+            } else {
+                message = "this is merchant demo APP\n payment cancelled by user";
+            }
+
+            alertdialog.setMessage(message).create().show();
         }
     }
 

@@ -17,6 +17,7 @@ open class CPayDropInRequest() : Parcelable {
     private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
     private lateinit var mAccessToken: String
     private var mChargeToken: String = ""
+    private var mReference: String = ""
     private var mConsumerID: String = ""
     private var mBrainTreeDropInRequest: DropInRequest =  DropInRequest()
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
@@ -41,6 +42,7 @@ open class CPayDropInRequest() : Parcelable {
         private lateinit var accessToken: String
         private lateinit var chargeToken: String
         private lateinit var customerID: String
+        private lateinit var reference: String
         private var paymentRequest: CitconPaymentRequest? = null
         private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
         private var isRequest3DSecure = false
@@ -52,6 +54,11 @@ open class CPayDropInRequest() : Parcelable {
 
         fun chargeToken(token: String): PaymentBuilder {
             chargeToken = token
+            return this
+        }
+
+        fun reference(reference: String): PaymentBuilder {
+            this.reference = reference
             return this
         }
 
@@ -85,6 +92,7 @@ open class CPayDropInRequest() : Parcelable {
                 .accessToken(accessToken)
                 .chargeToken(chargeToken)
                 .consumerID(customerID)
+                .reference(reference)
 
             if(isRequest3DSecure && citcon3DSecureRequest != null)
                 dropInRequest.threeDSecureRequest(citcon3DSecureRequest!!)
@@ -102,6 +110,7 @@ open class CPayDropInRequest() : Parcelable {
         mPaymentMethodType = parcel.readSerializable() as CitconPaymentMethodType
         mAccessToken = parcel.readString()!!
         mChargeToken = parcel.readString()!!
+        mReference = parcel.readString()!!
         mConsumerID = parcel.readString()!!
         mBrainTreeDropInRequest = parcel.readParcelable(DropInRequest::class.java.classLoader)!!
         mGooglePaymentRequest = parcel.readParcelable(GooglePaymentRequest::class.java.classLoader)
@@ -111,6 +120,7 @@ open class CPayDropInRequest() : Parcelable {
         parcel.writeSerializable(mPaymentMethodType)
         parcel.writeString(mAccessToken)
         parcel.writeString(mChargeToken)
+        parcel.writeString(mReference)
         parcel.writeString(mConsumerID)
         parcel.writeParcelable(mBrainTreeDropInRequest, 0)
         parcel.writeParcelable(mGooglePaymentRequest, 0)
@@ -209,6 +219,20 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     /**
+     * This method is mandatory. reference is used to finish payment.
+     *
+     * @param ref is applied from backend server.
+     */
+    private fun reference(ref: String): CPayDropInRequest {
+        mReference = ref
+        return this
+    }
+
+    fun getReference() : String {
+        return mReference
+    }
+
+    /**
      * This method is optional. consumer id is used to vault payment methods.
      *
      * @param id is current customer id.
@@ -221,6 +245,7 @@ open class CPayDropInRequest() : Parcelable {
     fun getConsumerID(): String {
         return mConsumerID
     }
+
 
     /**
      * This method is optional.

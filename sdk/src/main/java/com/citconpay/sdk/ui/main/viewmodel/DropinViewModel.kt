@@ -56,18 +56,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
                 mDropInRequest.getConsumerID())))
             mLoading.postValue(false)
         } catch (exception: Exception) {
-            //lateinit var errorMessage: ErrorMessage
             mLoading.postValue(false)
-            /*(exception as HttpException).response()?.let {response->
-                response.errorBody()?.let { errorMsg->
-                    JSONObject(errorMsg.string()).let {
-                        errorMessage = GsonBuilder().create().fromJson(
-                            it.getJSONObject("data").toString(),
-                            ErrorMessage::class.java
-                        )
-                    }
-                }
-            }*/
             emit(Resource.error(data = null, message = handleErrorMsg(exception)))
         }
     }
@@ -77,7 +66,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         emit(Resource.loading(data = null))
         try {
             emit(Resource.success(data = apiRepository.confirmCharge(mDropInRequest.getAccessToken(),
-            mDropInRequest.getChargeToken(),nonce.nonce)))
+            mDropInRequest.getChargeToken(),mDropInRequest.getReference(),nonce.nonce)))
             mLoading.postValue(false)
         } catch (exception: Exception) {
             mLoading.postValue(false)
@@ -89,11 +78,11 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         return getClientToken()
     }*/
 
-    fun loadClientToken() : LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
+    internal fun loadClientToken() : LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
         return getClientToken()
     }
 
-    fun placeOrderByNonce(nonce: PaymentMethodNonce): LiveData<Resource<CitconApiResponse<PlacedOrder>>> {
+    internal fun placeOrderByNonce(nonce: PaymentMethodNonce): LiveData<Resource<CitconApiResponse<PlacedOrder>>> {
         return sendNonceToServer(nonce)
     }
 
