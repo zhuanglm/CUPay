@@ -6,7 +6,7 @@ import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.SingleLineTransformationMethod;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.test.TestActivity;
 import com.cupay.cardform.utils.CardType;
 

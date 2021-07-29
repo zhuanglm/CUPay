@@ -2,7 +2,7 @@ package com.cupay.cardform.utils;
 
 import android.text.TextUtils;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 
 import java.util.regex.Pattern;
 
@@ -21,7 +21,7 @@ public enum CardType {
             3, R.string.bt_cvc, null),
     DISCOVER("^(6011|65|64[4-9]|622)\\d*",
             R.drawable.bt_ic_discover,
-            16, 16,
+            16, 19,
             3, R.string.bt_cid, null),
     AMEX("^3[47]\\d*",
             R.drawable.bt_ic_amex,
@@ -84,7 +84,7 @@ public enum CardType {
     }
 
     /**
-     * Returns the card type matching this account, or {@link CardType#UNKNOWN}
+     * Returns the card type matching this account, or {@link com.braintreepayments.cardform.utils.CardType#UNKNOWN}
      * for no match.
      * <p/>
      * A partial account type may be given, with the caveat that it may not have enough digits to
@@ -166,14 +166,14 @@ public enum CardType {
     }
 
     /**
-     * @return minimum length of a card for this {@link CardType}
+     * @return minimum length of a card for this {@link com.braintreepayments.cardform.utils.CardType}
      */
     public int getMinCardLength() {
         return mMinCardLength;
     }
 
     /**
-     * @return max length of a card for this {@link CardType}
+     * @return max length of a card for this {@link com.braintreepayments.cardform.utils.CardType}
      */
     public int getMaxCardLength() {
         return mMaxCardLength;

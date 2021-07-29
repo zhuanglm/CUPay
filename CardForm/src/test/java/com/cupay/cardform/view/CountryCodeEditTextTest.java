@@ -1,6 +1,6 @@
 package com.cupay.cardform.view;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.test.TestActivity;
 
 import org.junit.Before;

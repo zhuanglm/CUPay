@@ -11,7 +11,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.utils.DateValidator;
 
 /**

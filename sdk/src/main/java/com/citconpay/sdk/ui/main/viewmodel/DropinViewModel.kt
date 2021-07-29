@@ -5,8 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
-import com.braintreepayments.api.dropin.DropInRequest
-import com.braintreepayments.api.dropin.DropInResult
+import com.cupay.api.dropin.DropInRequest
+import com.cupay.api.dropin.DropInResult
 import com.braintreepayments.api.models.BinData
 import com.braintreepayments.api.models.CardNonce
 import com.braintreepayments.api.models.PayPalAccountNonce

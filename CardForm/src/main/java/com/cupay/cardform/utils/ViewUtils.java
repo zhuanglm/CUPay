@@ -7,7 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 
 public class ViewUtils {
 

@@ -1,4 +1,4 @@
-package com.cupay.cardform.view;
+package com.braintreepayments.cardform.view;
 
 import android.os.Parcelable;
 

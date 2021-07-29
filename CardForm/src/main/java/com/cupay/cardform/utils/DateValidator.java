@@ -2,12 +2,10 @@ package com.cupay.cardform.utils;
 
 import android.text.TextUtils;
 
-import com.cupay.cardform.view.ExpirationDateEditText;
-
 import java.util.Calendar;
 
 /**
- * Class provided as a convenience to {@link ExpirationDateEditText} to
+ * Class provided as a convenience to {@link com.braintreepayments.cardform.view.ExpirationDateEditText} to
  * make testing easier.
  */
 public class DateValidator {

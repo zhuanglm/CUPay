@@ -2,7 +2,7 @@ package com.cupay.cardform.utils;
 
 import android.app.Activity;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 
 public enum ExpirationDateDialogTheme {
 

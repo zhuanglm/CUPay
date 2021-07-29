@@ -6,7 +6,7 @@ import android.text.InputFilter.LengthFilter;
 import android.text.InputType;
 import android.util.AttributeSet;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 
 /**
  * Input for postal codes. Validated for presence only due to the wide variation of postal code formats worldwide.

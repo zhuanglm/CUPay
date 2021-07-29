@@ -5,10 +5,6 @@ import android.content.Context;
 import android.os.Build.VERSION_CODES;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-
-import com.cupay.cardform.OnCardFormValidListener;
-import com.cupay.cardform.utils.CardType;
-import com.cupay.cardform.utils.ViewUtils;
 import com.google.android.material.textfield.TextInputEditText;
 
 import android.text.Editable;
@@ -29,7 +25,10 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.cupay.cardform.OnCardFormFieldFocusedListener;
 import com.cupay.cardform.OnCardFormSubmitListener;
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.OnCardFormValidListener;
+import com.cupay.cardform.R;
+import com.cupay.cardform.utils.CardType;
+import com.cupay.cardform.utils.ViewUtils;
 import com.cupay.cardform.view.CardEditText.OnCardTypeChangedListener;
 
 import java.lang.annotation.Retention;
@@ -38,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 public class CardForm extends LinearLayout implements OnCardTypeChangedListener, OnFocusChangeListener, OnClickListener,
         OnEditorActionListener, TextWatcher {
@@ -263,12 +263,23 @@ public class CardForm extends LinearLayout implements OnCardTypeChangedListener,
 
     /**
      * Sets up the card form for display to the user using the values provided in {@link CardForm#cardRequired(boolean)},
-     * {@link CardForm#expirationRequired(boolean)}, ect. If {@link CardForm#setup(AppCompatActivity)} is not called,
-     * the form will not be visible.
+     * {@link CardForm#expirationRequired(boolean)}, ect. If {@link CardForm#setup(AppCompatActivity)}
+     * or {@link CardForm#setup(FragmentActivity)} is not called, the form will not be visible.
      *
-     * @param activity Used to set {@link android.view.WindowManager.LayoutParams#FLAG_SECURE} to prevent screenshots
+     * @param activity Used to set {@link WindowManager.LayoutParams#FLAG_SECURE} to prevent screenshots
      */
     public void setup(AppCompatActivity activity) {
+        setup((FragmentActivity) activity);
+    }
+
+    /**
+     * Sets up the card form for display to the user using the values provided in {@link CardForm#cardRequired(boolean)},
+     * {@link CardForm#expirationRequired(boolean)}, ect. If {@link CardForm#setup(AppCompatActivity)}
+     * or {@link CardForm#setup(FragmentActivity)} is not called, the form will not be visible.
+     *
+     * @param activity Used to set {@link WindowManager.LayoutParams#FLAG_SECURE} to prevent screenshots
+     */
+    public void setup(FragmentActivity activity) {
         activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE);
 
@@ -401,7 +412,7 @@ public class CardForm extends LinearLayout implements OnCardTypeChangedListener,
     }
 
     /**
-     * Set the listener to receive a callback when the {@link CardType} changes.
+     * Set the listener to receive a callback when the {@link com.braintreepayments.cardform.utils.CardType} changes.
      *
      * @param listener to receive the callback
      */

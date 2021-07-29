@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_margin="0dp"
     android:onClick="onBackgroundClicked"
-    tools:context=".DropInActivity">
+    tools:context="com.cupay.api.dropin.DropInActivity">
 
     <LinearLayout
         android:id="@+id/bt_dropin_bottom_sheet"

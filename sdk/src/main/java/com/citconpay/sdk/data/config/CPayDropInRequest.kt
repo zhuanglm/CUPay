@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import com.braintreepayments.api.DataCollector
-import com.braintreepayments.api.dropin.DropInRequest
-import com.braintreepayments.api.dropin.utils.PaymentMethodType
+import com.cupay.api.dropin.DropInRequest
+import com.cupay.api.dropin.utils.PaymentMethodType
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
 import com.citconpay.sdk.data.model.CitconPaymentMethodType
@@ -19,7 +19,8 @@ open class CPayDropInRequest() : Parcelable {
     private var mChargeToken: String = ""
     private var mReference: String = ""
     private var mConsumerID: String = ""
-    private var mBrainTreeDropInRequest: DropInRequest =  DropInRequest()
+    private var mBrainTreeDropInRequest: DropInRequest =
+        DropInRequest()
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
 
     object ManagerBuilder {
@@ -167,21 +168,30 @@ open class CPayDropInRequest() : Parcelable {
     private fun paymentMethod(type: CitconPaymentMethodType): CPayDropInRequest {
         this.mPaymentMethodType = type
         when(type) {
-            CitconPaymentMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.PAYPAL)
-            CitconPaymentMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.UNKNOWN)
-            CitconPaymentMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.PAY_WITH_VENMO)
-            CitconPaymentMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.AMEX)
-            CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.GOOGLE_PAYMENT)
+            CitconPaymentMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.PAYPAL)
+            CitconPaymentMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.UNKNOWN)
+            CitconPaymentMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.PAY_WITH_VENMO)
+            CitconPaymentMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.AMEX)
+            CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.GOOGLE_PAYMENT)
             CitconPaymentMethodType.DINERS -> TODO()
             CitconPaymentMethodType.DISCOVER -> TODO()
             CitconPaymentMethodType.JCB -> TODO()
             CitconPaymentMethodType.MAESTRO -> TODO()
-            CitconPaymentMethodType.MASTERCARD -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.MASTERCARD)
-            CitconPaymentMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.VISA)
-            CitconPaymentMethodType.UNIONPAY -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.UNIONPAY)
+            CitconPaymentMethodType.MASTERCARD -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.MASTERCARD)
+            CitconPaymentMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.VISA)
+            CitconPaymentMethodType.UNIONPAY -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.UNIONPAY)
             CitconPaymentMethodType.HIPER -> TODO()
             CitconPaymentMethodType.HIPERCARD -> TODO()
-            CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(PaymentMethodType.NONE)
+            CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.NONE)
         }
         return this
     }

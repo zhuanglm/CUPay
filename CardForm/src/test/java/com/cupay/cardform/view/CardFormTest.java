@@ -1,4 +1,4 @@
-package com.cupay.cardform.view;
+package com.braintreepayments.cardform.view;
 
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,11 +13,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cupay.cardform.OnCardFormFieldFocusedListener;
-import com.cupay.cardform.OnCardFormValidListener;
+import com.braintreepayments.cardform.OnCardFormFieldFocusedListener;
+import com.braintreepayments.cardform.OnCardFormValidListener;
 import com.braintreepayments.cardform.R;
-import com.cupay.cardform.test.TestActivity;
-import com.cupay.cardform.utils.CardType;
+import com.braintreepayments.cardform.test.TestActivity;
+import com.braintreepayments.cardform.utils.CardType;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.junit.Before;
@@ -35,13 +35,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-import static com.cupay.cardform.test.Assertions.assertIconHintIs;
-import static com.cupay.cardform.test.Assertions.assertNoHintIcon;
-import static com.cupay.cardform.test.ColorTestUtils.getColor;
-import static com.cupay.cardform.test.TestCardNumbers.AMEX;
-import static com.cupay.cardform.test.TestCardNumbers.INVALID_VISA;
-import static com.cupay.cardform.test.TestCardNumbers.VISA;
-import static com.cupay.cardform.test.TestExpirationDate.getValidExpiration;
+import static com.braintreepayments.cardform.test.Assertions.assertIconHintIs;
+import static com.braintreepayments.cardform.test.Assertions.assertNoHintIcon;
+import static com.braintreepayments.cardform.test.ColorTestUtils.getColor;
+import static com.braintreepayments.cardform.test.TestCardNumbers.AMEX;
+import static com.braintreepayments.cardform.test.TestCardNumbers.INVALID_VISA;
+import static com.braintreepayments.cardform.test.TestCardNumbers.VISA;
+import static com.braintreepayments.cardform.test.TestExpirationDate.getValidExpiration;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;

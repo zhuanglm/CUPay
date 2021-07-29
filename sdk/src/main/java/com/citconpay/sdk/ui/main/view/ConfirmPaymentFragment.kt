@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import com.citconpay.sdk.data.model.PaymentResult
+import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.databinding.PaymentResultFragmentBinding
 import com.citconpay.sdk.ui.base.BaseFragment
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
@@ -54,7 +54,7 @@ class ConfirmPaymentFragment : BaseFragment() {
                             Status.SUCCESS -> {
                                 result.data?.let { response ->
                                     resultIntent.putExtra(
-                                        PAYMENT_RESULT, PaymentResult(
+                                        PAYMENT_RESULT, CPayOrderResult(
                                             RESULT_OK,
                                             sharedModel.getDropInRequest().getPaymentMethod(),
                                             response.data
@@ -67,7 +67,7 @@ class ConfirmPaymentFragment : BaseFragment() {
                             Status.ERROR -> {
                                 result.message?.let { errorMessage ->
                                     resultIntent.putExtra(
-                                        PAYMENT_RESULT, PaymentResult(
+                                        PAYMENT_RESULT, CPayOrderResult(
                                             RESULT_CANCELED,
                                             sharedModel.getDropInRequest().getPaymentMethod(),
                                             errorMessage

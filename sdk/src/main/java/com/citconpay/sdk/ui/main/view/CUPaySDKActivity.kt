@@ -11,12 +11,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import com.braintreepayments.api.dropin.DropInActivity
-import com.braintreepayments.api.dropin.DropInResult
+import com.cupay.api.dropin.DropInActivity
+import com.cupay.api.dropin.DropInResult
 import com.citconpay.sdk.R
 import com.citconpay.sdk.data.config.CPayDropInRequest
 import com.citconpay.sdk.data.model.ErrorMessage
-import com.citconpay.sdk.data.model.PaymentResult
+import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
 import com.citconpay.sdk.ui.base.BaseActivity
@@ -74,14 +74,15 @@ class CUPaySDKActivity : BaseActivity() {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == DROP_IN_REQUEST) {
-                val result: DropInResult? = data!!.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT)
+                val result: DropInResult? = data!!.getParcelableExtra(
+                    DropInResult.EXTRA_DROP_IN_RESULT)
                 result?.let { it -> mDropInViewModel.setDropInResult(it) }
             }
         } else if (resultCode != RESULT_CANCELED) {
             //return error message "venmo is not installed" etc.
             data?.let {
                 val exceptionMsg: Exception = it.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
-                finish(resultCode, Intent().putExtra(PAYMENT_RESULT,PaymentResult(resultCode,
+                finish(resultCode, Intent().putExtra(PAYMENT_RESULT,CPayOrderResult(resultCode,
                     mDropInViewModel.getDropInRequest().getPaymentMethod(),
                     ErrorMessage("",exceptionMsg.localizedMessage,""))))
             }

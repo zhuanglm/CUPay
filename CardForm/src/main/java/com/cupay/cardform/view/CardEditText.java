@@ -13,7 +13,7 @@ import android.text.TextWatcher;
 import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.utils.CardNumberTransformation;
 import com.cupay.cardform.utils.CardType;
 
@@ -71,7 +71,7 @@ public class CardEditText extends ErrorEditText implements TextWatcher {
     }
 
     /**
-     * @return The {@link CardType} currently entered in
+     * @return The {@link com.cupay.cardform.utils.CardType} currently entered in
      * the {@link android.widget.EditText}
      */
     public CardType getCardType() {
@@ -103,8 +103,8 @@ public class CardEditText extends ErrorEditText implements TextWatcher {
     }
 
     /**
-     * Receive a callback when the {@link CardType} changes
-     * @param listener to be called when the {@link CardType}
+     * Receive a callback when the {@link com.cupay.cardform.utils.CardType} changes
+     * @param listener to be called when the {@link com.cupay.cardform.utils.CardType}
      *  changes
      */
     public void setOnCardTypeChangedListener(OnCardTypeChangedListener listener) {

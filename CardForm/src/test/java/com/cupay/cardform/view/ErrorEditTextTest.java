@@ -1,9 +1,9 @@
-package com.cupay.cardform.view;
+package com.braintreepayments.cardform.view;
 
 import com.google.android.material.textfield.TextInputLayout;
 
 import com.braintreepayments.cardform.R;
-import com.cupay.cardform.test.TestActivity;
+import com.braintreepayments.cardform.test.TestActivity;
 
 import org.junit.Before;
 import org.junit.Test;

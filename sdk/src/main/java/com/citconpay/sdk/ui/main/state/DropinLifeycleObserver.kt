@@ -3,12 +3,12 @@ package com.citconpay.sdk.ui.main.state
 import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
 import androidx.lifecycle.*
-import com.citconpay.sdk.data.model.PaymentResult
+import com.cupay.cardform.view.CardForm
+import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Constant
 import com.citconpay.sdk.utils.Status
-import com.cupay.cardform.view.CardForm
 
 class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewModel) : LifecycleObserver {
     private val mViewModel : DropinViewModel by lazy { viewModel }
@@ -38,7 +38,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     Status.ERROR -> {
                         it.message?.let { err ->
                             mActivity.finish(RESULT_CANCELED,Intent().putExtra(
-                                Constant.PAYMENT_RESULT, PaymentResult(
+                                Constant.PAYMENT_RESULT, CPayOrderResult(
                                     RESULT_CANCELED,
                                     mViewModel.getDropInRequest().getPaymentMethod(),
                                     err

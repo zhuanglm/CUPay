@@ -9,9 +9,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.SingleLineTransformationMethod;
+import android.text.method.TransformationMethod;
 import android.util.AttributeSet;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.utils.CardType;
 
 /**
@@ -47,7 +48,7 @@ public class CvvEditText extends ErrorEditText implements TextWatcher {
     /**
      * Sets the card type associated with the security code type. {@link CardType#AMEX} has a
      * different icon and length than other card types. Typically handled through
-     * {@link CardEditText.OnCardTypeChangedListener#onCardTypeChanged(CardType)}.
+     * {@link com.cupay.cardform.view.CardEditText.OnCardTypeChangedListener#onCardTypeChanged(com.cupay.cardform.utils.CardType)}.
      *
      * @param cardType Type of card represented by the current value of card number input.
      */

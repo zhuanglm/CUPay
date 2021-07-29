@@ -3,7 +3,7 @@ package com.cupay.cardform.view;
 import android.text.Editable;
 import android.text.method.TransformationMethod;
 
-import com.braintreepayments.cardform.R;
+import com.cupay.cardform.R;
 import com.cupay.cardform.test.TestActivity;
 import com.cupay.cardform.utils.CardNumberTransformation;
 import com.cupay.cardform.utils.CardType;
@@ -51,7 +51,7 @@ public class CardEditTextTest {
 
     @Test
     public void testDiscover() {
-        helper("6011", "1111 1111 1117", R.drawable.bt_ic_discover, 4, 8, 12);
+        helper("6011", "1111 1111 1111117", R.drawable.bt_ic_discover, 4, 8, 12);
     }
 
     @Test

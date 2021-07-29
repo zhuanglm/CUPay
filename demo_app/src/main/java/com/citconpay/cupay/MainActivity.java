@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
-import com.citconpay.sdk.data.model.PaymentResult;
+import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.cupay.model.RequestAccessToken;
 import com.citconpay.cupay.model.RequestChargeToken;
 import com.citconpay.cupay.model.Transaction;
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Quit", null);
 
         if (resultCode == RESULT_OK) {
-            PaymentResult order = (PaymentResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
+            CPayOrderResult order = (CPayOrderResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
             alertdialog.setMessage(String.format(Locale.CANADA, "this is merchant demo APP\n paid %s %d",
                     order.getCurrency(), order.getAmount()))
                     .create().show();
@@ -328,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             String message;
             if(data != null) {
-                PaymentResult error = (PaymentResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
+                CPayOrderResult error = (CPayOrderResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
                 message = "this is merchant demo APP\n payment cancelled : \n" + error.getMessage()
                         + " - " + error.getCode();
 
