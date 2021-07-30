@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.cupay.api.dropin.DropInActivity
 import com.cupay.api.dropin.DropInResult
 import com.citconpay.sdk.R
-import com.citconpay.sdk.data.config.CPayDropInRequest
+import com.citconpay.sdk.data.model.CPayDropInRequest
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.data.repository.ApiRepository

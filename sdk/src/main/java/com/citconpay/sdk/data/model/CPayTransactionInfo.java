@@ -1,4 +1,4 @@
-package com.citconpay.sdk.data.config;
+package com.citconpay.sdk.data.model;
 
 import androidx.annotation.NonNull;
 

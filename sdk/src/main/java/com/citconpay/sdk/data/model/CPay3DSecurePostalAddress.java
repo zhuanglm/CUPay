@@ -1,4 +1,4 @@
-package com.citconpay.sdk.data.config;
+package com.citconpay.sdk.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

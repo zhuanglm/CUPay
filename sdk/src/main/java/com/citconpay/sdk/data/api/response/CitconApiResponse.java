@@ -1,5 +1,6 @@
 package com.citconpay.sdk.data.api.response;
 
+@SuppressWarnings("unused")
 public class CitconApiResponse<T> {
     String status;
     String app;

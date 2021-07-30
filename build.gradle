@@ -46,6 +46,7 @@ allprojects {
                 password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
             }
         }
+        maven { url 'https://jitpack.io' }
     }
 }
 

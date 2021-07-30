@@ -1,18 +1,18 @@
-package com.citconpay.sdk.data.config
+package com.citconpay.sdk.data.model
 
 import android.content.Context
 import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import com.braintreepayments.api.DataCollector
-import com.cupay.api.dropin.DropInRequest
-import com.cupay.api.dropin.utils.PaymentMethodType
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
-import com.citconpay.sdk.data.model.CitconPaymentMethodType
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
+import com.cupay.api.dropin.DropInRequest
+import com.cupay.api.dropin.utils.PaymentMethodType
 import com.cupay.cardform.view.CardForm
 
+@Suppress("SameParameterValue")
 open class CPayDropInRequest() : Parcelable {
     private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
     private lateinit var mAccessToken: String
@@ -59,7 +59,7 @@ open class CPayDropInRequest() : Parcelable {
         }
 
         fun reference(reference: String): PaymentBuilder {
-            this.reference = reference
+            PaymentBuilder.reference = reference
             return this
         }
 
@@ -211,7 +211,7 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     fun getAccessToken() : String {
-        return mAccessToken;
+        return mAccessToken
     }
 
     /**
@@ -225,7 +225,7 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     fun getChargeToken() : String {
-        return mChargeToken;
+        return mChargeToken
     }
 
     /**

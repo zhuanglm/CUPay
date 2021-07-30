@@ -15,7 +15,7 @@ import com.citconpay.sdk.data.api.response.CitconApiResponse
 import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.api.response.LoadedConfig
-import com.citconpay.sdk.data.config.CPayDropInRequest
+import com.citconpay.sdk.data.model.CPayDropInRequest
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
