@@ -1,20 +1,31 @@
 package com.citconpay.sdk.data.model;
 
 public enum CitconPaymentMethodType {
-    AMEX,
-    GOOGLE_PAYMENT,
-    DINERS,
-    DISCOVER,
-    JCB,
-    MAESTRO,
-    MASTERCARD,
-    PAYPAL,
-    VISA,
-    PAY_WITH_VENMO,
-    UNIONPAY,
-    HIPER,
-    HIPERCARD,
-    UNKNOWN,
-    NONE;
+    ALI("alipay"),
+    AMEX("card"),
+    GOOGLE_PAYMENT("google"),
+    DINERS("card"),
+    DISCOVER("card"),
+    JCB("card"),
+    MAESTRO("card"),
+    MASTERCARD("card"),
+    PAYPAL("paypal"),
+    VISA("card"),
+    PAY_WITH_VENMO("venmo"),
+    UNIONPAY("card"),
+    HIPER("card"),
+    HIPERCARD("card"),
+    UNKNOWN("card"),
+    WECHAT("wechatpay"),
+    NONE("none");
+
+    private final String mMethodType;
+    CitconPaymentMethodType(String type) {
+        mMethodType = type;
+    }
+
+    public String getType() {
+        return mMethodType;
+    }
 }
 

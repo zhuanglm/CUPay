@@ -65,8 +65,17 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         //mLoading.postValue(true)
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = apiRepository.confirmCharge(mDropInRequest.getAccessToken(),
-            mDropInRequest.getChargeToken(),mDropInRequest.getReference(),nonce.nonce)))
+            emit(
+                Resource.success(
+                    data = apiRepository.confirmCharge(
+                        mDropInRequest.getAccessToken(),
+                        mDropInRequest.getChargeToken(),
+                        mDropInRequest.getReference(),
+                        mDropInRequest.getPaymentMethod().type,
+                        nonce.nonce
+                    )
+                )
+            )
             mLoading.postValue(false)
         } catch (exception: Exception) {
             mLoading.postValue(false)

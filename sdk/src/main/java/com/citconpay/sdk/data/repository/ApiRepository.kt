@@ -28,14 +28,15 @@ class ApiRepository {
         accessToken: String,
         chargeToken: String,
         reference: String,
+        method: String,
         nonce: String
     ): CitconApiResponse<PlacedOrder> {
         return apiService.confirmCharge(
             "Bearer $accessToken", contentType, chargeToken,
             RequestCharge(
                 RequestChargePayment(
-                    "paypal", "braitree", false,
-                    "", "fake-paypal-billing-agreement-nonce"
+                    method, "braitree", false,
+                    "", nonce
                 ),
                 RequestTransaction(reference)
             )

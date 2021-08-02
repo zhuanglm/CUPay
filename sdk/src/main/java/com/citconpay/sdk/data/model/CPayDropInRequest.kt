@@ -178,6 +178,8 @@ open class CPayDropInRequest() : Parcelable {
                 PaymentMethodType.AMEX)
             CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.GOOGLE_PAYMENT)
+            CitconPaymentMethodType.ALI -> TODO()
+            CitconPaymentMethodType.WECHAT -> TODO()
             CitconPaymentMethodType.DINERS -> TODO()
             CitconPaymentMethodType.DISCOVER -> TODO()
             CitconPaymentMethodType.JCB -> TODO()
