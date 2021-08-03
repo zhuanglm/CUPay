@@ -13,7 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bt_black_54"
+        android:background="@color/ct_black_54"
         android:visibility="visible">
 
         <fragment

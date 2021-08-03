@@ -25,7 +25,7 @@
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bt_black_54"
+        android:background="@color/ct_black_54"
         android:visibility="invisible"
         tools:context=".ui.main.view.ConfirmPaymentFragment">
 
@@ -39,7 +39,7 @@
             android:background="@android:color/background_light"
             android:text="@{result}"
             android:textAlignment="textStart"
-            android:textColor="@color/bt_color_primary_dark"
+            android:textColor="@color/ct_colorPrimaryDark"
             android:textSize="18sp"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:background="@color/bt_blue"
+            android:background="@color/ct_blue"
             android:text="@string/place_order"
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="@+id/tv_nonce_details"

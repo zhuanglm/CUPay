@@ -8,7 +8,7 @@
             android:value="true"/>
 
         <activity android:name=".ui.main.view.CUPaySDKActivity"
-            android:theme="@style/cp_transparent_activity_theme"/>
+            android:theme="@style/ct_transparent_activity_theme"/>
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
