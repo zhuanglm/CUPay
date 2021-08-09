@@ -13,6 +13,7 @@ import com.google.android.gms.wallet.WalletConstants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+@SuppressWarnings({"unused","SameParameterValue","UnusedReturnValue"})
 public class CitconPaymentRequest implements Parcelable {
 
     public CitconPaymentRequest() {

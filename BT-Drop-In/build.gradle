@@ -2,8 +2,11 @@ plugins {
     id 'com.android.library'
     id 'de.marcphilipp.nexus-publish'
     id 'signing'
+    id 'kotlin-android'
+    id 'com.github.dcendents.android-maven'
 }
-apply plugin: 'kotlin-android'
+// Your Group
+group='com.github.Citcon'
 
 def LOCALHOST_IP = System.properties['LOCALHOST_IP'] ?: '"10.0.2.2"'
 def GATEWAY_IP = System.properties['GATEWAY_IP'] ?: '"10.0.2.2"'
