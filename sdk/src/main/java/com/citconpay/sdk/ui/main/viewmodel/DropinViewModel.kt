@@ -69,7 +69,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
     }
 
     private fun sendNonceToServer(nonce: PaymentMethodNonce) = liveData(Dispatchers.IO) {
-        //mLoading.postValue(true)
+        mLoading.postValue(true)
         emit(Resource.loading(data = null))
         try {
             emit(

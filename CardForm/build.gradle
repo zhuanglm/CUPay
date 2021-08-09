@@ -88,7 +88,7 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = 'com.braintreepayments'
+                groupId = 'com.github.Citcon'
                 artifactId = 'card-form'
                 version = rootProject.versionName
 
