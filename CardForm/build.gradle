@@ -27,6 +27,10 @@ android {
     }
 
     resourcePrefix 'bt_'
+    buildTypes {
+        'buildTypes.debug' {
+        }
+    }
 }
 
 dependencies {

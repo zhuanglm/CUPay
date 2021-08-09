@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitBuilder {
 
     //private const val BASE_URL = "https://dev.citconpay.com/fei/bt-demo/"
-    private const val BASE_URL = "https://api.dev01.citconpay.com/v1/"
+    private const val BASE_URL = "https://api.qa01.citconpay.com/v1/"
 
     private fun getRetrofit(): Retrofit {
         //val apiInterceptor = ApiClientRequestInterceptor()

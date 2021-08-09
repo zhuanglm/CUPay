@@ -24,7 +24,8 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 
-class DropinViewModel(private val apiRepository: ApiRepository, application: Application) : AndroidViewModel(application) {
+class DropinViewModel(private val apiRepository: ApiRepository, application: Application) :
+    AndroidViewModel(application) {
     val mTextViewMsg = MutableLiveData<String>()
     private lateinit var mDropInRequest: CPayDropInRequest
     val mLoading = MutableLiveData<Boolean>()
@@ -52,8 +53,14 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         emit(Resource.loading(data = null))
         try {
             //emit(Resource.success(data = apiRepository.getClientToken()))
-            emit(Resource.success(data = apiRepository.loadConfig(mDropInRequest.getAccessToken(),
-                mDropInRequest.getConsumerID())))
+            emit(
+                Resource.success(
+                    data = apiRepository.loadConfig(
+                        mDropInRequest.getAccessToken(),
+                        mDropInRequest.getConsumerID()
+                    )
+                )
+            )
             mLoading.postValue(false)
         } catch (exception: Exception) {
             mLoading.postValue(false)
@@ -87,7 +94,7 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
         return getClientToken()
     }*/
 
-    internal fun loadClientToken() : LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
+    internal fun loadClientToken(): LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
         return getClientToken()
     }
 
@@ -101,8 +108,8 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
 
     private fun handleErrorMsg(exception: Exception): ErrorMessage {
         lateinit var errorMessage: ErrorMessage
-        (exception as HttpException).response()?.let {response->
-            response.errorBody()?.let { errorMsg->
+        (exception as HttpException).response()?.let { response ->
+            response.errorBody()?.let { errorMsg ->
                 JSONObject(errorMsg.string()).let {
                     errorMessage = GsonBuilder().create().fromJson(
                         it.getJSONObject("data").toString(),
@@ -174,12 +181,14 @@ class DropinViewModel(private val apiRepository: ApiRepository, application: App
     }
 
     private fun getDisplayString(nonce: CardNonce?): String {
-        nonce?.let{return "Card Last Two: ${nonce.lastTwo}\n" +
-                "${getDisplayString(nonce.binData)}\n" +
-                "3DS:\n" +
-                "         - isLiabilityShifted: ${nonce.threeDSecureInfo.isLiabilityShifted}\n" +
-                "         - isLiabilityShiftPossible: ${nonce.threeDSecureInfo.isLiabilityShiftPossible}\n" +
-                "         - wasVerified: ${nonce.threeDSecureInfo.wasVerified()}\n"}
+        nonce?.let {
+            return "Card Last Two: ${nonce.lastTwo}\n" +
+                    "${getDisplayString(nonce.binData)}\n" +
+                    "3DS:\n" +
+                    "         - isLiabilityShifted: ${nonce.threeDSecureInfo.isLiabilityShifted}\n" +
+                    "         - isLiabilityShiftPossible: ${nonce.threeDSecureInfo.isLiabilityShiftPossible}\n" +
+                    "         - wasVerified: ${nonce.threeDSecureInfo.wasVerified()}\n"
+        }
         return "null"
     }
 

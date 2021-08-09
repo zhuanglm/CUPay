@@ -2,6 +2,8 @@ package com.citconpay.cupay;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -57,12 +59,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static final int DROP_IN_REQUEST = 1;
-    private static final String CITCON_SERVER = "https://api.dev01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
     private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
-    private TextView mTextViewAccessToken, mTextViewChargeToken;
+    private TextView mTextViewAccessToken;
+    private TextView mTextViewChargeToken;
     private String mAccessToken, mChargeToken, mReference;
     private ProgressBar mProgressBar;
     private TextInputEditText mEditTextConsumerID;
@@ -77,11 +80,13 @@ public class MainActivity extends AppCompatActivity {
         mEditTextConsumerID = findViewById(R.id.edit_consumer_id);
         mTextViewAccessToken = findViewById(R.id.tv_access_token);
         mTextViewChargeToken = findViewById(R.id.tv_charge_token);
+        TextView textViewVersion = findViewById(R.id.tv_version);
         mProgressBar = findViewById(R.id.progressBar_loading);
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
         mLayoutPayments = findViewById(R.id.layout_payments);
 
         mEditTextConsumerID.setText(DEFAULT_CONSUMER_ID);
+        textViewVersion.setText(getVersion());
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -105,6 +110,18 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mApiService = retrofit.create(CitconUPIAPIService.class);
+    }
+
+    public String getVersion() {
+        String versionInfo;
+        PackageManager packageManager = this.getPackageManager();
+        try {
+            PackageInfo info = packageManager.getPackageInfo(getPackageName(),0);
+            versionInfo = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            versionInfo = e.getMessage();
+        }
+        return versionInfo;
     }
 
     // Access Token should be applied from backend server. here we get it directly is just for demo

@@ -36,7 +36,7 @@
 
             <CheckBox
                 android:id="@+id/checkBox_3DS"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="3DSecure Verification" />
@@ -128,8 +128,8 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchGooglePay"
-                android:text="@string/bt_google" />
+                android:onClick="launchVenmo"
+                android:text="@string/bt_venmo" />
 
             <Button
                 android:id="@+id/button2"
@@ -158,8 +158,9 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchVenmo"
-                android:text="@string/bt_venmo" />
+                android:onClick="launchGooglePay"
+                android:visibility="invisible"
+                android:text="@string/bt_google" />
 
             <Button
                 android:id="@+id/button6"
@@ -179,5 +180,14 @@
         </TableRow>
 
     </TableLayout>
+
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

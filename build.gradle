@@ -5,6 +5,7 @@ buildscript {
         minSdkVersion = 21
         targetSdkVersion = 30
         versionCode = 85
+        version = '1.21.8.01'
         versionName = version
     }
     repositories {
