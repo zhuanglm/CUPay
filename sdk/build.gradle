@@ -37,7 +37,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
     implementation 'androidx.core:core-ktx:1.6.0'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
@@ -56,7 +56,7 @@ dependencies {
     //implementation 'com.kaopiz:kprogresshud:1.2.0'
 
     // Braintree dependencies
-    api 'com.braintreepayments.api:braintree:3.17.4'
+    implementation('com.braintreepayments.api:braintree:3.17.4'){transitive = true}
     implementation 'com.braintreepayments.api:google-payment:3.5.0'
     //implementation('com.braintreepayments.api:drop-in:5.2.0')
     implementation project(':BT-Drop-In')
