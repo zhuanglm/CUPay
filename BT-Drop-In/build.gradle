@@ -59,7 +59,7 @@ android {
 }
 
 dependencies {
-    api 'com.braintreepayments.api:braintree:3.17.4'
+    api ('com.braintreepayments.api:braintree:3.17.4'){transitive = true}
     api project(':CardForm')
     api 'com.braintreepayments.api:three-d-secure:3.17.4'
 
