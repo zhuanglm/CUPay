@@ -60,7 +60,7 @@ android {
 
 dependencies {
     api 'com.braintreepayments.api:braintree:3.17.4'
-    implementation project(':CardForm')
+    api project(':CardForm')
     api 'com.braintreepayments.api:three-d-secure:3.17.4'
 
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -127,26 +127,26 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                groupId = 'com.braintreepayments.api'
+                groupId = 'com.citcon.api'
                 artifactId = 'drop-in'
                 version = rootProject.versionName
 
                 pom {
                     name = 'drop-in'
                     packaging = 'aar'
-                    description = 'Drop-in payment form for Braintree\'s Android SDK. Integrate this library to add a readymade UI for your payments.'
-                    url = 'https://github.com/braintree/braintree-android-drop-in'
+                    description = 'Drop-in payment form for Citcon\'s Android SDK. Integrate this library to add a readymade UI for your payments.'
+                    url = 'https://github.com/Citcon/UPI_mobile_SDK_Android'
 
                     scm {
-                        url = 'scm:git@github.com:braintree/braintree-android-drop-in.git'
-                        connection = 'scm:git@github.com:braintree/braintree-android-drop-in.git'
-                        developerConnection = 'scm:git@github.com:braintree/braintree-android-drop-in.git'
+                        url = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
+                        connection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
+                        developerConnection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
                     }
 
                     developers {
                         developer {
                             id = 'devs'
-                            name = 'Braintree Payments'
+                            name = 'Citcon Payments'
                         }
                     }
 
@@ -161,9 +161,6 @@ afterEvaluate {
             }
         }
     }
-}
-repositories {
-    mavenCentral()
 }
 
 // endregion

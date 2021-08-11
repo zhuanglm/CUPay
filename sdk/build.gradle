@@ -1,30 +1,44 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.library'
+    id 'de.marcphilipp.nexus-publish'
+    id 'signing'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    //github remote repo test
+    // JitPack Maven
+    id 'com.github.dcendents.android-maven'
+}
 
-//github remote repo test
-// JitPack Maven
-apply plugin: 'com.github.dcendents.android-maven'
 // Your Group
 group='com.github.Citcon'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion rootProject.compileSdkVersion
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 26
-        targetSdkVersion 30
-        versionCode 1
-        versionName rootProject.ext.version
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode rootProject.versionCode
+        versionName rootProject.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    packagingOptions {
+        exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
+        exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
+    }
+
+    testOptions.unitTests {
+        returnDefaultValues true
+        includeAndroidResources true
+    }
+
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -60,7 +74,7 @@ dependencies {
 //    api 'com.braintreepayments.api:google-payment:3.5.0'
     //implementation('com.braintreepayments.api:drop-in:5.2.0')
     api project(':BT-Drop-In')
-    implementation project(':CardForm')
+    //implementation project(':CardForm')
 
     // Google dependencies
     implementation 'com.google.android.gms:play-services-wallet:18.1.3'
@@ -80,4 +94,63 @@ dependencies {
         }
     }
 
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    //archives javadocsJar
+    archives sourcesJar
+}
+
+signing {
+    required {
+        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
+    }
+    sign publishing.publications
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'com.github.Citcon'
+                artifactId = 'card-form'
+                version = rootProject.versionName
+
+                pom {
+                    name = 'card-form'
+                    packaging = 'aar'
+                    description = 'A ready-made card form layout that can be included in your Android app, making it easy to accept credit and debit cards.'
+                    url = 'https://github.com/Citcon/UPI_mobile_SDK_Android'
+
+                    scm {
+                        url = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
+                        connection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
+                        developerConnection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
+                    }
+
+                    developers {
+                        developer {
+                            id = 'devs'
+                            name = 'Citcon Payments'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name = 'MIT'
+                            url = 'http://opensource.org/licenses/MIT'
+                            distribution = 'repo'
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

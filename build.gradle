@@ -4,7 +4,7 @@ buildscript {
         compileSdkVersion = 30
         minSdkVersion = 21
         targetSdkVersion = 30
-        versionCode = 85
+        versionCode = 1
         version = '1.21.8.01'
         versionName = version
     }
@@ -31,7 +31,7 @@ plugins {
 }
 
 nexusStaging {
-    packageGroup = "com.braintreepayments"
+    packageGroup = "com.citcon"
     // give nexus sonatype more time to close the staging repository
     delayBetweenRetriesInMillis = 20000
     username = System.env['SONATYPE_USERNAME']
@@ -39,6 +39,7 @@ nexusStaging {
 }
 
 allprojects {
+
     repositories {
         google()
         mavenCentral()
@@ -51,6 +52,7 @@ allprojects {
         }
         maven { url 'https://jitpack.io' }
     }
+
 }
 
 task clean(type: Delete) {
