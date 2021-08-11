@@ -85,16 +85,16 @@ dependencies {
 
 // region signing and publishing
 
-task javadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    failOnError false
-}
-
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set('javadoc')
-    from javadocs.destinationDir
-}
+//task javadocs(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//    failOnError false
+//}
+//
+//task javadocsJar(type: Jar, dependsOn: javadocs) {
+//    archiveClassifier.set('javadoc')
+//    from javadocs.destinationDir
+//}
 
 task sourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -102,7 +102,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives javadocsJar
+    //archives javadocsJar
     archives sourcesJar
 }
 
