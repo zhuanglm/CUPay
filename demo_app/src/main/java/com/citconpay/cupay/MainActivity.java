@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEFAULT_CONSUMER_ID = "115646448";
     private TextView mTextViewAccessToken;
     private TextView mTextViewChargeToken;
+    private TextView mTextViewReference;
     private String mAccessToken, mChargeToken, mReference;
     private ProgressBar mProgressBar;
     private TextInputEditText mEditTextConsumerID;
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         mEditTextConsumerID = findViewById(R.id.edit_consumer_id);
         mTextViewAccessToken = findViewById(R.id.tv_access_token);
         mTextViewChargeToken = findViewById(R.id.tv_charge_token);
+        mTextViewReference = findViewById(R.id.tv_reference);
         TextView textViewVersion = findViewById(R.id.tv_version);
         mProgressBar = findViewById(R.id.progressBar_loading);
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
@@ -116,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         String versionInfo;
         PackageManager packageManager = this.getPackageManager();
         try {
-            PackageInfo info = packageManager.getPackageInfo(getPackageName(),0);
+            PackageInfo info = packageManager.getPackageInfo(getPackageName(), 0);
             versionInfo = info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             versionInfo = e.getMessage();
@@ -225,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                mTextViewReference.setText(mReference);
                 mTextViewChargeToken.setText(mChargeToken);
             }
 
@@ -338,13 +341,13 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             CPayOrderResult order = (CPayOrderResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
-            alertdialog.setMessage(String.format(Locale.CANADA, "this is merchant demo APP\n paid %s %d",
-                    order.getCurrency(), order.getAmount()))
+            alertdialog.setMessage(String.format(Locale.CANADA, "this is merchant demo APP\n paid %s %d \n transaction id: %s \n reference: %s \n",
+                    order.getCurrency(), order.getAmount(), order.getTransactionId(), order.getReference()))
                     .create().show();
 
         } else {
             String message;
-            if(data != null) {
+            if (data != null) {
                 CPayOrderResult error = (CPayOrderResult) data.getSerializableExtra(Constant.PAYMENT_RESULT);
                 message = "this is merchant demo APP\n payment cancelled : \n" + error.getMessage()
                         + " - " + error.getCode();
