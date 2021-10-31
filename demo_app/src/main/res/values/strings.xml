@@ -8,4 +8,5 @@
     <string name="bt_wx">WX Pay</string>
     <string name="bt_ali">Ali Pay</string>
     <string name="bt_my_wallet">My Wallet</string>
+    <string name="bt_upop">Union Pay</string>
 </resources>

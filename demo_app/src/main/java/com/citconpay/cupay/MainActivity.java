@@ -245,6 +245,16 @@ public class MainActivity extends AppCompatActivity {
         getAccessToken(mApiService);
     }
 
+    public void launchUnionPay(View v) {
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
+                .getIntent(this), DROP_IN_REQUEST);
+    }
+
+    public void launchAliPay(View v) {
+        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI)
+                .getIntent(this), DROP_IN_REQUEST);
+    }
+
     public void launchGooglePay(View v) {
         startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
                 .getIntent(this), DROP_IN_REQUEST);
@@ -281,15 +291,30 @@ public class MainActivity extends AppCompatActivity {
      * @param type is payment method type which was selected by user want to pay with
      */
     private CPayDropInRequest buildDropInRequest(CitconPaymentMethodType type) {
-        return CPayDropInRequest.PaymentBuilder.INSTANCE
-                .accessToken(mAccessToken)
-                .chargeToken(mChargeToken)
-                .reference(mReference)
-                .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
-                .request3DSecureVerification(mCheckBox3DS.isChecked())
-                .threeDSecureRequest(demoThreeDSecureRequest())
-                .citconPaymentRequest(getPaymentRequest())
-                .build(type);
+        switch (type) {
+            case ALI:
+            case UNIONPAY:
+                return CPayDropInRequest.CPayBuilder.INSTANCE
+                        .reference(mReference)
+                        .currency("USD")
+                        .amount("1")
+                        .build(type);
+
+            case PAYPAL:
+            case PAY_WITH_VENMO:
+            case GOOGLE_PAYMENT:
+            case UNKNOWN:
+            default:
+                return CPayDropInRequest.PaymentBuilder.INSTANCE
+                        .accessToken(mAccessToken)
+                        .chargeToken(mChargeToken)
+                        .reference(mReference)
+                        .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                        .request3DSecureVerification(mCheckBox3DS.isChecked())
+                        .threeDSecureRequest(demoThreeDSecureRequest())
+                        .citconPaymentRequest(getPaymentRequest())
+                        .build(type);
+        }
     }
 
     private CitconPaymentRequest getPaymentRequest() {

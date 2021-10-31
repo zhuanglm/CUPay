@@ -19,7 +19,7 @@ import com.citconpay.sdk.utils.Status
 class ConfirmPaymentFragment : BaseFragment() {
     private var _binding: PaymentResultFragmentBinding? = null
 
-    private lateinit var sharedModel: DropinViewModel
+    private lateinit var mSharedModel: DropinViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,13 +41,13 @@ class ConfirmPaymentFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        sharedModel = ViewModelProvider(requireActivity()).get(DropinViewModel::class.java)
-        sharedModel.mResult.observe(viewLifecycleOwner) {
-            _binding?.result = sharedModel.displayNonce(it)
+        mSharedModel = ViewModelProvider(requireActivity()).get(DropinViewModel::class.java)
+        mSharedModel.mResult.observe(viewLifecycleOwner) {
+            _binding?.result = mSharedModel.displayNonce(it)
             _binding?.frameLayout?.visibility = View.VISIBLE
 
             it.paymentMethodNonce?.let { nonce ->
-                sharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner, { result ->
+                mSharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner, { result ->
                     result?.let { resource ->
                         val resultIntent = Intent()
                         when (resource.status) {
@@ -56,7 +56,7 @@ class ConfirmPaymentFragment : BaseFragment() {
                                     resultIntent.putExtra(
                                         PAYMENT_RESULT, CPayOrderResult(
                                             RESULT_OK,
-                                            sharedModel.getDropInRequest().getPaymentMethod(),
+                                            mSharedModel.getDropInRequest().getPaymentMethod(),
                                             response.data
                                         )
                                     )
@@ -69,7 +69,7 @@ class ConfirmPaymentFragment : BaseFragment() {
                                     resultIntent.putExtra(
                                         PAYMENT_RESULT, CPayOrderResult(
                                             RESULT_CANCELED,
-                                            sharedModel.getDropInRequest().getPaymentMethod(),
+                                            mSharedModel.getDropInRequest().getPaymentMethod(),
                                             errorMessage
                                         )
                                     )

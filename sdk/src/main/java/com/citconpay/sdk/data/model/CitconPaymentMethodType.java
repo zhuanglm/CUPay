@@ -12,7 +12,7 @@ public enum CitconPaymentMethodType {
     PAYPAL("paypal"),
     VISA("card"),
     PAY_WITH_VENMO("venmo"),
-    UNIONPAY("card"),
+    UNIONPAY("upop"),
     HIPER("card"),
     HIPERCARD("card"),
     UNKNOWN("card"),

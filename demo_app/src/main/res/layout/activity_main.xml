@@ -187,10 +187,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/bt_ali"
-                android:visibility="invisible" />
+                android:onClick="launchAliPay"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/button5"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bt_wx"
+                android:visibility="invisible" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button8"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchUnionPay"
+                android:visibility="visible"
+                android:text="@string/bt_upop" />
+
+            <Button
+                android:id="@+id/button9"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bt_ali"
+                android:onClick="launchAliPay"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/buttonA"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

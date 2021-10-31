@@ -2,6 +2,7 @@ package com.citconpay.sdk.data.model
 
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
 import com.braintreepayments.api.DataCollector
@@ -15,13 +16,22 @@ import com.cupay.cardform.view.CardForm
 @Suppress("SameParameterValue")
 open class CPayDropInRequest() : Parcelable {
     private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
-    private lateinit var mAccessToken: String
+    private var mAccessToken: String = ""
     private var mChargeToken: String = ""
     private var mReference: String = ""
     private var mConsumerID: String = ""
     private var mBrainTreeDropInRequest: DropInRequest =
         DropInRequest()
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
+
+    //CPaySDK CPayOrder
+    private var  mAmount: String = ""
+    private var  mCurrency: String = ""
+    private var  mSubject: String = ""
+    private var  mBody: String = ""
+    private var  mIpnUrl: String = ""
+    private var  mCallbackUrl: String = ""
+    private var  mAllowDuplicate = true
 
     object ManagerBuilder {
         private lateinit var accessToken: String
@@ -37,6 +47,43 @@ open class CPayDropInRequest() : Parcelable {
                 .paymentMethod(CitconPaymentMethodType.NONE)
         }
 
+    }
+
+    object CPayBuilder {
+        var referenceId: String = ""
+        private var amount: String = "0"
+        private lateinit var currency: String
+        private var subject: String = "cupay test subject"
+        private var body: String = "cupay test body"
+        private var ipnUrl: String = "https://cupay.test.ipn"
+        private var callbackUrl: String = "https://cupay.test.ipn"
+        private var allowDuplicate = true
+
+        fun reference(id: String):  CPayBuilder {
+            referenceId = id
+            return this
+        }
+
+        fun amount(amount: String):  CPayBuilder {
+            this.amount = amount
+            return this
+        }
+
+        fun currency(currency: String):  CPayBuilder {
+            this.currency = currency
+            return this
+        }
+
+        fun build(type: CitconPaymentMethodType): CPayDropInRequest {
+            return CPayDropInRequest().amount(amount)
+                    .reference(referenceId)
+                    .currency(this.currency)
+                    .paymentMethod(type)
+                    .subject(subject)
+                    .body(body)
+                    .ipnURL(ipnUrl)
+                    .callbackURL(callbackUrl)
+        }
     }
 
     object PaymentBuilder {
@@ -115,6 +162,16 @@ open class CPayDropInRequest() : Parcelable {
         mConsumerID = parcel.readString()!!
         mBrainTreeDropInRequest = parcel.readParcelable(DropInRequest::class.java.classLoader)!!
         mGooglePaymentRequest = parcel.readParcelable(GooglePaymentRequest::class.java.classLoader)
+
+        mAmount = parcel.readString()!!
+        mCurrency = parcel.readString()!!
+        mSubject = parcel.readString()!!
+        mBody = parcel.readString()!!
+        mIpnUrl = parcel.readString()!!
+        mCallbackUrl = parcel.readString()!!
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mAllowDuplicate = parcel.readBoolean()!!
+        }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -125,6 +182,16 @@ open class CPayDropInRequest() : Parcelable {
         parcel.writeString(mConsumerID)
         parcel.writeParcelable(mBrainTreeDropInRequest, 0)
         parcel.writeParcelable(mGooglePaymentRequest, 0)
+
+        parcel.writeString(mAmount)
+        parcel.writeString(mCurrency)
+        parcel.writeString(mSubject)
+        parcel.writeString(mBody)
+        parcel.writeString(mIpnUrl)
+        parcel.writeString(mCallbackUrl)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            parcel.writeBoolean(mAllowDuplicate)
+        }
     }
 
     override fun describeContents(): Int {
@@ -178,8 +245,8 @@ open class CPayDropInRequest() : Parcelable {
                 PaymentMethodType.AMEX)
             CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.GOOGLE_PAYMENT)
-            CitconPaymentMethodType.ALI -> TODO()
-            CitconPaymentMethodType.WECHAT -> TODO()
+
+
             CitconPaymentMethodType.DINERS -> TODO()
             CitconPaymentMethodType.DISCOVER -> TODO()
             CitconPaymentMethodType.JCB -> TODO()
@@ -188,8 +255,7 @@ open class CPayDropInRequest() : Parcelable {
                 PaymentMethodType.MASTERCARD)
             CitconPaymentMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.VISA)
-            CitconPaymentMethodType.UNIONPAY -> mBrainTreeDropInRequest.paymentMethodType(
-                PaymentMethodType.UNIONPAY)
+
             CitconPaymentMethodType.HIPER -> TODO()
             CitconPaymentMethodType.HIPERCARD -> TODO()
             CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(
@@ -321,6 +387,65 @@ open class CPayDropInRequest() : Parcelable {
         //Todo: setup 3DS request depends on Gateway type
         mBrainTreeDropInRequest.threeDSecureRequest(request.threeDSecureRequest)
         return this
+    }
+
+    //CPaySDK
+    private fun amount(amount: String): CPayDropInRequest {
+        mAmount = amount
+        return this
+    }
+
+    fun getAmount(): String {
+        return mAmount
+    }
+
+    private fun currency(currency: String): CPayDropInRequest {
+        mCurrency = currency
+        return this
+    }
+
+    fun getCurrency(): String {
+        return mCurrency
+    }
+
+    private fun subject(subject: String): CPayDropInRequest {
+        mSubject = subject
+        return this
+    }
+
+    fun getSubject(): String {
+        return mSubject
+    }
+
+    private fun body(body: String): CPayDropInRequest {
+        mBody = body
+        return this
+    }
+
+    fun getBody(): String {
+        return mBody
+    }
+
+    private fun ipnURL(ipn: String): CPayDropInRequest {
+        mIpnUrl = ipn
+        return this
+    }
+
+    fun getIpn(): String {
+        return mIpnUrl
+    }
+
+    private fun callbackURL(callback: String): CPayDropInRequest {
+        mCallbackUrl = callback
+        return this
+    }
+
+    fun getCallback(): String {
+        return mCallbackUrl
+    }
+
+    fun isAllowDuplicate(): Boolean {
+        return mAllowDuplicate
     }
 
     companion object CREATOR : Parcelable.Creator<CPayDropInRequest> {
