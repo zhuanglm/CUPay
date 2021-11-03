@@ -28,6 +28,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     private val mViewModel: DropinViewModel by lazy { viewModel }
     private val mLifecycleOwner: LifecycleOwner by lazy { activity }
     private val mActivity by lazy { activity }
+    private var mRunningFlag = false
     //private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
     private val mInquireReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -35,21 +36,18 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
             val result: PlacedOrder? = response?.run {
                 PlacedOrder("", mId, mReference,
-                        mAmount.toInt(), true, false,
+                        if (mAmount == "")  0 else mAmount.toInt(), true, false,
                         mCurrency, 0, 0, mStatus?:"", "",
                         ConfirmChargePayment(mViewModel.getDropInRequest().getPaymentMethod().type, ""))
             }
 
-            val resultIntent = Intent()
-            resultIntent.putExtra(
-                    Constant.PAYMENT_RESULT, result?.let {
-                CPayOrderResult(
-                        RESULT_OK,
-                        mViewModel.getDropInRequest().getPaymentMethod(), it)
+            if (mRunningFlag) {
+                val resultIntent = Intent()
+                resultIntent.putExtra(Constant.PAYMENT_RESULT, result?.let {
+                    CPayOrderResult(RESULT_OK, mViewModel.getDropInRequest().getPaymentMethod(), it)
+                })
+                mActivity.finish(RESULT_OK, resultIntent)
             }
-            )
-
-            mActivity.finish(RESULT_OK, resultIntent)
         }
     }
 
@@ -68,6 +66,8 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
      */
     private fun unregisterInquireReceiver() {
         if (mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.ALI
+                || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.ALI_HK
+                || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.KAKAO
                 || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.WECHAT
                 || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.UNIONPAY) {
                     CPaySDK.getInstance().unregisterReceiver(mInquireReceiver)
@@ -78,7 +78,8 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     fun onCreate() {
         //mViewModel.mLoading.observe(mLifecycleOwner, LoadingObserver(mActivity))
         when (mViewModel.getDropInRequest().getPaymentMethod()) {
-            CitconPaymentMethodType.ALI, CitconPaymentMethodType.WECHAT,
+            CitconPaymentMethodType.ALI, CitconPaymentMethodType.ALI_HK,
+            CitconPaymentMethodType.WECHAT, CitconPaymentMethodType.KAKAO,
             CitconPaymentMethodType.UNIONPAY -> {
                 val dropInRequest = mViewModel.getDropInRequest()
                 val order = CPayOrder(
@@ -108,7 +109,10 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                         )
                         ))
 
+                        mRunningFlag = false
                         return@OrderResponse
+                    } else {
+                        mRunningFlag = true
                     }
 
                     Log.d("zlm", "CPay requestOrder success")
@@ -156,6 +160,8 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         if (mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.ALI
+                || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.ALI_HK
+                || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.KAKAO
                 || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.WECHAT
                 || mViewModel.getDropInRequest().getPaymentMethod() == CitconPaymentMethodType.UNIONPAY) {
             registerInquireReceiver()

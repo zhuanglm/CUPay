@@ -7,6 +7,8 @@
     <string name="bt_google">Google Pay</string>
     <string name="bt_wx">WX Pay</string>
     <string name="bt_ali">Ali Pay</string>
+    <string name="bt_ali_hk">Ali Pay HK</string>
     <string name="bt_my_wallet">My Wallet</string>
     <string name="bt_upop">Union Pay</string>
+    <string name="bt_kakao">Kakao Pay</string>
 </resources>

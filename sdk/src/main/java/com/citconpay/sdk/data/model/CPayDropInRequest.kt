@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.activity.result.ActivityResultLauncher
 import com.braintreepayments.api.DataCollector
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
@@ -74,6 +75,11 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
+        fun setAllowDuplicate(flag: Boolean): CPayBuilder {
+            this.allowDuplicate = flag
+            return this
+        }
+
         fun build(type: CitconPaymentMethodType): CPayDropInRequest {
             return CPayDropInRequest().amount(amount)
                     .reference(referenceId)
@@ -83,6 +89,7 @@ open class CPayDropInRequest() : Parcelable {
                     .body(body)
                     .ipnURL(ipnUrl)
                     .callbackURL(callbackUrl)
+                    .setAllowDuplicate(allowDuplicate)
         }
     }
 
@@ -170,7 +177,7 @@ open class CPayDropInRequest() : Parcelable {
         mIpnUrl = parcel.readString()!!
         mCallbackUrl = parcel.readString()!!
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mAllowDuplicate = parcel.readBoolean()!!
+            mAllowDuplicate = parcel.readBoolean()
         }
     }
 
@@ -196,6 +203,10 @@ open class CPayDropInRequest() : Parcelable {
 
     override fun describeContents(): Int {
         return 0
+    }
+
+    fun start(context: Context, launcher: ActivityResultLauncher<Intent>) {
+        launcher.launch(this.getIntent(context))
     }
 
     /**
@@ -442,6 +453,11 @@ open class CPayDropInRequest() : Parcelable {
 
     fun getCallback(): String {
         return mCallbackUrl
+    }
+
+    private fun setAllowDuplicate(flag: Boolean): CPayDropInRequest {
+        mAllowDuplicate = flag
+        return this
     }
 
     fun isAllowDuplicate(): Boolean {

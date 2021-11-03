@@ -11,12 +11,15 @@ import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
-import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.cupay.model.RequestAccessToken;
 import com.citconpay.cupay.model.RequestChargeToken;
 import com.citconpay.cupay.model.Transaction;
@@ -27,11 +30,12 @@ import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.model.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.model.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.model.CPayDropInRequest;
+import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
 import com.citconpay.sdk.data.model.CPayTransactionInfo;
 import com.citconpay.sdk.data.model.Citcon3DSecureRequest;
-import com.citconpay.sdk.data.model.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.CitconPaymentMethodType;
+import com.citconpay.sdk.data.model.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.ErrorMessage;
 import com.citconpay.sdk.utils.Constant;
 import com.google.android.material.textfield.TextInputEditText;
@@ -73,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox mCheckBox3DS;
     private View mLayoutPayments;
     CitconUPIAPIService mApiService;
+
+    private final ActivityResultCallback<ActivityResult> activityResult = this::onResult;
+
+    private final ActivityResultLauncher<Intent> mStartForResult =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResult);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -245,42 +254,70 @@ public class MainActivity extends AppCompatActivity {
         getAccessToken(mApiService);
     }
 
+    public void launchWeChatPay(View v) {
+        buildDropInRequest(CitconPaymentMethodType.WECHAT).start(this, mStartForResult);
+//        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.WECHAT)
+//                .getIntent(this), DROP_IN_REQUEST);
+    }
+
     public void launchUnionPay(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
-                .getIntent(this), DROP_IN_REQUEST);
+//        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
+//                .getIntent(this), DROP_IN_REQUEST);
+        buildDropInRequest(CitconPaymentMethodType.UNIONPAY).start(this, mStartForResult);
+    }
+
+    public void launchAliPayHK(View v) {
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI_HK)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.ALI_HK).start(this, mStartForResult);
+    }
+
+    public void launchKakaoPay(View v) {
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.KAKAO)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.KAKAO).start(this, mStartForResult);
     }
 
     public void launchAliPay(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI)
-                .getIntent(this), DROP_IN_REQUEST);
+//        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI)
+//                .getIntent(this), DROP_IN_REQUEST);
+        buildDropInRequest(CitconPaymentMethodType.ALI).start(this, mStartForResult);
     }
 
     public void launchGooglePay(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
-                .getIntent(this), DROP_IN_REQUEST);
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT).start(this, mStartForResult);
     }
 
     public void launchCreditCard(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
-                .getIntent(this), DROP_IN_REQUEST);
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.UNKNOWN).start(this, mStartForResult);
     }
 
     public void launchVenmo(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
-                .getIntent(this), DROP_IN_REQUEST);
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO).start(this, mStartForResult);
     }
 
     public void launchPaypal(View v) {
-        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
-                .getIntent(this), DROP_IN_REQUEST);
+        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
+                .getIntent(this), DROP_IN_REQUEST);*/
+        buildDropInRequest(CitconPaymentMethodType.PAYPAL).start(this, mStartForResult);
     }
 
     public void launchManagement(View v) {
-        startActivityForResult(CPayDropInRequest.ManagerBuilder.INSTANCE
+        /*startActivityForResult(CPayDropInRequest.ManagerBuilder.INSTANCE
                         .accessToken(mAccessToken)
                         .build()
                         .getIntent(this),
-                DROP_IN_REQUEST);
+                DROP_IN_REQUEST);*/
+        CPayDropInRequest.ManagerBuilder.INSTANCE
+                .accessToken(mAccessToken)
+                .build()
+                .start(this,mStartForResult);
     }
 
     /**
@@ -298,6 +335,23 @@ public class MainActivity extends AppCompatActivity {
                         .reference(mReference)
                         .currency("USD")
                         .amount("1")
+                        .setAllowDuplicate(true)
+                        .build(type);
+
+            case ALI_HK:
+                return CPayDropInRequest.CPayBuilder.INSTANCE
+                        .reference(mReference)
+                        .currency("HKD")
+                        .amount("10")
+                        .setAllowDuplicate(true)
+                        .build(type);
+
+            case KAKAO:
+                return CPayDropInRequest.CPayBuilder.INSTANCE
+                        .reference(mReference)
+                        .currency("KRW")
+                        .amount("100")
+                        .setAllowDuplicate(true)
                         .build(type);
 
             case PAYPAL:
@@ -357,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @Override
+    /*@Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -383,10 +437,38 @@ public class MainActivity extends AppCompatActivity {
 
             alertdialog.setMessage(message).create().show();
         }
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
         finish();
+    }
+
+    private void onResult(ActivityResult result) {
+        AlertDialog.Builder alertdialog = new AlertDialog.Builder(this)
+                .setPositiveButton("Quit", null);
+
+        if (result.getResultCode() == RESULT_OK) {
+            if (result.getData() != null) {
+                CPayOrderResult orderResult = (CPayOrderResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
+                alertdialog.setMessage(
+                        String.format(
+                                Locale.CANADA, "this is merchant demo APP\n paid %s %d",
+                                orderResult.getCurrency(), orderResult.getAmount()
+                        )
+                ).create().show();
+            }
+
+        } else {
+            String message;
+            if (result.getData() == null) {
+                message = "this is merchant demo APP\n payment cancelled by user";
+            } else {
+                CPayOrderResult error  = (CPayOrderResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
+                message = "this is merchant demo APP\n payment cancelled :\n" + error.getMessage()
+                        + "-" + error.getCode();
+            }
+            alertdialog.setMessage(message).create().show();
+        }
     }
 }

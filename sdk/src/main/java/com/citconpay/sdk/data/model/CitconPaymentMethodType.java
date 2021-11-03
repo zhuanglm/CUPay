@@ -2,6 +2,7 @@ package com.citconpay.sdk.data.model;
 
 public enum CitconPaymentMethodType {
     ALI("alipay"),
+    ALI_HK("alipay_hk"),
     AMEX("card"),
     GOOGLE_PAYMENT("google"),
     DINERS("card"),
@@ -17,6 +18,7 @@ public enum CitconPaymentMethodType {
     HIPERCARD("card"),
     UNKNOWN("card"),
     WECHAT("wechatpay"),
+    KAKAO("kakaopay"),
     NONE("none");
 
     private final String mMethodType;

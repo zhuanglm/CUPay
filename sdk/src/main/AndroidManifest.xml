@@ -19,5 +19,11 @@
                 <data android:scheme="${applicationId}.braintree" />
             </intent-filter>
         </activity>
+
+        <!-- Wechat sdk and Citcon sdk call entry -->
+        <activity-alias
+            android:name=".wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:targetActivity="sdk.PaymentActivity" />
     </application>
 </manifest>

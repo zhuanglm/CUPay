@@ -10,7 +10,7 @@ class ViewModelFactory(private val apiRepository: ApiRepository, private val app
     val api by lazy { apiRepository }
     val app by lazy { application }
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DropinViewModel::class.java)) {
             return DropinViewModel(api,app) as T
         }

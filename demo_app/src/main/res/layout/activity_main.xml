@@ -178,7 +178,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchGooglePay"
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:text="@string/bt_google" />
 
             <Button
@@ -195,8 +195,9 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_wx"
-                android:visibility="invisible" />
+                android:text="@string/bt_kakao"
+                android:onClick="launchKakaoPay"
+                android:visibility="visible" />
         </TableRow>
 
         <TableRow
@@ -217,9 +218,9 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_ali"
-                android:onClick="launchAliPay"
-                android:visibility="invisible" />
+                android:text="@string/bt_ali_hk"
+                android:onClick="launchAliPayHK"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/buttonA"
@@ -227,7 +228,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/bt_wx"
-                android:visibility="invisible" />
+                android:onClick="launchWeChatPay"
+                android:visibility="visible" />
         </TableRow>
 
     </TableLayout>
