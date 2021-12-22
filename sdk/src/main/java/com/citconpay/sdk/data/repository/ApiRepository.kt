@@ -9,7 +9,7 @@ import com.citconpay.sdk.data.api.response.CitconApiResponse
 import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.api.response.LoadedConfig
 
-class ApiRepository {
+class ApiRepository(private val baseURL: String) {
     private val contentType = "application/json"
 
     //suspend fun getClientToken() = apiService.clientToken("11","115646448")
@@ -18,7 +18,7 @@ class ApiRepository {
         accessToken: String,
         consumerID: String
     ): CitconApiResponse<LoadedConfig> {
-        return apiService.loadConfig(
+        return apiService(baseURL).loadConfig(
             "Bearer $accessToken", contentType,
             RequestConfig("android", consumerID, "braintree")
         )
@@ -31,11 +31,11 @@ class ApiRepository {
         method: String,
         nonce: String
     ): CitconApiResponse<PlacedOrder> {
-        return apiService.confirmCharge(
+        return apiService(baseURL).confirmCharge(
             "Bearer $accessToken", contentType, chargeToken,
             RequestCharge(
                 RequestChargePayment(
-                    method, "braitree", false,
+                    method, "braintree", false,
                     "", nonce
                 ),
                 RequestTransaction(reference)

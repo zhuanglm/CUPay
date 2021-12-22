@@ -30,6 +30,7 @@ import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.model.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.model.CPay3DSecurePostalAddress;
 import com.citconpay.sdk.data.model.CPayDropInRequest;
+import com.citconpay.sdk.data.repository.CPayENVMode;
 import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
 import com.citconpay.sdk.data.model.CPayTransactionInfo;
@@ -62,9 +63,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final int DROP_IN_REQUEST = 1;
     private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
-    private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
+    //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 DROP_IN_REQUEST);*/
         CPayDropInRequest.ManagerBuilder.INSTANCE
                 .accessToken(mAccessToken)
-                .build()
+                .build(CPayENVMode.DEV)
                 .start(this,mStartForResult);
     }
 
@@ -336,7 +336,8 @@ public class MainActivity extends AppCompatActivity {
                         .currency("USD")
                         .amount("1")
                         .setAllowDuplicate(true)
-                        .build(type);
+                        .paymentMethod(type)
+                        .build(CPayENVMode.UAT);
 
             case ALI_HK:
                 return CPayDropInRequest.CPayBuilder.INSTANCE
@@ -344,7 +345,8 @@ public class MainActivity extends AppCompatActivity {
                         .currency("HKD")
                         .amount("10")
                         .setAllowDuplicate(true)
-                        .build(type);
+                        .paymentMethod(type)
+                        .build(CPayENVMode.UAT);
 
             case KAKAO:
                 return CPayDropInRequest.CPayBuilder.INSTANCE
@@ -352,7 +354,8 @@ public class MainActivity extends AppCompatActivity {
                         .currency("KRW")
                         .amount("100")
                         .setAllowDuplicate(true)
-                        .build(type);
+                        .paymentMethod(type)
+                        .build(CPayENVMode.UAT);
 
             case PAYPAL:
             case PAY_WITH_VENMO:
@@ -367,7 +370,8 @@ public class MainActivity extends AppCompatActivity {
                         .request3DSecureVerification(mCheckBox3DS.isChecked())
                         .threeDSecureRequest(demoThreeDSecureRequest())
                         .citconPaymentRequest(getPaymentRequest())
-                        .build(type);
+                        .paymentMethod(type)
+                        .build(CPayENVMode.QA);
         }
     }
 

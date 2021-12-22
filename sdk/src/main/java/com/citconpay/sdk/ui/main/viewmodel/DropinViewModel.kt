@@ -17,6 +17,7 @@ import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.api.response.LoadedConfig
 import com.citconpay.sdk.data.model.CPayDropInRequest
 import com.citconpay.sdk.data.repository.ApiRepository
+import com.citconpay.sdk.data.repository.CPayENV
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
@@ -24,20 +25,14 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 
-class DropinViewModel(private val apiRepository: ApiRepository, application: Application) :
+class DropinViewModel(dropInRequest: CPayDropInRequest, application: Application) :
     AndroidViewModel(application) {
     val mTextViewMsg = MutableLiveData<String>()
-    private lateinit var mDropInRequest: CPayDropInRequest
+    private val mDropInRequest: CPayDropInRequest by lazy { dropInRequest }
     val mLoading = MutableLiveData<Boolean>()
     val mResult = MutableLiveData<DropInResult>()
-
-    /*fun getTextView(message: String) {
-        mTextViewMsg.postValue(message)
-    }*/
-
-    fun setDropInRequest(request: CPayDropInRequest) {
-        mDropInRequest = request
-        mTextViewMsg.postValue(request.getPaymentMethod().name)
+    private val apiRepository: ApiRepository by lazy {
+        ApiRepository(CPayENV.getBaseURL(dropInRequest.getENVMode()))
     }
 
     fun getDropInRequest(): CPayDropInRequest {

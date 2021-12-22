@@ -9,10 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitBuilder {
 
-    //private const val BASE_URL = "https://dev.citconpay.com/fei/bt-demo/"
-    private const val BASE_URL = "https://api.qa01.citconpay.com/v1/"
-
-    private fun getRetrofit(): Retrofit {
+    private fun getRetrofit(baseURL: String): Retrofit {
         //val apiInterceptor = ApiClientRequestInterceptor()
         val clientBuilder = OkHttpClient.Builder()
                 /*.addInterceptor(ApiClientRequestInterceptor())*/
@@ -28,11 +25,15 @@ object RetrofitBuilder {
         }
 
         return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseURL)
                 .client(clientBuilder.build())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build() //Doesn't require the adapter
     }
 
-    val apiService: ApiService = getRetrofit().create(ApiService::class.java)
+    //val apiService: ApiService = getRetrofit().create(ApiService::class.java)
+
+    fun apiService(url: String): ApiService{
+        return getRetrofit(url).create(ApiService::class.java)
+    }
 }

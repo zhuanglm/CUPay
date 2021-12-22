@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.citconpay.sdk.data.api.response.ConfirmChargePayment
 import com.citconpay.sdk.data.api.response.PlacedOrder
+import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.data.model.CitconPaymentMethodType
 import com.citconpay.sdk.data.model.ErrorMessage
@@ -95,7 +96,13 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                 )
 
                 CPaySDK.getInstance(mActivity, null)
-                CPaySDK.setMode(CPayMode.UAT)
+                when (dropInRequest.getENVMode()) {
+                    CPayENVMode.DEV -> CPaySDK.setMode(CPayMode.DEV)
+                    CPayENVMode.UAT -> CPaySDK.setMode(CPayMode.UAT)
+                    CPayENVMode.PROD -> CPaySDK.setMode(CPayMode.PROD)
+                    else -> CPaySDK.setMode(CPayMode.UAT)
+                }
+
                 CPaySDK.setToken("XYIL2W9BCQSTNN1CXUQ6WEH9JQYZ3VLM")
                 CPaySDK.getInstance().requestOrder(order, OrderResponse { orderResult ->
                     if (orderResult == null || orderResult.mStatus != "0") {

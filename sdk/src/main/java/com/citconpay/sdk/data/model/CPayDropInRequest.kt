@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultLauncher
 import com.braintreepayments.api.DataCollector
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
+import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.cupay.api.dropin.DropInRequest
 import com.cupay.api.dropin.utils.PaymentMethodType
@@ -16,6 +17,8 @@ import com.cupay.cardform.view.CardForm
 
 @Suppress("SameParameterValue")
 open class CPayDropInRequest() : Parcelable {
+    private var mENVmode = CPayENVMode.UAT
+
     private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
     private var mAccessToken: String = ""
     private var mChargeToken: String = ""
@@ -42,10 +45,11 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(): CPayDropInRequest {
+        fun build(mode: CPayENVMode): CPayDropInRequest {
             return CPayDropInRequest().accessToken(accessToken)
                 .vaultManager(true)
                 .paymentMethod(CitconPaymentMethodType.NONE)
+                .setENVMode(mode)
         }
 
     }
@@ -59,6 +63,7 @@ open class CPayDropInRequest() : Parcelable {
         private var ipnUrl: String = "https://cupay.test.ipn"
         private var callbackUrl: String = "https://cupay.test.ipn"
         private var allowDuplicate = true
+        private lateinit var type: CitconPaymentMethodType
 
         fun reference(id: String):  CPayBuilder {
             referenceId = id
@@ -80,16 +85,22 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(type: CitconPaymentMethodType): CPayDropInRequest {
+        fun paymentMethod(type: CitconPaymentMethodType): CPayBuilder {
+            this.type = type
+            return this
+        }
+
+        fun build(mode: CPayENVMode): CPayDropInRequest {
             return CPayDropInRequest().amount(amount)
-                    .reference(referenceId)
-                    .currency(this.currency)
-                    .paymentMethod(type)
-                    .subject(subject)
-                    .body(body)
-                    .ipnURL(ipnUrl)
-                    .callbackURL(callbackUrl)
-                    .setAllowDuplicate(allowDuplicate)
+                .reference(referenceId)
+                .currency(this.currency)
+                .paymentMethod(type)
+                .subject(subject)
+                .body(body)
+                .ipnURL(ipnUrl)
+                .callbackURL(callbackUrl)
+                .setAllowDuplicate(allowDuplicate)
+                .setENVMode(mode)
         }
     }
 
@@ -101,6 +112,12 @@ open class CPayDropInRequest() : Parcelable {
         private var paymentRequest: CitconPaymentRequest? = null
         private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
         private var isRequest3DSecure = false
+        private lateinit var type: CitconPaymentMethodType
+
+        fun paymentMethod(type: CitconPaymentMethodType): PaymentBuilder {
+            this.type = type
+            return this
+        }
 
         fun accessToken(token: String): PaymentBuilder {
             accessToken = token
@@ -137,7 +154,7 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(type: CitconPaymentMethodType): CPayDropInRequest {
+        fun build(mode: CPayENVMode): CPayDropInRequest {
             val dropInRequest = CPayDropInRequest()
                 .collectDeviceData(true)
                 .vaultManager(false)
@@ -148,6 +165,8 @@ open class CPayDropInRequest() : Parcelable {
                 .chargeToken(chargeToken)
                 .consumerID(customerID)
                 .reference(reference)
+                .paymentMethod(type)
+                .setENVMode(mode)
 
             if(isRequest3DSecure && citcon3DSecureRequest != null)
                 dropInRequest.threeDSecureRequest(citcon3DSecureRequest!!)
@@ -162,6 +181,7 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     constructor(parcel: Parcel) : this() {
+        mENVmode = parcel.readSerializable() as CPayENVMode
         mPaymentMethodType = parcel.readSerializable() as CitconPaymentMethodType
         mAccessToken = parcel.readString()!!
         mChargeToken = parcel.readString()!!
@@ -182,6 +202,7 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeSerializable(mENVmode)
         parcel.writeSerializable(mPaymentMethodType)
         parcel.writeString(mAccessToken)
         parcel.writeString(mChargeToken)
@@ -239,6 +260,20 @@ open class CPayDropInRequest() : Parcelable {
     }
 
     /**
+     * This method is mandatory. base url and endpoint
+     *
+     * @param mode [CPayENVMode] is DEV/UAT/PRD.
+     */
+    private fun setENVMode(mode: CPayENVMode): CPayDropInRequest {
+        mENVmode = mode
+        return this
+    }
+
+    public fun getENVMode(): CPayENVMode {
+        return mENVmode
+    }
+
+    /**
      * This method is mandatory. payment method type is used for bring up UI.
      *
      * @param type Type of the payment method.
@@ -271,6 +306,7 @@ open class CPayDropInRequest() : Parcelable {
             CitconPaymentMethodType.HIPERCARD -> TODO()
             CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.NONE)
+            else -> {}
         }
         return this
     }
