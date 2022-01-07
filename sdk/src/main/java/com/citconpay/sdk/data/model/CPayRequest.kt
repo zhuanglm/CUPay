@@ -16,7 +16,7 @@ import com.citconpay.dropin.utils.PaymentMethodType
 import com.citconpay.cardform.view.CardForm
 
 @Suppress("SameParameterValue")
-open class CPayDropInRequest() : Parcelable {
+open class CPayRequest() : Parcelable {
     private var mENVmode = CPayENVMode.UAT
 
     private var mPaymentMethodType: CPayMethodType = CPayMethodType.NONE
@@ -45,8 +45,8 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(mode: CPayENVMode): CPayDropInRequest {
-            return CPayDropInRequest().accessToken(accessToken)
+        fun build(mode: CPayENVMode): CPayRequest {
+            return CPayRequest().accessToken(accessToken)
                 .vaultManager(true)
                 .paymentMethod(CPayMethodType.NONE)
                 .setENVMode(mode)
@@ -90,8 +90,8 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(mode: CPayENVMode): CPayDropInRequest {
-            return CPayDropInRequest().amount(amount)
+        fun build(mode: CPayENVMode): CPayRequest {
+            return CPayRequest().amount(amount)
                 .reference(referenceId)
                 .currency(this.currency)
                 .paymentMethod(type)
@@ -154,8 +154,8 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun build(mode: CPayENVMode): CPayDropInRequest {
-            val dropInRequest = CPayDropInRequest()
+        fun build(mode: CPayENVMode): CPayRequest {
+            val dropInRequest = CPayRequest()
                 .collectDeviceData(true)
                 .vaultManager(false)
                 .maskCardNumber(true)
@@ -235,7 +235,7 @@ open class CPayDropInRequest() : Parcelable {
      * to launch [CUPaySDKActivity] and the Drop-in UI.
      *
      * @param context
-     * @return [Intent] containing all of the options set in [CPayDropInRequest].
+     * @return [Intent] containing all of the options set in [CPayRequest].
      */
     fun getIntent(context: Context?): Intent {
         return Intent(context, CUPaySDKActivity::class.java)
@@ -252,7 +252,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param citconPaymentRequest [CitconPaymentRequest] is specify citcon PaymentRequest.
      */
-    private fun citconPaymentRequest(citconPaymentRequest: CitconPaymentRequest): CPayDropInRequest {
+    private fun citconPaymentRequest(citconPaymentRequest: CitconPaymentRequest): CPayRequest {
         mGooglePaymentRequest = citconPaymentRequest.googlePaymentRequest
         //Todo: setup Payment request depends on Gateway type
         mBrainTreeDropInRequest.googlePaymentRequest(mGooglePaymentRequest)
@@ -264,7 +264,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param mode [CPayENVMode] is DEV/UAT/PRD.
      */
-    private fun setENVMode(mode: CPayENVMode): CPayDropInRequest {
+    private fun setENVMode(mode: CPayENVMode): CPayRequest {
         mENVmode = mode
         return this
     }
@@ -278,7 +278,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param type Type of the payment method.
      */
-    private fun paymentMethod(type: CPayMethodType): CPayDropInRequest {
+    private fun paymentMethod(type: CPayMethodType): CPayRequest {
         this.mPaymentMethodType = type
         when(type) {
             CPayMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(
@@ -320,7 +320,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param token is applied from backend server.
      */
-    private fun accessToken(token: String): CPayDropInRequest {
+    private fun accessToken(token: String): CPayRequest {
         mAccessToken = token
         return this
     }
@@ -334,7 +334,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param token is applied from backend server.
      */
-    private fun chargeToken(token: String): CPayDropInRequest {
+    private fun chargeToken(token: String): CPayRequest {
         mChargeToken = token
         return this
     }
@@ -348,7 +348,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param ref is applied from backend server.
      */
-    private fun reference(ref: String): CPayDropInRequest {
+    private fun reference(ref: String): CPayRequest {
         mReference = ref
         return this
     }
@@ -362,7 +362,7 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param id is current customer id.
      */
-    private fun consumerID(id: String): CPayDropInRequest {
+    private fun consumerID(id: String): CPayRequest {
         mConsumerID = id
         return this
     }
@@ -379,7 +379,7 @@ open class CPayDropInRequest() : Parcelable {
      * fraud prevention.
      * @see DataCollector
      */
-    private fun collectDeviceData(collectDeviceData: Boolean): CPayDropInRequest {
+    private fun collectDeviceData(collectDeviceData: Boolean): CPayRequest {
         mBrainTreeDropInRequest.collectDeviceData(collectDeviceData)
         return this
     }
@@ -388,7 +388,7 @@ open class CPayDropInRequest() : Parcelable {
      * @param vaultManager `true` to allow customers to manage their vaulted payment methods.
      * Defaults to `false`.
      */
-    private fun vaultManager(vaultManager: Boolean): CPayDropInRequest {
+    private fun vaultManager(vaultManager: Boolean): CPayRequest {
         mBrainTreeDropInRequest.vaultManager(vaultManager)
         return this
     }
@@ -398,7 +398,7 @@ open class CPayDropInRequest() : Parcelable {
      * See [com.citconpay.cardform.view.CardEditText] for more details. Defaults to
      * `false`.
      */
-    private fun maskCardNumber(maskCardNumber: Boolean): CPayDropInRequest {
+    private fun maskCardNumber(maskCardNumber: Boolean): CPayRequest {
         mBrainTreeDropInRequest.maskCardNumber(maskCardNumber)
         return this
     }
@@ -406,7 +406,7 @@ open class CPayDropInRequest() : Parcelable {
     /**
      * @param maskSecurityCode `true` to mask the security code during input. Defaults to `false`.
      */
-    private fun maskSecurityCode(maskSecurityCode: Boolean): CPayDropInRequest {
+    private fun maskSecurityCode(maskSecurityCode: Boolean): CPayRequest {
         mBrainTreeDropInRequest.maskSecurityCode(maskSecurityCode)
         return this
     }
@@ -419,7 +419,7 @@ open class CPayDropInRequest() : Parcelable {
      * @param requestThreeDSecure `true` to request a 3D Secure verification as part of Drop-In, `false` to not request a 3D Secure verification. Defaults to `false`.
      * @return the drop in request
      */
-     private fun request3DSecureVerification(requestThreeDSecure: Boolean): CPayDropInRequest {
+     private fun request3DSecureVerification(requestThreeDSecure: Boolean): CPayRequest {
         mBrainTreeDropInRequest.requestThreeDSecureVerification(requestThreeDSecure)
         return this
     }
@@ -430,14 +430,14 @@ open class CPayDropInRequest() : Parcelable {
      * @param request [ThreeDSecureRequest] to specify options and additional information for 3D Secure. To encourage 3DS 2.0 flows, set [ThreeDSecureRequest.billingAddress], [ThreeDSecureRequest.email], and [ThreeDSecureRequest.mobilePhoneNumber] for best results. If no amount is set, the [DropInRequest.amount] will be used.
      * @return the drop in request
      */
-    private fun threeDSecureRequest(request: Citcon3DSecureRequest): CPayDropInRequest {
+    private fun threeDSecureRequest(request: Citcon3DSecureRequest): CPayRequest {
         //Todo: setup 3DS request depends on Gateway type
         mBrainTreeDropInRequest.threeDSecureRequest(request.threeDSecureRequest)
         return this
     }
 
     //CPaySDK
-    private fun amount(amount: String): CPayDropInRequest {
+    private fun amount(amount: String): CPayRequest {
         mAmount = amount
         return this
     }
@@ -446,7 +446,7 @@ open class CPayDropInRequest() : Parcelable {
         return mAmount
     }
 
-    private fun currency(currency: String): CPayDropInRequest {
+    private fun currency(currency: String): CPayRequest {
         mCurrency = currency
         return this
     }
@@ -455,7 +455,7 @@ open class CPayDropInRequest() : Parcelable {
         return mCurrency
     }
 
-    private fun subject(subject: String): CPayDropInRequest {
+    private fun subject(subject: String): CPayRequest {
         mSubject = subject
         return this
     }
@@ -464,7 +464,7 @@ open class CPayDropInRequest() : Parcelable {
         return mSubject
     }
 
-    private fun body(body: String): CPayDropInRequest {
+    private fun body(body: String): CPayRequest {
         mBody = body
         return this
     }
@@ -473,7 +473,7 @@ open class CPayDropInRequest() : Parcelable {
         return mBody
     }
 
-    private fun ipnURL(ipn: String): CPayDropInRequest {
+    private fun ipnURL(ipn: String): CPayRequest {
         mIpnUrl = ipn
         return this
     }
@@ -482,7 +482,7 @@ open class CPayDropInRequest() : Parcelable {
         return mIpnUrl
     }
 
-    private fun callbackURL(callback: String): CPayDropInRequest {
+    private fun callbackURL(callback: String): CPayRequest {
         mCallbackUrl = callback
         return this
     }
@@ -491,7 +491,7 @@ open class CPayDropInRequest() : Parcelable {
         return mCallbackUrl
     }
 
-    private fun setAllowDuplicate(flag: Boolean): CPayDropInRequest {
+    private fun setAllowDuplicate(flag: Boolean): CPayRequest {
         mAllowDuplicate = flag
         return this
     }
@@ -500,14 +500,14 @@ open class CPayDropInRequest() : Parcelable {
         return mAllowDuplicate
     }
 
-    companion object CREATOR : Parcelable.Creator<CPayDropInRequest> {
+    companion object CREATOR : Parcelable.Creator<CPayRequest> {
         const val EXTRA_CHECKOUT_REQUEST: String = "com.citconpay.sdk.data.api.EXTRA_CHECKOUT_REQUEST"
 
-        override fun createFromParcel(parcel: Parcel): CPayDropInRequest {
-            return CPayDropInRequest(parcel)
+        override fun createFromParcel(parcel: Parcel): CPayRequest {
+            return CPayRequest(parcel)
         }
 
-        override fun newArray(size: Int): Array<CPayDropInRequest?> {
+        override fun newArray(size: Int): Array<CPayRequest?> {
             return arrayOfNulls(size)
         }
     }

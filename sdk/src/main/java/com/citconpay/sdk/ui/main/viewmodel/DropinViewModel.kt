@@ -15,7 +15,7 @@ import com.citconpay.sdk.data.api.response.CitconApiResponse
 import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.api.response.LoadedConfig
-import com.citconpay.sdk.data.model.CPayDropInRequest
+import com.citconpay.sdk.data.model.CPayRequest
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.data.repository.CPayENV
 import com.citconpay.sdk.utils.Resource
@@ -25,18 +25,18 @@ import org.json.JSONObject
 import retrofit2.HttpException
 
 
-class DropinViewModel(dropInRequest: CPayDropInRequest, application: Application) :
+class DropinViewModel(request: CPayRequest, application: Application) :
     AndroidViewModel(application) {
     val mTextViewMsg = MutableLiveData<String>()
-    private val mDropInRequest: CPayDropInRequest by lazy { dropInRequest }
+    private val mRequest: CPayRequest by lazy { request }
     val mLoading = MutableLiveData<Boolean>()
     val mResult = MutableLiveData<DropInResult>()
     private val apiRepository: ApiRepository by lazy {
-        ApiRepository(CPayENV.getBaseURL(dropInRequest.getENVMode()))
+        ApiRepository(CPayENV.getBaseURL(request.getENVMode()))
     }
 
-    fun getDropInRequest(): CPayDropInRequest {
-        return mDropInRequest
+    fun getDropInRequest(): CPayRequest {
+        return mRequest
     }
 
     fun setDropInResult(result: DropInResult) {
@@ -51,8 +51,8 @@ class DropinViewModel(dropInRequest: CPayDropInRequest, application: Application
             emit(
                 Resource.success(
                     data = apiRepository.loadConfig(
-                        mDropInRequest.getAccessToken(),
-                        mDropInRequest.getConsumerID()
+                        mRequest.getAccessToken(),
+                        mRequest.getConsumerID()
                     )
                 )
             )
@@ -70,10 +70,10 @@ class DropinViewModel(dropInRequest: CPayDropInRequest, application: Application
             emit(
                 Resource.success(
                     data = apiRepository.confirmCharge(
-                        mDropInRequest.getAccessToken(),
-                        mDropInRequest.getChargeToken(),
-                        mDropInRequest.getReference(),
-                        mDropInRequest.getPaymentMethod().type,
+                        mRequest.getAccessToken(),
+                        mRequest.getChargeToken(),
+                        mRequest.getReference(),
+                        mRequest.getPaymentMethod().type,
                         nonce.nonce
                     )
                 )
@@ -98,7 +98,7 @@ class DropinViewModel(dropInRequest: CPayDropInRequest, application: Application
     }
 
     fun getBTDropInRequest(): DropInRequest {
-        return mDropInRequest.getBrainTreeDropInRequest()
+        return mRequest.getBrainTreeDropInRequest()
     }
 
     private fun handleErrorMsg(exception: Exception): ErrorMessage {

@@ -3,10 +3,10 @@ package com.citconpay.sdk.ui.base
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.citconpay.sdk.data.model.CPayDropInRequest
+import com.citconpay.sdk.data.model.CPayRequest
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 
-class ViewModelFactory(private val request: CPayDropInRequest, private val application: Application) : ViewModelProvider.Factory {
+class ViewModelFactory(private val request: CPayRequest, private val application: Application) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

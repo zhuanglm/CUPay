@@ -29,7 +29,7 @@ import com.citconpay.cupay.response.ChargeToken;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.model.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.model.CPay3DSecurePostalAddress;
-import com.citconpay.sdk.data.model.CPayDropInRequest;
+import com.citconpay.sdk.data.model.CPayRequest;
 import com.citconpay.sdk.data.repository.CPayENVMode;
 import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                         .build()
                         .getIntent(this),
                 DROP_IN_REQUEST);*/
-        CPayDropInRequest.ManagerBuilder.INSTANCE
+        CPayRequest.ManagerBuilder.INSTANCE
                 .accessToken(mAccessToken)
                 .build(CPayENVMode.DEV)
                 .start(this,mStartForResult);
@@ -327,11 +327,11 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param type is payment method type which was selected by user want to pay with
      */
-    private CPayDropInRequest buildDropInRequest(CPayMethodType type) {
+    private CPayRequest buildDropInRequest(CPayMethodType type) {
         switch (type) {
             case ALI:
             case UNIONPAY:
-                return CPayDropInRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayBuilder.INSTANCE
                         .reference(mReference)
                         .currency("USD")
                         .amount("1")
@@ -340,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
                         .build(CPayENVMode.UAT);
 
             case ALI_HK:
-                return CPayDropInRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayBuilder.INSTANCE
                         .reference(mReference)
                         .currency("HKD")
                         .amount("10")
@@ -349,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
                         .build(CPayENVMode.UAT);
 
             case KAKAO:
-                return CPayDropInRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayBuilder.INSTANCE
                         .reference(mReference)
                         .currency("KRW")
                         .amount("100")
@@ -362,7 +362,7 @@ public class MainActivity extends AppCompatActivity {
             case GOOGLE_PAYMENT:
             case UNKNOWN:
             default:
-                return CPayDropInRequest.PaymentBuilder.INSTANCE
+                return CPayRequest.PaymentBuilder.INSTANCE
                         .accessToken(mAccessToken)
                         .chargeToken(mChargeToken)
                         .reference(mReference)

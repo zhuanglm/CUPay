@@ -12,7 +12,7 @@ import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.citconpay.sdk.R
-import com.citconpay.sdk.data.model.CPayDropInRequest
+import com.citconpay.sdk.data.model.CPayRequest
 import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
@@ -35,7 +35,7 @@ class CUPaySDKActivity : BaseActivity() {
         val binding : ActivitySdkMainBinding =
                 DataBindingUtil.setContentView(this, R.layout.activity_sdk_main)
 
-        mDropInViewModel = ViewModelProvider(this, ViewModelFactory(intent.getParcelableExtra(CPayDropInRequest.EXTRA_CHECKOUT_REQUEST)!!,application))
+        mDropInViewModel = ViewModelProvider(this, ViewModelFactory(intent.getParcelableExtra(CPayRequest.EXTRA_CHECKOUT_REQUEST)!!,application))
                 .get(DropinViewModel::class.java)
 
         mDropInViewModel.mLoading.observe(this,LoadingObserver(binding.pbLoadingParameter, binding.tvLoadingMessage))
