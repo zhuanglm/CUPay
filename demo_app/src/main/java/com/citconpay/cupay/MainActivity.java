@@ -35,7 +35,7 @@ import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
 import com.citconpay.sdk.data.model.CPayTransactionInfo;
 import com.citconpay.sdk.data.model.Citcon3DSecureRequest;
-import com.citconpay.sdk.data.model.CitconPaymentMethodType;
+import com.citconpay.sdk.data.model.CPayMethodType;
 import com.citconpay.sdk.data.model.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.ErrorMessage;
 import com.citconpay.sdk.utils.Constant;
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchWeChatPay(View v) {
-        buildDropInRequest(CitconPaymentMethodType.WECHAT).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.WECHAT).start(this, mStartForResult);
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.WECHAT)
 //                .getIntent(this), DROP_IN_REQUEST);
     }
@@ -263,49 +263,49 @@ public class MainActivity extends AppCompatActivity {
     public void launchUnionPay(View v) {
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
 //                .getIntent(this), DROP_IN_REQUEST);
-        buildDropInRequest(CitconPaymentMethodType.UNIONPAY).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.UNIONPAY).start(this, mStartForResult);
     }
 
     public void launchAliPayHK(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI_HK)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.ALI_HK).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.ALI_HK).start(this, mStartForResult);
     }
 
     public void launchKakaoPay(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.KAKAO)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.KAKAO).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.KAKAO).start(this, mStartForResult);
     }
 
     public void launchAliPay(View v) {
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI)
 //                .getIntent(this), DROP_IN_REQUEST);
-        buildDropInRequest(CitconPaymentMethodType.ALI).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.ALI).start(this, mStartForResult);
     }
 
     public void launchGooglePay(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.GOOGLE_PAYMENT).start(this, mStartForResult);
     }
 
     public void launchCreditCard(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.UNKNOWN).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult);
     }
 
     public void launchVenmo(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.PAY_WITH_VENMO).start(this, mStartForResult);
     }
 
     public void launchPaypal(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CitconPaymentMethodType.PAYPAL).start(this, mStartForResult);
+        buildDropInRequest(CPayMethodType.PAYPAL).start(this, mStartForResult);
     }
 
     public void launchManagement(View v) {
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param type is payment method type which was selected by user want to pay with
      */
-    private CPayDropInRequest buildDropInRequest(CitconPaymentMethodType type) {
+    private CPayDropInRequest buildDropInRequest(CPayMethodType type) {
         switch (type) {
             case ALI:
             case UNIONPAY:

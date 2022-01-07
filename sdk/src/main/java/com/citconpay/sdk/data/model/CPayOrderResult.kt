@@ -14,11 +14,11 @@ data class CPayOrderResult(
     val transactionId: String,
     val reference: String,
     val time: Long,
-    val paymentMethod: CitconPaymentMethodType
+    val paymentMethod: CPayMethodType
 ) : Serializable {
     internal constructor(
         activityResultCode: Int,
-        paymentMethod: CitconPaymentMethodType,
+        paymentMethod: CPayMethodType,
         errorMessage: ErrorMessage
     ) : this(
         activityResultCode,
@@ -36,7 +36,7 @@ data class CPayOrderResult(
 
     internal constructor(
         activityResultCode: Int,
-        paymentMethod: CitconPaymentMethodType,
+        paymentMethod: CPayMethodType,
         placedOrder: PlacedOrder
     ) : this(
         activityResultCode,

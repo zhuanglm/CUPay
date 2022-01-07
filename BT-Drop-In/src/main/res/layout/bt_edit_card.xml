@@ -2,12 +2,12 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:bt="http://schemas.android.com/apk/res-auto">
 
-    <com.cupay.cardform.view.CardForm
+    <com.citconpay.cardform.view.CardForm
         android:id="@+id/bt_card_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.cupay.api.dropin.view.AnimatedButtonView
+    <com.citconpay.dropin.view.AnimatedButtonView
         android:id="@+id/bt_animated_button_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

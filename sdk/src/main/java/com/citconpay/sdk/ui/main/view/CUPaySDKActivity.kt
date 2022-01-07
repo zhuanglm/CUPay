@@ -22,8 +22,8 @@ import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.state.DropinLifecycleObserver
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Constant.PAYMENT_RESULT
-import com.cupay.api.dropin.DropInActivity
-import com.cupay.api.dropin.DropInResult
+import com.citconpay.dropin.DropInActivity
+import com.citconpay.dropin.DropInResult
 
 class CUPaySDKActivity : BaseActivity() {
     private lateinit var mDropInViewModel: DropinViewModel

@@ -4,8 +4,8 @@ buildscript {
         compileSdkVersion = 30
         minSdkVersion = 21
         targetSdkVersion = 30
-        versionCode = 2
-        version = '2.21.11.01'
+        versionCode = 3
+        version = '3.21.12'
         versionName = version
     }
     repositories {
@@ -15,7 +15,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
         classpath 'com.android.tools.build.jetifier:jetifier-processor:1.0.0-beta10'
         classpath 'de.marcphilipp.gradle:nexus-publish-plugin:0.4.0'
         //this is for github remote repo test

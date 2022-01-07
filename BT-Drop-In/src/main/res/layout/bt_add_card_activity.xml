@@ -40,21 +40,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <com.cupay.api.dropin.view.AddCardView
+                <com.citconpay.dropin.view.AddCardView
                     android:id="@+id/bt_add_card_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:visibility="gone"/>
 
-                <com.cupay.api.dropin.view.EditCardView
+                <com.citconpay.dropin.view.EditCardView
                     android:id="@+id/bt_edit_card_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="16dp"
                     android:visibility="gone"/>
 
-                <com.cupay.api.dropin.view.EnrollmentCardView
+                <com.citconpay.dropin.view.EnrollmentCardView
                     android:id="@+id/bt_enrollment_card_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

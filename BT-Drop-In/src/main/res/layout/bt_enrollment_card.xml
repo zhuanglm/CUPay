@@ -19,7 +19,7 @@
             android:paddingEnd="0dp"
             android:labelFor="@+id/bt_sms_code">
 
-            <com.cupay.cardform.view.ErrorEditText
+            <com.citconpay.cardform.view.ErrorEditText
                 style="@style/bt_card_form_field"
                 android:id="@+id/bt_sms_code"
                 android:inputType="number"
@@ -39,7 +39,7 @@
         android:paddingStart="58dp"
         android:text="@string/bt_sms_code_sent_to" />
 
-    <com.cupay.api.dropin.view.AnimatedButtonView
+    <com.citconpay.dropin.view.AnimatedButtonView
         android:id="@+id/bt_animated_button_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

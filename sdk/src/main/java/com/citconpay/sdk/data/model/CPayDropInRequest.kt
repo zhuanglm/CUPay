@@ -11,15 +11,15 @@ import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
 import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
-import com.cupay.api.dropin.DropInRequest
-import com.cupay.api.dropin.utils.PaymentMethodType
-import com.cupay.cardform.view.CardForm
+import com.citconpay.dropin.DropInRequest
+import com.citconpay.dropin.utils.PaymentMethodType
+import com.citconpay.cardform.view.CardForm
 
 @Suppress("SameParameterValue")
 open class CPayDropInRequest() : Parcelable {
     private var mENVmode = CPayENVMode.UAT
 
-    private var mPaymentMethodType: CitconPaymentMethodType = CitconPaymentMethodType.NONE
+    private var mPaymentMethodType: CPayMethodType = CPayMethodType.NONE
     private var mAccessToken: String = ""
     private var mChargeToken: String = ""
     private var mReference: String = ""
@@ -48,7 +48,7 @@ open class CPayDropInRequest() : Parcelable {
         fun build(mode: CPayENVMode): CPayDropInRequest {
             return CPayDropInRequest().accessToken(accessToken)
                 .vaultManager(true)
-                .paymentMethod(CitconPaymentMethodType.NONE)
+                .paymentMethod(CPayMethodType.NONE)
                 .setENVMode(mode)
         }
 
@@ -63,7 +63,7 @@ open class CPayDropInRequest() : Parcelable {
         private var ipnUrl: String = "https://cupay.test.ipn"
         private var callbackUrl: String = "https://cupay.test.ipn"
         private var allowDuplicate = true
-        private lateinit var type: CitconPaymentMethodType
+        private lateinit var type: CPayMethodType
 
         fun reference(id: String):  CPayBuilder {
             referenceId = id
@@ -85,7 +85,7 @@ open class CPayDropInRequest() : Parcelable {
             return this
         }
 
-        fun paymentMethod(type: CitconPaymentMethodType): CPayBuilder {
+        fun paymentMethod(type: CPayMethodType): CPayBuilder {
             this.type = type
             return this
         }
@@ -112,9 +112,9 @@ open class CPayDropInRequest() : Parcelable {
         private var paymentRequest: CitconPaymentRequest? = null
         private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
         private var isRequest3DSecure = false
-        private lateinit var type: CitconPaymentMethodType
+        private lateinit var type: CPayMethodType
 
-        fun paymentMethod(type: CitconPaymentMethodType): PaymentBuilder {
+        fun paymentMethod(type: CPayMethodType): PaymentBuilder {
             this.type = type
             return this
         }
@@ -182,7 +182,7 @@ open class CPayDropInRequest() : Parcelable {
 
     constructor(parcel: Parcel) : this() {
         mENVmode = parcel.readSerializable() as CPayENVMode
-        mPaymentMethodType = parcel.readSerializable() as CitconPaymentMethodType
+        mPaymentMethodType = parcel.readSerializable() as CPayMethodType
         mAccessToken = parcel.readString()!!
         mChargeToken = parcel.readString()!!
         mReference = parcel.readString()!!
@@ -269,7 +269,7 @@ open class CPayDropInRequest() : Parcelable {
         return this
     }
 
-    public fun getENVMode(): CPayENVMode {
+    fun getENVMode(): CPayENVMode {
         return mENVmode
     }
 
@@ -278,40 +278,40 @@ open class CPayDropInRequest() : Parcelable {
      *
      * @param type Type of the payment method.
      */
-    private fun paymentMethod(type: CitconPaymentMethodType): CPayDropInRequest {
+    private fun paymentMethod(type: CPayMethodType): CPayDropInRequest {
         this.mPaymentMethodType = type
         when(type) {
-            CitconPaymentMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.PAYPAL)
-            CitconPaymentMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.UNKNOWN)
-            CitconPaymentMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.PAY_WITH_VENMO)
-            CitconPaymentMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.AMEX)
-            CitconPaymentMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.GOOGLE_PAYMENT -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.GOOGLE_PAYMENT)
 
 
-            CitconPaymentMethodType.DINERS -> TODO()
-            CitconPaymentMethodType.DISCOVER -> TODO()
-            CitconPaymentMethodType.JCB -> TODO()
-            CitconPaymentMethodType.MAESTRO -> TODO()
-            CitconPaymentMethodType.MASTERCARD -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.DINERS -> TODO()
+            CPayMethodType.DISCOVER -> TODO()
+            CPayMethodType.JCB -> TODO()
+            CPayMethodType.MAESTRO -> TODO()
+            CPayMethodType.MASTERCARD -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.MASTERCARD)
-            CitconPaymentMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.VISA -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.VISA)
 
-            CitconPaymentMethodType.HIPER -> TODO()
-            CitconPaymentMethodType.HIPERCARD -> TODO()
-            CitconPaymentMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(
+            CPayMethodType.HIPER -> TODO()
+            CPayMethodType.HIPERCARD -> TODO()
+            CPayMethodType.NONE -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.NONE)
             else -> {}
         }
         return this
     }
 
-    fun getPaymentMethod(): CitconPaymentMethodType {
+    fun getPaymentMethod(): CPayMethodType {
         return mPaymentMethodType
     }
 
@@ -395,7 +395,7 @@ open class CPayDropInRequest() : Parcelable {
 
     /**
      * @param maskCardNumber `true` to mask the card number when the field is not focused.
-     * See [com.cupay.cardform.view.CardEditText] for more details. Defaults to
+     * See [com.citconpay.cardform.view.CardEditText] for more details. Defaults to
      * `false`.
      */
     private fun maskCardNumber(maskCardNumber: Boolean): CPayDropInRequest {
