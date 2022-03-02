@@ -52,7 +52,8 @@ class DropinViewModel(request: CPayRequest, application: Application) :
                 Resource.success(
                     data = apiRepository.loadConfig(
                         mRequest.getAccessToken(),
-                        mRequest.getConsumerID()
+                        mRequest.getConsumerID(),
+                        mRequest.getPaymentMethod().type
                     )
                 )
             )

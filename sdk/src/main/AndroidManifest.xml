@@ -11,6 +11,7 @@
             android:theme="@style/ct_transparent_activity_theme"/>
 
         <activity android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
+            android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

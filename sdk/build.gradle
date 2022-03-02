@@ -4,9 +4,6 @@ plugins {
     id 'signing'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    //github remote repo test
-    // JitPack Maven
-    id 'com.github.dcendents.android-maven'
 }
 
 // Your Group
@@ -50,21 +47,21 @@ android {
 }
 
 dependencies {
-    //implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.3.1"
-    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation fileTree(dir: "libs", include: ["*.aar"])
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
+    implementation 'androidx.core:core-ktx:1.7.0'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.4'
 
     //debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
     //implementation 'com.kaopiz:kprogresshud:1.2.0'
@@ -77,9 +74,9 @@ dependencies {
     //implementation project(':CardForm')
 
     // Google dependencies
-    implementation 'com.google.android.gms:play-services-wallet:19.0.0'
+    implementation 'com.google.android.gms:play-services-wallet:19.1.0'
 
-    implementation 'com.citcon.sdk:mobile:2.4.1'
+    implementation 'com.citcon.sdk:mobile:2.5.2'
     // wechatpay
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.9'
     // alipay

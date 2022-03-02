@@ -63,7 +63,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = "https://api.dev01.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
@@ -330,14 +330,16 @@ public class MainActivity extends AppCompatActivity {
     private CPayRequest buildDropInRequest(CPayMethodType type) {
         switch (type) {
             case ALI:
+            case WECHAT:
             case UNIONPAY:
-                return CPayRequest.CPayBuilder.INSTANCE
+                //return CPayRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayUPIBuilder.INSTANCE
                         .reference(mReference)
                         .currency("USD")
                         .amount("1")
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
-                        .build(CPayENVMode.UAT);
+                        .build(CPayENVMode.DEV);
 
             case ALI_HK:
                 return CPayRequest.CPayBuilder.INSTANCE
@@ -371,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
                         .threeDSecureRequest(demoThreeDSecureRequest())
                         .citconPaymentRequest(getPaymentRequest())
                         .paymentMethod(type)
-                        .build(CPayENVMode.QA);
+                        .build(CPayENVMode.DEV);
         }
     }
 

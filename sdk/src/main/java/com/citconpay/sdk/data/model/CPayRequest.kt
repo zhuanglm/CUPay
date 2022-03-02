@@ -37,6 +37,8 @@ open class CPayRequest() : Parcelable {
     private var  mCallbackUrl: String = ""
     private var  mAllowDuplicate = true
 
+    private var  mApiType = CPayAPIType.UPI
+
     object ManagerBuilder {
         private lateinit var accessToken: String
 
@@ -86,6 +88,57 @@ open class CPayRequest() : Parcelable {
         }
 
         fun paymentMethod(type: CPayMethodType): CPayBuilder {
+            this.type = type
+            return this
+        }
+
+        fun build(mode: CPayENVMode): CPayRequest {
+            return CPayRequest().amount(amount)
+                .reference(referenceId)
+                .currency(this.currency)
+                .paymentMethod(type)
+                .subject(subject)
+                .body(body)
+                .ipnURL(ipnUrl)
+                .callbackURL(callbackUrl)
+                .setAllowDuplicate(allowDuplicate)
+                .setENVMode(mode)
+                .setApiType(CPayAPIType.ONLINE)
+        }
+    }
+
+    object CPayUPIBuilder {
+        var referenceId: String = ""
+        private var amount: String = "0"
+        private lateinit var currency: String
+        private var subject: String = "cupay test subject"
+        private var body: String = "cupay test body"
+        private var ipnUrl: String = "https://cupay.test.ipn"
+        private var callbackUrl: String = "https://cupay.test.ipn"
+        private var allowDuplicate = true
+        private lateinit var type: CPayMethodType
+
+        fun reference(id: String):  CPayUPIBuilder {
+            referenceId = id
+            return this
+        }
+
+        fun amount(amount: String):  CPayUPIBuilder {
+            this.amount = amount
+            return this
+        }
+
+        fun currency(currency: String):  CPayUPIBuilder {
+            this.currency = currency
+            return this
+        }
+
+        fun setAllowDuplicate(flag: Boolean): CPayUPIBuilder {
+            this.allowDuplicate = flag
+            return this
+        }
+
+        fun paymentMethod(type: CPayMethodType): CPayUPIBuilder {
             this.type = type
             return this
         }
@@ -199,6 +252,8 @@ open class CPayRequest() : Parcelable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             mAllowDuplicate = parcel.readBoolean()
         }
+
+        mApiType = parcel.readSerializable() as CPayAPIType
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -220,6 +275,8 @@ open class CPayRequest() : Parcelable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             parcel.writeBoolean(mAllowDuplicate)
         }
+
+        parcel.writeSerializable(mApiType)
     }
 
     override fun describeContents(): Int {
@@ -313,6 +370,15 @@ open class CPayRequest() : Parcelable {
 
     fun getPaymentMethod(): CPayMethodType {
         return mPaymentMethodType
+    }
+
+    private fun setApiType(type: CPayAPIType): CPayRequest {
+        mApiType = type
+        return this
+    }
+
+    fun getApiType(): CPayAPIType {
+        return mApiType
     }
 
     /**

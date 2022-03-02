@@ -38,16 +38,14 @@ class ConfirmPaymentFragment : BaseFragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        mSharedModel = ViewModelProvider(requireActivity()).get(DropinViewModel::class.java)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mSharedModel = ViewModelProvider(requireActivity())[DropinViewModel::class.java]
         mSharedModel.mResult.observe(viewLifecycleOwner) {
             _binding?.result = mSharedModel.displayNonce(it)
             _binding?.frameLayout?.visibility = View.VISIBLE
 
             it.paymentMethodNonce?.let { nonce ->
-                mSharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner, { result ->
+                mSharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner) { result ->
                     result?.let { resource ->
                         val resultIntent = Intent()
                         when (resource.status) {
@@ -82,7 +80,7 @@ class ConfirmPaymentFragment : BaseFragment() {
                             }
                         }
                     }
-                })
+                }
             }
         }
 
