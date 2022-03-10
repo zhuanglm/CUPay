@@ -9,11 +9,12 @@ import androidx.activity.result.ActivityResultLauncher
 import com.braintreepayments.api.DataCollector
 import com.braintreepayments.api.models.GooglePaymentRequest
 import com.braintreepayments.api.models.ThreeDSecureRequest
-import com.citconpay.sdk.data.repository.CPayENVMode
-import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
+import com.citconpay.cardform.view.CardForm
 import com.citconpay.dropin.DropInRequest
 import com.citconpay.dropin.utils.PaymentMethodType
-import com.citconpay.cardform.view.CardForm
+import com.citconpay.sdk.data.repository.CPayENVMode
+import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
+import java.util.*
 
 @Suppress("SameParameterValue")
 open class CPayRequest() : Parcelable {
@@ -36,6 +37,11 @@ open class CPayRequest() : Parcelable {
     private var  mIpnUrl: String = ""
     private var  mCallbackUrl: String = ""
     private var  mAllowDuplicate = true
+
+    private var mMobileCallback: String? = null
+    private var mCallbackFailUrl: String? = null
+    private var mCancelUrl: String? = null
+    private var mCountry: Locale = Locale.CANADA
 
     private var  mApiType = CPayAPIType.UPI
 
@@ -108,7 +114,9 @@ open class CPayRequest() : Parcelable {
     }
 
     object CPayUPIBuilder {
-        var referenceId: String = ""
+        private lateinit var accessToken: String
+        private lateinit var customerID: String
+        private lateinit var reference: String
         private var amount: String = "0"
         private lateinit var currency: String
         private var subject: String = "cupay test subject"
@@ -117,9 +125,23 @@ open class CPayRequest() : Parcelable {
         private var callbackUrl: String = "https://cupay.test.ipn"
         private var allowDuplicate = true
         private lateinit var type: CPayMethodType
+        private var country: Locale = Locale.CANADA
+        private var mobileCallback: String? = null
+        private var callbackFailUrl: String? = null
+        private var cancelUrl: String? = null
 
-        fun reference(id: String):  CPayUPIBuilder {
-            referenceId = id
+        fun accessToken(token: String): CPayUPIBuilder {
+            this.accessToken = token
+            return this
+        }
+
+        fun reference(reference: String): CPayUPIBuilder {
+            this.reference = reference
+            return this
+        }
+
+        fun customerID(id: String): CPayUPIBuilder {
+            this.customerID = id
             return this
         }
 
@@ -143,9 +165,41 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        fun country(country: Locale): CPayUPIBuilder {
+            this.country = country
+            return this
+        }
+
+        fun callbackURL(url: String): CPayUPIBuilder {
+            this.callbackUrl = url
+            return this
+        }
+
+        fun ipnURL(url: String): CPayUPIBuilder {
+            this.ipnUrl = url
+            return this
+        }
+
+        fun mobileURL(url: String): CPayUPIBuilder {
+            this.mobileCallback = url
+            return this
+        }
+
+        fun failURL(url: String): CPayUPIBuilder {
+            this.callbackFailUrl = url
+            return this
+        }
+
+        fun cancelURL(url: String): CPayUPIBuilder {
+            this.cancelUrl = url
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             return CPayRequest().amount(amount)
-                .reference(referenceId)
+                .reference(reference)
+                .accessToken(accessToken)
+                .consumerID(customerID)
                 .currency(this.currency)
                 .paymentMethod(type)
                 .subject(subject)
@@ -153,6 +207,10 @@ open class CPayRequest() : Parcelable {
                 .ipnURL(ipnUrl)
                 .callbackURL(callbackUrl)
                 .setAllowDuplicate(allowDuplicate)
+                .mobileCallbackURL(mobileCallback)
+                .failCallbackURL(callbackFailUrl)
+                .cancelURL(cancelUrl)
+                .setCountry(country)
                 .setENVMode(mode)
         }
     }
@@ -253,6 +311,11 @@ open class CPayRequest() : Parcelable {
             mAllowDuplicate = parcel.readBoolean()
         }
 
+        mMobileCallback = parcel.readString()
+        mCallbackFailUrl = parcel.readString()
+        mCancelUrl = parcel.readString()
+        mCountry = parcel.readSerializable() as Locale
+
         mApiType = parcel.readSerializable() as CPayAPIType
     }
 
@@ -276,6 +339,10 @@ open class CPayRequest() : Parcelable {
             parcel.writeBoolean(mAllowDuplicate)
         }
 
+        parcel.writeString(mMobileCallback)
+        parcel.writeString(mCallbackFailUrl)
+        parcel.writeString(mCancelUrl)
+        parcel.writeSerializable(mCountry)
         parcel.writeSerializable(mApiType)
     }
 
@@ -555,6 +622,42 @@ open class CPayRequest() : Parcelable {
 
     fun getCallback(): String {
         return mCallbackUrl
+    }
+
+    private fun mobileCallbackURL(callback: String?): CPayRequest {
+        mMobileCallback = callback
+        return this
+    }
+
+    fun getMobileCallback(): String? {
+        return mMobileCallback
+    }
+
+    private fun failCallbackURL(callback: String?): CPayRequest {
+        mCallbackFailUrl = callback
+        return this
+    }
+
+    fun getFailCallback(): String? {
+        return mCallbackFailUrl
+    }
+
+    private fun cancelURL(callback: String?): CPayRequest {
+        mCancelUrl = callback
+        return this
+    }
+
+    fun getCancelURL(): String? {
+        return mCancelUrl
+    }
+
+    private fun setCountry(country: Locale): CPayRequest {
+        mCountry = country
+        return this
+    }
+
+    fun getCountry(): Locale? {
+        return mCountry
     }
 
     private fun setAllowDuplicate(flag: Boolean): CPayRequest {

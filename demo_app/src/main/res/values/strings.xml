@@ -11,4 +11,12 @@
     <string name="bt_my_wallet">My Wallet</string>
     <string name="bt_upop">Union Pay</string>
     <string name="bt_kakao">Kakao Pay</string>
+    <string name="three_DS">3DSecure Verification</string>
+    <string name="consumer_id">consumer ID</string>
+    <string name="new_payment">New Payment</string>
+    <string name="amount">AMOUNT</string>
+    <string name="callback_url">callback URL</string>
+    <string name="ipn_url">IPN URL</string>
+    <string name="default_ipn_url">https://merchant.com/ipn.php"</string>
+    <string name="default_callback_url">https://dev.citcon-inc.com"</string>
 </resources>

@@ -2,17 +2,14 @@ package com.citconpay.sdk.ui.main.state
 
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.citconpay.cardform.view.CardForm
 import com.citconpay.sdk.data.api.response.ConfirmChargePayment
 import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.model.CPayAPIType
-import com.citconpay.sdk.data.model.CPayMethodType
 import com.citconpay.sdk.data.model.CPayOrderResult
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.repository.CPayENVMode
@@ -20,21 +17,19 @@ import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Constant
 import com.citconpay.sdk.utils.Status
-import sdk.CPayMode
-import sdk.CPaySDK
-import sdk.interfaces.OrderResponse
-import sdk.models.CPayInquireResult
-import sdk.models.CPayOrder
+import upisdk.CPayLaunchType
 import upisdk.CPayUPISDK
 import upisdk.models.CPayUPIOrder
+import java.util.*
 
 class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewModel) : DefaultLifecycleObserver {
     private val mViewModel: DropinViewModel by lazy { viewModel }
     private val mLifecycleOwner: LifecycleOwner by lazy { activity }
     private val mActivity by lazy { activity }
     private var mRunningFlag = false
+    private var mGatewayType = "None"
     //private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
-    private val mInquireReceiver = object : BroadcastReceiver() {
+    /*private val mInquireReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val response = intent.getSerializableExtra("inquire_result") as CPayInquireResult?
 
@@ -60,33 +55,24 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                 mActivity.finish(RESULT_OK, resultIntent)
             }
         }
-    }
+    }*/
 
     /**
      * Register BroadcastReceiver.
      */
-    private fun registerInquireReceiver() {
+    /*private fun registerInquireReceiver() {
         val filter = IntentFilter()
         filter.addAction("CPAY_INQUIRE_ORDER")
         CPaySDK.getInstance().registerReceiver(mInquireReceiver, filter)
-    }
-
-    /**
-     *
-     * unregister BroadcastReceiver.
-     */
-    private fun unregisterInquireReceiver() {
-        if (mViewModel.getDropInRequest().getApiType() == CPayAPIType.ONLINE) {
-            CPaySDK.getInstance().unregisterReceiver(mInquireReceiver)
-        }
-    }
+    }*/
 
     //@OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate(owner: LifecycleOwner) {
         //mViewModel.mLoading.observe(mLifecycleOwner, LoadingObserver(mActivity))
+
         when (mViewModel.getDropInRequest().getApiType()) {
             CPayAPIType.ONLINE -> {
-                val dropInRequest = mViewModel.getDropInRequest()
+                /*val dropInRequest = mViewModel.getDropInRequest()
                 val order = CPayOrder(
                         dropInRequest.getReference(),
                         dropInRequest.getSubject(),
@@ -125,9 +111,10 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                     } else {
                         mRunningFlag = true
                     }
-                })
+                })*/
             }
             else -> {
+                //UPI SDK
                 mViewModel.loadClientToken().observe(mLifecycleOwner) {
                     it?.let {
                         when (it.status) {
@@ -135,41 +122,80 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                             Status.SUCCESS -> {
                                 it.data?.let { response ->
                                     //todo: setup and launch dropin according to gateway
+                                    mGatewayType = response.data.gateway
                                     if (response.data.gateway == "braintree") {
                                         mViewModel.getDropInRequest().getBrainTreeDropInRequest()
                                             //.clientToken(SANDBOX_TOKENIZATION_KEY)
                                             //.clientToken(response.data?.token)
-                                            .clientToken(response.data.client_token)
+                                            //.clientToken(response.data.publishable_key)
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()
                                     } else {
                                         // alipay,wechatpay,upop
-                                        val dropInRequest = mViewModel.getDropInRequest()
-                                        val order = CPayUPIOrder(
-                                            dropInRequest.getReference(),
-                                            dropInRequest.getSubject(),
-                                            dropInRequest.getBody(),
-                                            dropInRequest.getAmount(),
-                                            dropInRequest.getCurrency(),
-                                            dropInRequest.getPaymentMethod().type,
-                                            dropInRequest.getIpn(),
-                                            dropInRequest.getCallback(),
-                                            dropInRequest.isAllowDuplicate()
-                                        )
+                                        val request = mViewModel.getDropInRequest()
+
+                                        val order = CPayUPIOrder.Builder()
+                                            .setLaunchType(CPayLaunchType.OTHERS)
+                                            .setReferenceId(request.getReference())
+                                            .setAmount(request.getAmount())
+                                            .setCurrency(request.getCurrency())
+                                            .setVendor(request.getPaymentMethod().type)
+                                            .setIpnUrl(request.getIpn())
+                                            .setCallbackUrl(request.getCallback())
+                                            .setMobileCallback(request.getMobileCallback())
+                                            .setCallbackFailUrl(request.getFailCallback())
+                                            .setCallbackCancelUrl(request.getCancelURL())
+                                            .setAllowDuplicate(request.isAllowDuplicate())
+                                            .setCountry(Locale.CANADA)
+                                            .enableCNPayAcceleration(false)
+                                            .build()
 
                                         CPayUPISDK.initInstance(mActivity, null)
-                                        when (dropInRequest.getENVMode()) {
+                                        when (request.getENVMode()) {
                                             CPayENVMode.DEV -> CPayUPISDK.setMode("DEV")
                                             CPayENVMode.UAT -> CPayUPISDK.setMode("UAT")
                                             CPayENVMode.QA -> CPayUPISDK.setMode("QA")
                                             CPayENVMode.PROD -> CPayUPISDK.setMode("PROD")
                                         }
 
-                                        CPayUPISDK.setToken("XYIL2W9BCQSTNN1CXUQ6WEH9JQYZ3VLM")
-                                        CPayUPISDK.getInstance().requestOrder(
-                                            mActivity,
-                                            order,
+                                        CPayUPISDK.setToken(request.getAccessToken())
+                                        CPayUPISDK.mInquireResult.observe(owner) { inquireResponse ->
+                                            Log.d("zlm debug", "inquire: $inquireResponse")
+                                            inquireResponse?.run {
+                                                val result = PlacedOrder("", mId, mReference,
+                                                        mAmount,
+                                                        amount_captured = mCaptureAmount > 0,
+                                                        amount_refunded = mRefundAmount > 0,
+                                                        currency = mCurrency,
+                                                        time_created = mTime,
+                                                        time_captured = mCaptureTime,
+                                                        status = mStatus ?: "",
+                                                        country = mCountry,
+                                                        payment = ConfirmChargePayment(
+                                                            mViewModel.getDropInRequest()
+                                                                .getPaymentMethod().type, ""
+                                                        )
+                                                )
+
+
+                                                if (mRunningFlag) {
+                                                    val resultIntent = Intent()
+                                                    resultIntent.putExtra(
+                                                        Constant.PAYMENT_RESULT,
+                                                        CPayOrderResult(
+                                                            RESULT_OK,
+                                                            mViewModel.getDropInRequest()
+                                                                .getPaymentMethod(),
+                                                            result
+                                                        )
+                                                    )
+                                                    mActivity.finish(RESULT_OK, resultIntent)
+                                                }
+                                            }
+                                        }
+
+                                        CPayUPISDK.getInstance().requestOrder(mActivity, order,
                                             upisdk.interfaces.OrderResponse { orderResult ->
                                                 if (orderResult == null || orderResult.mStatus != "0") {
                                                     mActivity.finish(RESULT_CANCELED,
@@ -231,14 +257,18 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     //@OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onResume(owner: LifecycleOwner) {
         if (mViewModel.getDropInRequest().getApiType() == CPayAPIType.ONLINE) {
-            registerInquireReceiver()
+            //registerInquireReceiver()
 
-            CPaySDK.getInstance().onResume()
+            //CPaySDK.getInstance().onResume()
+        } else {
+            if(mGatewayType == "upop") {
+                CPayUPISDK.getInstance()?.onResume()
+            }
         }
     }
 
     //@OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    override fun onPause(owner: LifecycleOwner) {
+    /*override fun onPause(owner: LifecycleOwner) {
             unregisterInquireReceiver()
-    }
+    }*/
 }

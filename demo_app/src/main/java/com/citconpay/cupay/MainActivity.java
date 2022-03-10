@@ -6,9 +6,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResult;
@@ -17,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
 
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
@@ -29,15 +34,15 @@ import com.citconpay.cupay.response.ChargeToken;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.model.CPay3DSecureAdditionalInfo;
 import com.citconpay.sdk.data.model.CPay3DSecurePostalAddress;
-import com.citconpay.sdk.data.model.CPayRequest;
-import com.citconpay.sdk.data.repository.CPayENVMode;
+import com.citconpay.sdk.data.model.CPayMethodType;
 import com.citconpay.sdk.data.model.CPayOrderResult;
+import com.citconpay.sdk.data.model.CPayRequest;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
 import com.citconpay.sdk.data.model.CPayTransactionInfo;
 import com.citconpay.sdk.data.model.Citcon3DSecureRequest;
-import com.citconpay.sdk.data.model.CPayMethodType;
 import com.citconpay.sdk.data.model.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.ErrorMessage;
+import com.citconpay.sdk.data.repository.CPayENVMode;
 import com.citconpay.sdk.utils.Constant;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
@@ -49,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -63,20 +69,23 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = "https://api.dev01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = "braintree";
+    private static final String CITCON_BT_TEST = "kfc_upi_usd"/*"braintree"*/;
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
     private TextView mTextViewAccessToken;
     private TextView mTextViewChargeToken;
     private TextView mTextViewReference;
-    private String mAccessToken, mChargeToken, mReference;
+    private String mAccessToken, mReference;
     private ProgressBar mProgressBar;
-    private TextInputEditText mEditTextConsumerID;
+    private EditText mEditTextAmount;
+    private TextInputEditText mEditTextConsumerID, mEditTextCallbackURL, mEditTextIPNURL;
     private CheckBox mCheckBox3DS;
+    private Spinner mModeSpinner, mCurrencySpinner;
     private View mLayoutPayments;
     CitconUPIAPIService mApiService;
+    private final MutableLiveData<String> mChargeToken = new MutableLiveData<>();
 
     private final ActivityResultCallback<ActivityResult> activityResult = this::onResult;
 
@@ -88,12 +97,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mEditTextConsumerID = findViewById(R.id.edit_consumer_id);
+        mEditTextCallbackURL = findViewById(R.id.edit_callback_url);
+        mEditTextIPNURL = findViewById(R.id.edit_ipn_url);
+        mEditTextAmount = findViewById(R.id.amount_editText);
         mTextViewAccessToken = findViewById(R.id.tv_access_token);
         mTextViewChargeToken = findViewById(R.id.tv_charge_token);
         mTextViewReference = findViewById(R.id.tv_reference);
         TextView textViewVersion = findViewById(R.id.tv_version);
         mProgressBar = findViewById(R.id.progressBar_loading);
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
+        mModeSpinner = findViewById(R.id.mode_spinner);
+        mCurrencySpinner = findViewById(R.id.select_currency);
         mLayoutPayments = findViewById(R.id.layout_payments);
 
         mEditTextConsumerID.setText(DEFAULT_CONSUMER_ID);
@@ -138,18 +152,19 @@ public class MainActivity extends AppCompatActivity {
     // Access Token should be applied from backend server. here we get it directly is just for demo
     void getAccessToken(CitconUPIAPIService apiService) {
         Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_BT_TEST,
-                CONTENT_TYPE, new RequestAccessToken().setTokenType("client"));
+                CONTENT_TYPE, new RequestAccessToken().setTokenType("server"));
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
             public void onResponse(@NotNull Call<CitconApiResponse<AccessToken>> call,
                                    @NotNull Response<CitconApiResponse<AccessToken>> response) {
+                mProgressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
                     if (response.body() != null) {
                         mAccessToken = response.body().getData().getAccessToken();
-                        getChargeToken(apiService);
+                        //getChargeToken(apiService);
+                        mLayoutPayments.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    mProgressBar.setVisibility(View.GONE);
                     JSONObject jsonObject = null;
                     Gson gson = new GsonBuilder().create();
                     try {
@@ -169,6 +184,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 mTextViewAccessToken.setText(mAccessToken);
+                mReference = RandomStringUtils.randomAlphanumeric(10);
+                mTextViewReference.setText(mReference);
+                Log.d("reference", mReference);
             }
 
             @Override
@@ -183,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
     // Charge Token also should be applied from backend server. here we get it directly is just for demo
     void getChargeToken(CitconUPIAPIService apiService) {
         Transaction transaction = new Transaction();
-        transaction.setReference(RandomStringUtils.randomAlphanumeric(10));
+        transaction.setReference(mReference);
         transaction.setAmount(100);
         transaction.setCurrency("USD");
         transaction.setCountry("US");
@@ -213,9 +231,9 @@ public class MainActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 if (response.code() == 200) {
                     if (response.body() != null) {
-                        mChargeToken = response.body().getData().getChargeToken();
+                        mChargeToken.postValue(response.body().getData().getChargeToken());
                         mReference = response.body().getData().getReference();
-                        mLayoutPayments.setVisibility(View.VISIBLE);
+                        //mLayoutPayments.setVisibility(View.VISIBLE);
                     }
                 } else {
                     JSONObject jsonObject = null;
@@ -229,15 +247,14 @@ public class MainActivity extends AppCompatActivity {
                             error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
                         }
                         if (error != null) {
-                            mChargeToken = error.getMessage() + " (" + error.getDebug() + error.getCode() + ")";
+                            mChargeToken.postValue(error.getMessage() + " (" + error.getDebug() + error.getCode() + ")");
                         }
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
                     }
                 }
 
-                mTextViewReference.setText(mReference);
-                mTextViewChargeToken.setText(mChargeToken);
+                //mTextViewChargeToken.setText(mChargeToken);
             }
 
             @Override
@@ -293,19 +310,22 @@ public class MainActivity extends AppCompatActivity {
     public void launchCreditCard(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult);
+        getChargeToken(mApiService);
+        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));
+
     }
 
     public void launchVenmo(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CPayMethodType.PAY_WITH_VENMO).start(this, mStartForResult);
+        getChargeToken(mApiService);
+        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.PAY_WITH_VENMO).start(this, mStartForResult));
     }
 
     public void launchPaypal(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);*/
-        buildDropInRequest(CPayMethodType.PAYPAL).start(this, mStartForResult);
+        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.PAYPAL).start(this, mStartForResult));
     }
 
     public void launchManagement(View v) {
@@ -328,18 +348,27 @@ public class MainActivity extends AppCompatActivity {
      * @param type is payment method type which was selected by user want to pay with
      */
     private CPayRequest buildDropInRequest(CPayMethodType type) {
+        CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
         switch (type) {
             case ALI:
             case WECHAT:
             case UNIONPAY:
                 //return CPayRequest.CPayBuilder.INSTANCE
                 return CPayRequest.CPayUPIBuilder.INSTANCE
+                        .accessToken(mAccessToken)
                         .reference(mReference)
-                        .currency("USD")
-                        .amount("1")
+                        .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                        .currency(mCurrencySpinner.getSelectedItem().toString())
+                        .amount(mEditTextAmount.getText().toString())
+                        .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
+                        .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
+                        .mobileURL("https://exampe.com/mobile")
+                        .cancelURL("https://exampe.com/cancel")
+                        .failURL("https://exampe.com/fail")
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
-                        .build(CPayENVMode.DEV);
+                        .country(Locale.CANADA)
+                        .build(mode);
 
             case ALI_HK:
                 return CPayRequest.CPayBuilder.INSTANCE
@@ -348,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
                         .amount("10")
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
-                        .build(CPayENVMode.UAT);
+                        .build(mode);
 
             case KAKAO:
                 return CPayRequest.CPayBuilder.INSTANCE
@@ -357,7 +386,7 @@ public class MainActivity extends AppCompatActivity {
                         .amount("100")
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
-                        .build(CPayENVMode.UAT);
+                        .build(mode);
 
             case PAYPAL:
             case PAY_WITH_VENMO:
@@ -366,14 +395,14 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return CPayRequest.PaymentBuilder.INSTANCE
                         .accessToken(mAccessToken)
-                        .chargeToken(mChargeToken)
+                        .chargeToken(Objects.requireNonNull(mChargeToken.getValue()))
                         .reference(mReference)
                         .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                         .request3DSecureVerification(mCheckBox3DS.isChecked())
                         .threeDSecureRequest(demoThreeDSecureRequest())
                         .citconPaymentRequest(getPaymentRequest())
                         .paymentMethod(type)
-                        .build(CPayENVMode.DEV);
+                        .build(mode);
         }
     }
 
@@ -459,8 +488,10 @@ public class MainActivity extends AppCompatActivity {
                 CPayOrderResult orderResult = (CPayOrderResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
                 alertdialog.setMessage(
                         String.format(
-                                Locale.CANADA, "this is merchant demo APP\n paid %s %d",
-                                orderResult.getCurrency(), orderResult.getAmount()
+                                Locale.CANADA, "this is merchant demo APP\n paid %s %d\ncreated at: %s",
+                                orderResult.getCurrency(), orderResult.getAmount(),
+                                DateFormat.format("MM/dd/yyyy hh:mm:ss a",
+                                        new Date(orderResult.getTime())).toString()
                         )
                 ).create().show();
             }

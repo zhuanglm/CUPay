@@ -31,9 +31,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     private val mRequest: CPayRequest by lazy { request }
     val mLoading = MutableLiveData<Boolean>()
     val mResult = MutableLiveData<DropInResult>()
-    private val apiRepository: ApiRepository by lazy {
-        ApiRepository(CPayENV.getBaseURL(request.getENVMode()))
-    }
+    private val apiRepository = ApiRepository(CPayENV.getBaseURL(request.getENVMode()))
 
     fun getDropInRequest(): CPayRequest {
         return mRequest
@@ -102,17 +100,22 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         return mRequest.getBrainTreeDropInRequest()
     }
 
-    private fun handleErrorMsg(exception: Exception): ErrorMessage {
-        lateinit var errorMessage: ErrorMessage
-        (exception as HttpException).response()?.let { response ->
-            response.errorBody()?.let { errorMsg ->
-                JSONObject(errorMsg.string()).let {
-                    errorMessage = GsonBuilder().create().fromJson(
-                        it.getJSONObject("data").toString(),
-                        ErrorMessage::class.java
-                    )
+    private fun handleErrorMsg(exception: Exception): ErrorMessage? {
+        var errorMessage: ErrorMessage? = null
+
+        if (exception is HttpException) {
+            exception.response()?.let { response ->
+                response.errorBody()?.let { errorMsg ->
+                    JSONObject(errorMsg.string()).let {
+                        errorMessage = GsonBuilder().create().fromJson(
+                            it.getJSONObject("data").toString(),
+                            ErrorMessage::class.java
+                        )
+                    }
                 }
             }
+        } else {
+            errorMessage = ErrorMessage("-1", exception.localizedMessage, exception.toString())
         }
         return errorMessage
     }

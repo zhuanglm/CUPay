@@ -25,6 +25,6 @@
         <activity-alias
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
-            android:targetActivity="sdk.PaymentActivity" />
+            android:targetActivity="upisdk.PaymentActivity" />
     </application>
 </manifest>

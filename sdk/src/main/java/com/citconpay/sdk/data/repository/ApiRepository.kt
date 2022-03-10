@@ -20,7 +20,7 @@ class ApiRepository(private val baseURL: String) {
 
     internal suspend fun loadConfig(
         accessToken: String,
-        consumerID: String,
+        consumerID: String?,
         paymentMethod: String
     ): CitconApiResponse<LoadedConfig> {
         return apiService(baseURL).loadConfig(

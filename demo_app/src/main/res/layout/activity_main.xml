@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +25,8 @@
                 android:id="@+id/edit_consumer_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="consumer ID" />
+                android:hint="@string/consumer_id"
+                android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
@@ -39,15 +39,93 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="3DSecure Verification" />
+                android:text="@string/three_DS" />
+
+            <Spinner
+                android:id="@+id/mode_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/rect"
+                android:entries="@array/mode_list"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/amount_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:text="@string/amount"
+                android:textSize="14sp"
+                android:layout_weight="1"/>
+
+            <EditText
+                android:id="@+id/amount_editText"
+                android:layout_width="100dp"
+                android:layout_height="25dp"
+                android:layout_weight="1"
+                android:autofillHints=""
+                android:background="@drawable/rect"
+                android:inputType="numberDecimal"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="1"
+                android:textSize="14sp"
+                tools:ignore="LabelFor" />
+
+            <Spinner
+                android:id="@+id/select_currency"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/rect"
+                android:entries="@array/currency_list"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_callback_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/callback_url"
+                android:text="@string/default_callback_url"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_ipn_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ipn_url"
+                android:text="@string/default_ipn_url"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/button_new_payment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="newPayment"
-            android:text="New Payment" />
+            android:text="@string/new_payment" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,6 +168,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <TextView
