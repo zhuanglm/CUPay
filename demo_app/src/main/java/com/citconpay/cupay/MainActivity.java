@@ -71,7 +71,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = "kfc_upi_usd"/*"braintree"*/;
+    private static final String CITCON_BT_TEST = "kfc_upi_usd";
+    private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
     private TextView mTextViewAccessToken;
@@ -150,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Access Token should be applied from backend server. here we get it directly is just for demo
-    void getAccessToken(CitconUPIAPIService apiService) {
-        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + CITCON_BT_TEST,
+    void getAccessToken(CitconUPIAPIService apiService, String authKey) {
+        Call<CitconApiResponse<AccessToken>> call = apiService.getAccessToken("Bearer " + authKey,
                 CONTENT_TYPE, new RequestAccessToken().setTokenType("server"));
         call.enqueue(new Callback<CitconApiResponse<AccessToken>>() {
             @Override
@@ -266,9 +267,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void newPayment(View v) {
+    public void newBraintreeToken(View v) {
         mProgressBar.setVisibility(View.VISIBLE);
-        getAccessToken(mApiService);
+        getAccessToken(mApiService, BRAINTREE_BT_TEST);
+    }
+
+    public void newToken(View v) {
+        mProgressBar.setVisibility(View.VISIBLE);
+        getAccessToken(mApiService, CITCON_BT_TEST);
     }
 
     public void launchWeChatPay(View v) {

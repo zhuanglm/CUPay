@@ -127,7 +127,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                         mViewModel.getDropInRequest().getBrainTreeDropInRequest()
                                             //.clientToken(SANDBOX_TOKENIZATION_KEY)
                                             //.clientToken(response.data?.token)
-                                            //.clientToken(response.data.publishable_key)
+                                            .clientToken(response.data.client_token)
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()

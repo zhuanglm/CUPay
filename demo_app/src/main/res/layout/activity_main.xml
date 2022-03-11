@@ -50,8 +50,7 @@
                 android:background="@drawable/rect"
                 android:entries="@array/mode_list"
                 android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                />
+                android:paddingRight="5dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -63,9 +62,9 @@
                 android:id="@+id/amount_textView"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
+                android:layout_weight="1"
                 android:text="@string/amount"
-                android:textSize="14sp"
-                android:layout_weight="1"/>
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/amount_editText"
@@ -87,11 +86,11 @@
                 android:layout_height="25dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
+                android:layout_weight="1"
                 android:background="@drawable/rect"
                 android:entries="@array/currency_list"
                 android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:layout_weight="1"/>
+                android:paddingRight="5dp" />
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -120,12 +119,28 @@
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/button_new_payment"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="newPayment"
-            android:text="@string/new_payment" />
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_new_payment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="newToken"
+                android:text="@string/new_token" />
+
+            <Button
+                android:id="@+id/button_new_braintree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="newBraintreeToken"
+                android:text="@string/new_braintree_token" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -168,8 +183,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_charge_token_title"
@@ -188,9 +203,9 @@
         <ProgressBar
             android:id="@+id/progressBar_loading"
             style="?android:attr/progressBarStyle"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -198,11 +213,11 @@
         android:id="@+id/layout_payments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        android:visibility="gone">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <TableRow
             android:layout_width="match_parent"
@@ -257,16 +272,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchGooglePay"
-                android:visibility="visible"
-                android:text="@string/bt_google" />
+                android:text="@string/bt_google"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/button6"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_ali"
                 android:onClick="launchAliPay"
+                android:text="@string/bt_ali"
                 android:visibility="visible" />
 
             <Button
@@ -274,8 +289,8 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_kakao"
                 android:onClick="launchKakaoPay"
+                android:text="@string/bt_kakao"
                 android:visibility="visible" />
         </TableRow>
 
@@ -289,16 +304,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="launchUnionPay"
-                android:visibility="visible"
-                android:text="@string/bt_upop" />
+                android:text="@string/bt_upop"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/button9"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_ali_hk"
                 android:onClick="launchAliPayHK"
+                android:text="@string/bt_ali_hk"
                 android:visibility="visible" />
 
             <Button
@@ -306,8 +321,8 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/bt_wx"
                 android:onClick="launchWeChatPay"
+                android:text="@string/bt_wx"
                 android:visibility="visible" />
         </TableRow>
 
