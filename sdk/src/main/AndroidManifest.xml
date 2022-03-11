@@ -23,8 +23,9 @@
 
         <!-- Wechat sdk and Citcon sdk call entry -->
         <activity-alias
-            android:name=".wxapi.WXPayEntryActivity"
+            android:name="${applicationId}.wxapi.WXPayEntryActivity"
             android:exported="true"
             android:targetActivity="upisdk.PaymentActivity" />
+
     </application>
 </manifest>

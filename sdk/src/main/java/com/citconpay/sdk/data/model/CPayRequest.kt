@@ -571,7 +571,12 @@ open class CPayRequest() : Parcelable {
 
     //CPaySDK
     private fun amount(amount: String): CPayRequest {
-        mAmount = amount
+        mAmount = try {
+            amount.toInt()
+            amount
+        } catch (e: Exception) {
+            "0"
+        }
         return this
     }
 
