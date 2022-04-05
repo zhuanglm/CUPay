@@ -3,7 +3,7 @@ package com.citconpay.sdk.data.model
 import com.citconpay.sdk.data.api.response.PlacedOrder
 import java.io.Serializable
 
-data class CPayOrderResult(
+data class CPayResult(
     val resultCode: Int,
     val result: String,
     val code: String,

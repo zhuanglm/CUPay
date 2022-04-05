@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.braintreepayments.api.BraintreeFragment;
 import com.citconpay.dropin.BraintreeUnitTestHttpClient;
-import com.braintreepayments.api.dropin.R;
+import com.citconpay.dropin.R;
 import com.citconpay.dropin.VaultManagerActivity;
 import com.citconpay.dropin.adapters.VaultManagerPaymentMethodsAdapter;
 import com.braintreepayments.api.exceptions.InvalidArgumentException;

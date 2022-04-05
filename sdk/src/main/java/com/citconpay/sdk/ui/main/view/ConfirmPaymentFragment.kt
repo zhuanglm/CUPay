@@ -2,17 +2,15 @@ package com.citconpay.sdk.ui.main.view
 
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import com.citconpay.sdk.data.model.CPayOrderResult
+import com.citconpay.sdk.data.model.CPayResult
 import com.citconpay.sdk.databinding.PaymentResultFragmentBinding
 import com.citconpay.sdk.ui.base.BaseFragment
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
-import com.citconpay.sdk.utils.Constant.PAYMENT_RESULT
 import com.citconpay.sdk.utils.Status
 
 
@@ -47,33 +45,26 @@ class ConfirmPaymentFragment : BaseFragment() {
             it.paymentMethodNonce?.let { nonce ->
                 mSharedModel.placeOrderByNonce(nonce).observe(viewLifecycleOwner) { result ->
                     result?.let { resource ->
-                        val resultIntent = Intent()
                         when (resource.status) {
                             Status.SUCCESS -> {
                                 result.data?.let { response ->
-                                    resultIntent.putExtra(
-                                        PAYMENT_RESULT, CPayOrderResult(
+                                    close(CPayResult(
                                             RESULT_OK,
                                             mSharedModel.getDropInRequest().getPaymentMethod(),
                                             response.data
                                         )
                                     )
                                 }
-
-                                close(RESULT_OK, resultIntent)
                             }
                             Status.ERROR -> {
                                 result.message?.let { errorMessage ->
-                                    resultIntent.putExtra(
-                                        PAYMENT_RESULT, CPayOrderResult(
+                                    close(CPayResult(
                                             RESULT_CANCELED,
                                             mSharedModel.getDropInRequest().getPaymentMethod(),
                                             errorMessage
                                         )
                                     )
                                 }
-
-                                close(RESULT_CANCELED, resultIntent)
                             }
                             Status.LOADING -> {
 
@@ -86,9 +77,9 @@ class ConfirmPaymentFragment : BaseFragment() {
 
     }
 
-    private fun close(resultStatus: Int, resultIntent: Intent) {
+    private fun close(result: CPayResult) {
         val parent = activity as CUPaySDKActivity
-        parent.finish(resultStatus, resultIntent)
+        parent.finish(result)
     }
 
 }

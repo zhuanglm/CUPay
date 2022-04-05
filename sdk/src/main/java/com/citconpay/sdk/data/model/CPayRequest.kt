@@ -20,7 +20,7 @@ import java.util.*
 open class CPayRequest() : Parcelable {
     private var mENVmode = CPayENVMode.UAT
 
-    private var mPaymentMethodType: CPayMethodType = CPayMethodType.NONE
+    private var mPaymentMethod: CPayMethodType = CPayMethodType.NONE
     private var mAccessToken: String = ""
     private var mChargeToken: String = ""
     private var mReference: String = ""
@@ -43,7 +43,9 @@ open class CPayRequest() : Parcelable {
     private var mCancelUrl: String? = null
     private var mCountry: Locale = Locale.CANADA
 
-    private var  mApiType = CPayAPIType.UPI
+    private var mTimeout:Long = 60000
+
+    private var  mApiType = CPayAPIType.UPI_ORDER
 
     object ManagerBuilder {
         private lateinit var accessToken: String
@@ -62,7 +64,7 @@ open class CPayRequest() : Parcelable {
 
     }
 
-    object CPayBuilder {
+    object CPayOrderBuilder {
         var referenceId: String = ""
         private var amount: String = "0"
         private lateinit var currency: String
@@ -73,27 +75,27 @@ open class CPayRequest() : Parcelable {
         private var allowDuplicate = true
         private lateinit var type: CPayMethodType
 
-        fun reference(id: String):  CPayBuilder {
+        fun reference(id: String):  CPayOrderBuilder {
             referenceId = id
             return this
         }
 
-        fun amount(amount: String):  CPayBuilder {
+        fun amount(amount: String):  CPayOrderBuilder {
             this.amount = amount
             return this
         }
 
-        fun currency(currency: String):  CPayBuilder {
+        fun currency(currency: String):  CPayOrderBuilder {
             this.currency = currency
             return this
         }
 
-        fun setAllowDuplicate(flag: Boolean): CPayBuilder {
+        fun setAllowDuplicate(flag: Boolean): CPayOrderBuilder {
             this.allowDuplicate = flag
             return this
         }
 
-        fun paymentMethod(type: CPayMethodType): CPayBuilder {
+        fun paymentMethod(type: CPayMethodType): CPayOrderBuilder {
             this.type = type
             return this
         }
@@ -109,11 +111,40 @@ open class CPayRequest() : Parcelable {
                 .callbackURL(callbackUrl)
                 .setAllowDuplicate(allowDuplicate)
                 .setENVMode(mode)
-                .setApiType(CPayAPIType.ONLINE)
+                .setApiType(CPayAPIType.ONLINE_ORDER)
         }
     }
 
-    object CPayUPIBuilder {
+    object UPIInquireBuilder {
+        private lateinit var accessToken: String
+        private lateinit var reference: String
+        private lateinit var type: CPayMethodType
+
+        fun accessToken(token: String): UPIInquireBuilder {
+            this.accessToken = token
+            return this
+        }
+
+        fun paymentMethod(type: CPayMethodType): UPIInquireBuilder {
+            this.type = type
+            return this
+        }
+
+        fun reference(reference: String): UPIInquireBuilder {
+            this.reference = reference
+            return this
+        }
+
+        fun build(mode: CPayENVMode): CPayRequest {
+            return CPayRequest().reference(reference)
+                .accessToken(accessToken)
+                .paymentMethod(type)
+                .setENVMode(mode)
+                .setApiType(CPayAPIType.UPI_INQUIRE)
+        }
+    }
+
+    object UPIOrderBuilder {
         private lateinit var accessToken: String
         private lateinit var customerID: String
         private lateinit var reference: String
@@ -129,68 +160,74 @@ open class CPayRequest() : Parcelable {
         private var mobileCallback: String? = null
         private var callbackFailUrl: String? = null
         private var cancelUrl: String? = null
+        private var timeout: Long = 60000
 
-        fun accessToken(token: String): CPayUPIBuilder {
+        fun setTimeout(t: Long): UPIOrderBuilder {
+            this.timeout = t
+            return this
+        }
+
+        fun accessToken(token: String): UPIOrderBuilder {
             this.accessToken = token
             return this
         }
 
-        fun reference(reference: String): CPayUPIBuilder {
+        fun reference(reference: String): UPIOrderBuilder {
             this.reference = reference
             return this
         }
 
-        fun customerID(id: String): CPayUPIBuilder {
+        fun customerID(id: String): UPIOrderBuilder {
             this.customerID = id
             return this
         }
 
-        fun amount(amount: String):  CPayUPIBuilder {
+        fun amount(amount: String):  UPIOrderBuilder {
             this.amount = amount
             return this
         }
 
-        fun currency(currency: String):  CPayUPIBuilder {
+        fun currency(currency: String):  UPIOrderBuilder {
             this.currency = currency
             return this
         }
 
-        fun setAllowDuplicate(flag: Boolean): CPayUPIBuilder {
+        fun setAllowDuplicate(flag: Boolean): UPIOrderBuilder {
             this.allowDuplicate = flag
             return this
         }
 
-        fun paymentMethod(type: CPayMethodType): CPayUPIBuilder {
+        fun paymentMethod(type: CPayMethodType): UPIOrderBuilder {
             this.type = type
             return this
         }
 
-        fun country(country: Locale): CPayUPIBuilder {
+        fun country(country: Locale): UPIOrderBuilder {
             this.country = country
             return this
         }
 
-        fun callbackURL(url: String): CPayUPIBuilder {
+        fun callbackURL(url: String): UPIOrderBuilder {
             this.callbackUrl = url
             return this
         }
 
-        fun ipnURL(url: String): CPayUPIBuilder {
+        fun ipnURL(url: String): UPIOrderBuilder {
             this.ipnUrl = url
             return this
         }
 
-        fun mobileURL(url: String): CPayUPIBuilder {
+        fun mobileURL(url: String): UPIOrderBuilder {
             this.mobileCallback = url
             return this
         }
 
-        fun failURL(url: String): CPayUPIBuilder {
+        fun failURL(url: String): UPIOrderBuilder {
             this.callbackFailUrl = url
             return this
         }
 
-        fun cancelURL(url: String): CPayUPIBuilder {
+        fun cancelURL(url: String): UPIOrderBuilder {
             this.cancelUrl = url
             return this
         }
@@ -212,6 +249,88 @@ open class CPayRequest() : Parcelable {
                 .cancelURL(cancelUrl)
                 .setCountry(country)
                 .setENVMode(mode)
+                .setTimeout(timeout)
+        }
+    }
+
+    object BillingAdressBuilder {
+        private var street: String? = null
+        private var street2: String? = null
+        private var city: String? = null
+        private var state: String? = null
+        private var zip: String? = null
+        private var country: String? = null
+
+        fun street(street: String): BillingAdressBuilder {
+            this.street = street
+            return this
+        }
+
+        fun street2(street: String): BillingAdressBuilder {
+            this.street2 = street
+            return this
+        }
+
+        fun city(city: String): BillingAdressBuilder {
+            this.city = city
+            return this
+        }
+
+        fun state(state: String): BillingAdressBuilder {
+            this.state = state
+            return this
+        }
+
+        fun postCode(zip: String): BillingAdressBuilder {
+            this.zip = zip
+            return this
+        }
+
+        fun country(country: String): BillingAdressBuilder {
+            this.country = country
+            return this
+        }
+
+        fun build(): CPayBillingAddr {
+            return CPayBillingAddr(street, street2, city, state, zip, country)
+        }
+    }
+
+    object ConsumerBuilder {
+        private var reference: String? = null
+        private var firstName: String? = null
+        private var lastName: String? = null
+        private var phone: String? = null
+        private var email: String? = null
+        private var billingAddress: CPayBillingAddr? = null
+
+        fun firstName(name: String): ConsumerBuilder {
+            this.firstName = name
+            return this
+        }
+
+        fun lastName(name: String): ConsumerBuilder {
+            this.lastName = name
+            return this
+        }
+
+        fun phone(number: String): ConsumerBuilder {
+            this.phone = number
+            return this
+        }
+
+        fun email(email: String): ConsumerBuilder {
+            this.email = email
+            return this
+        }
+
+        fun billingAddress(billingAddr: CPayBillingAddr): ConsumerBuilder {
+            this.billingAddress = billingAddr
+            return this
+        }
+
+        fun build(): CPayConsumer {
+            return CPayConsumer(reference, firstName, lastName, phone, email, billingAddress)
         }
     }
 
@@ -221,12 +340,19 @@ open class CPayRequest() : Parcelable {
         private lateinit var customerID: String
         private lateinit var reference: String
         private var paymentRequest: CitconPaymentRequest? = null
-        private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
+        //private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
         private var isRequest3DSecure = false
         private lateinit var type: CPayMethodType
+        private var consumer: CPayConsumer? = null
+        private var amount: String = "0"
 
         fun paymentMethod(type: CPayMethodType): PaymentBuilder {
             this.type = type
+            return this
+        }
+
+        fun amount(amount: String):  PaymentBuilder {
+            this.amount = amount
             return this
         }
 
@@ -255,18 +381,24 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun threeDSecureRequest(request: Citcon3DSecureRequest): PaymentBuilder {
+        /*fun threeDSecureRequest(request: Citcon3DSecureRequest): PaymentBuilder {
             citcon3DSecureRequest = request
             return this
-        }
+        }*/
 
         fun request3DSecureVerification(requestThreeDSecure: Boolean): PaymentBuilder {
             isRequest3DSecure = requestThreeDSecure
             return this
         }
 
+        fun consumer(consumer: CPayConsumer): PaymentBuilder {
+            this.consumer = consumer
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             val dropInRequest = CPayRequest()
+                .amount(amount)
                 .collectDeviceData(true)
                 .vaultManager(false)
                 .maskCardNumber(true)
@@ -279,8 +411,33 @@ open class CPayRequest() : Parcelable {
                 .paymentMethod(type)
                 .setENVMode(mode)
 
-            if(isRequest3DSecure && citcon3DSecureRequest != null)
-                dropInRequest.threeDSecureRequest(citcon3DSecureRequest!!)
+            if(isRequest3DSecure) {
+                val billingAddress = consumer?.run {
+                    CPay3DSecurePostalAddress()
+                        .givenName(firstName)
+                        .surname(lastName)
+                        .phoneNumber(phone)
+                        .streetAddress(billingAddress?.street)
+                        .extendedAddress(billingAddress?.street2)
+                        .locality(billingAddress?.city)
+                        .region(billingAddress?.state)
+                        .postalCode(billingAddress?.zip)
+                        .countryCodeAlpha2(billingAddress?.country)
+                }
+
+                val additionalInformation = CPay3DSecureAdditionalInfo()
+                    .accountId("account-id")
+
+                dropInRequest.threeDSecureRequest(
+                    Citcon3DSecureRequest()
+                        .amount(amount)
+                        .versionRequested(Citcon3DSecureRequest.VERSION_2)
+                        .email(consumer?.email)
+                        .mobilePhoneNumber(consumer?.phone)
+                        .billingAddress(billingAddress)
+                        .additionalInformation(additionalInformation)
+                )
+            }
 
             if(paymentRequest != null) {
                 dropInRequest.citconPaymentRequest(paymentRequest!!)
@@ -293,7 +450,7 @@ open class CPayRequest() : Parcelable {
 
     constructor(parcel: Parcel) : this() {
         mENVmode = parcel.readSerializable() as CPayENVMode
-        mPaymentMethodType = parcel.readSerializable() as CPayMethodType
+        mPaymentMethod = parcel.readSerializable() as CPayMethodType
         mAccessToken = parcel.readString()!!
         mChargeToken = parcel.readString()!!
         mReference = parcel.readString()!!
@@ -315,13 +472,14 @@ open class CPayRequest() : Parcelable {
         mCallbackFailUrl = parcel.readString()
         mCancelUrl = parcel.readString()
         mCountry = parcel.readSerializable() as Locale
+        mTimeout = parcel.readLong()
 
         mApiType = parcel.readSerializable() as CPayAPIType
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeSerializable(mENVmode)
-        parcel.writeSerializable(mPaymentMethodType)
+        parcel.writeSerializable(mPaymentMethod)
         parcel.writeString(mAccessToken)
         parcel.writeString(mChargeToken)
         parcel.writeString(mReference)
@@ -343,6 +501,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeString(mCallbackFailUrl)
         parcel.writeString(mCancelUrl)
         parcel.writeSerializable(mCountry)
+        parcel.writeLong(mTimeout)
         parcel.writeSerializable(mApiType)
     }
 
@@ -403,7 +562,7 @@ open class CPayRequest() : Parcelable {
      * @param type Type of the payment method.
      */
     private fun paymentMethod(type: CPayMethodType): CPayRequest {
-        this.mPaymentMethodType = type
+        this.mPaymentMethod = type
         when(type) {
             CPayMethodType.PAYPAL -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.PAYPAL)
@@ -436,7 +595,7 @@ open class CPayRequest() : Parcelable {
     }
 
     fun getPaymentMethod(): CPayMethodType {
-        return mPaymentMethodType
+        return mPaymentMethod
     }
 
     private fun setApiType(type: CPayAPIType): CPayRequest {
@@ -503,7 +662,6 @@ open class CPayRequest() : Parcelable {
     fun getConsumerID(): String {
         return mConsumerID
     }
-
 
     /**
      * This method is optional.
@@ -663,6 +821,15 @@ open class CPayRequest() : Parcelable {
 
     fun getCountry(): Locale? {
         return mCountry
+    }
+
+    private fun setTimeout(t: Long): CPayRequest {
+        mTimeout = t
+        return this
+    }
+
+    fun getTimeout(): Long {
+        return mTimeout
     }
 
     private fun setAllowDuplicate(flag: Boolean): CPayRequest {

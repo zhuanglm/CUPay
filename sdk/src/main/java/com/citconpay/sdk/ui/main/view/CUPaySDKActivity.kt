@@ -11,9 +11,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.citconpay.dropin.DropInActivity
+import com.citconpay.dropin.DropInResult
 import com.citconpay.sdk.R
 import com.citconpay.sdk.data.model.CPayRequest
-import com.citconpay.sdk.data.model.CPayOrderResult
+import com.citconpay.sdk.data.model.CPayResult
 import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.databinding.ActivitySdkMainBinding
 import com.citconpay.sdk.ui.base.BaseActivity
@@ -22,8 +24,6 @@ import com.citconpay.sdk.ui.main.adapter.LoadingObserver
 import com.citconpay.sdk.ui.main.state.DropinLifecycleObserver
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Constant.PAYMENT_RESULT
-import com.citconpay.dropin.DropInActivity
-import com.citconpay.dropin.DropInResult
 
 class CUPaySDKActivity : BaseActivity() {
     private lateinit var mDropInViewModel: DropinViewModel
@@ -58,7 +58,11 @@ class CUPaySDKActivity : BaseActivity() {
         super.finish()
     }
 
-    fun finish(resultCode: Int, resultIntent: Intent?) {
+    fun finish(result: CPayResult) {
+        finish(result.resultCode, Intent().putExtra(PAYMENT_RESULT, result))
+    }
+
+    private fun finish(resultCode: Int, resultIntent: Intent?) {
         setResult(resultCode, resultIntent)
         finish()
     }
@@ -81,9 +85,8 @@ class CUPaySDKActivity : BaseActivity() {
             //return error message "venmo is not installed" etc.
             data?.let {
                 val exceptionMsg: Exception = it.getSerializableExtra(DropInActivity.EXTRA_ERROR) as Exception
-                finish(resultCode, Intent().putExtra(PAYMENT_RESULT,CPayOrderResult(resultCode,
-                    mDropInViewModel.getDropInRequest().getPaymentMethod(),
-                    ErrorMessage("",exceptionMsg.localizedMessage,""))))
+                finish(CPayResult(resultCode, mDropInViewModel.getDropInRequest().getPaymentMethod(),
+                    ErrorMessage("",exceptionMsg.localizedMessage,"")))
             }
         } else {
             finish(RESULT_CANCELED,data)

@@ -32,14 +32,13 @@ import com.citconpay.cupay.model.Urls;
 import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
-import com.citconpay.sdk.data.model.CPay3DSecureAdditionalInfo;
-import com.citconpay.sdk.data.model.CPay3DSecurePostalAddress;
+import com.citconpay.sdk.data.model.CPayBillingAddr;
+import com.citconpay.sdk.data.model.CPayConsumer;
 import com.citconpay.sdk.data.model.CPayMethodType;
-import com.citconpay.sdk.data.model.CPayOrderResult;
 import com.citconpay.sdk.data.model.CPayRequest;
+import com.citconpay.sdk.data.model.CPayResult;
 import com.citconpay.sdk.data.model.CPayShippingAddressRequirements;
 import com.citconpay.sdk.data.model.CPayTransactionInfo;
-import com.citconpay.sdk.data.model.Citcon3DSecureRequest;
 import com.citconpay.sdk.data.model.CitconPaymentRequest;
 import com.citconpay.sdk.data.model.ErrorMessage;
 import com.citconpay.sdk.data.repository.CPayENVMode;
@@ -79,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTextViewChargeToken;
     private TextView mTextViewReference;
     private String mAccessToken, mReference;
+    private CPayMethodType mMethodType = CPayMethodType.ALI;
     private ProgressBar mProgressBar;
     private EditText mEditTextAmount;
     private TextInputEditText mEditTextConsumerID, mEditTextCallbackURL, mEditTextIPNURL;
@@ -203,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
     void getChargeToken(CitconUPIAPIService apiService) {
         Transaction transaction = new Transaction();
         transaction.setReference(mReference);
-        transaction.setAmount(100);
-        transaction.setCurrency("USD");
+        transaction.setAmount(Integer.parseInt(mEditTextAmount.getText().toString()));
+        transaction.setCurrency(mCurrencySpinner.getSelectedItem().toString());
         transaction.setCountry("US");
         transaction.setAutoCapture(false);
         transaction.setNote("braintree test");
@@ -277,13 +277,28 @@ public class MainActivity extends AppCompatActivity {
         getAccessToken(mApiService, CITCON_BT_TEST);
     }
 
+    public void inquire(View v) {
+        //mProgressBar.setVisibility(View.VISIBLE);
+
+        CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
+
+        CPayRequest.UPIInquireBuilder.INSTANCE
+                .accessToken(mAccessToken)
+                .paymentMethod(mMethodType)
+                .reference(mReference)
+                .build(mode)
+                .start(this, mStartForResult);
+    }
+
     public void launchWeChatPay(View v) {
+        mMethodType = CPayMethodType.WECHAT;
         buildDropInRequest(CPayMethodType.WECHAT).start(this, mStartForResult);
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.WECHAT)
 //                .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchUnionPay(View v) {
+        mMethodType = CPayMethodType.UNIONPAY;
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
 //                .getIntent(this), DROP_IN_REQUEST);
         buildDropInRequest(CPayMethodType.UNIONPAY).start(this, mStartForResult);
@@ -302,6 +317,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchAliPay(View v) {
+        mMethodType = CPayMethodType.ALI;
 //        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI)
 //                .getIntent(this), DROP_IN_REQUEST);
         buildDropInRequest(CPayMethodType.ALI).start(this, mStartForResult);
@@ -314,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchCreditCard(View v) {
+        mMethodType = CPayMethodType.UNKNOWN;
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
                 .getIntent(this), DROP_IN_REQUEST);*/
         getChargeToken(mApiService);
@@ -329,8 +346,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchPaypal(View v) {
+        mMethodType = CPayMethodType.PAYPAL;
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);*/
+        getChargeToken(mApiService);
         mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.PAYPAL).start(this, mStartForResult));
     }
 
@@ -360,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
             case WECHAT:
             case UNIONPAY:
                 //return CPayRequest.CPayBuilder.INSTANCE
-                return CPayRequest.CPayUPIBuilder.INSTANCE
+                return CPayRequest.UPIOrderBuilder.INSTANCE
                         .accessToken(mAccessToken)
                         .reference(mReference)
                         .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
@@ -374,10 +393,11 @@ public class MainActivity extends AppCompatActivity {
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
                         .country(Locale.CANADA)
+                        .setTimeout(600)
                         .build(mode);
 
             case ALI_HK:
-                return CPayRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayOrderBuilder.INSTANCE
                         .reference(mReference)
                         .currency("HKD")
                         .amount("10")
@@ -386,7 +406,7 @@ public class MainActivity extends AppCompatActivity {
                         .build(mode);
 
             case KAKAO:
-                return CPayRequest.CPayBuilder.INSTANCE
+                return CPayRequest.CPayOrderBuilder.INSTANCE
                         .reference(mReference)
                         .currency("KRW")
                         .amount("100")
@@ -405,7 +425,7 @@ public class MainActivity extends AppCompatActivity {
                         .reference(mReference)
                         .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                         .request3DSecureVerification(mCheckBox3DS.isChecked())
-                        .threeDSecureRequest(demoThreeDSecureRequest())
+                        .consumer(demo3DSsetup())
                         .citconPaymentRequest(getPaymentRequest())
                         .paymentMethod(type)
                         .build(mode);
@@ -427,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                 .googleMerchantId("18278000977346790994");
     }
 
-    private Citcon3DSecureRequest demoThreeDSecureRequest() {
+    /*private Citcon3DSecureRequest demoThreeDSecureRequest() {
         CPay3DSecurePostalAddress billingAddress = new CPay3DSecurePostalAddress()
                 .givenName("Jill")
                 .surname("Doe")
@@ -449,6 +469,24 @@ public class MainActivity extends AppCompatActivity {
                 .mobilePhoneNumber("3125551234")
                 .billingAddress(billingAddress)
                 .additionalInformation(additionalInformation);
+    }*/
+
+    private CPayConsumer demo3DSsetup() {
+        CPayBillingAddr billingAddr = CPayRequest.BillingAdressBuilder.INSTANCE
+                .city("Chicago")
+                .state("IL")
+                .street("555 Smith St")
+                .postCode("12345")
+                .country("US")
+                .build();
+
+        return CPayRequest.ConsumerBuilder.INSTANCE
+                .firstName("Alex")
+                .lastName("Smith")
+                .email("google@gmal.com")
+                .phone("1112223344")
+                .billingAddress(billingAddr)
+                .build();
     }
 
 
@@ -491,7 +529,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (result.getResultCode() == RESULT_OK) {
             if (result.getData() != null) {
-                CPayOrderResult orderResult = (CPayOrderResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
+                CPayResult orderResult = (CPayResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
                 alertdialog.setMessage(
                         String.format(
                                 Locale.CANADA, "this is merchant demo APP\n paid %s %d\ncreated at: %s",
@@ -507,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
             if (result.getData() == null) {
                 message = "this is merchant demo APP\n payment cancelled by user";
             } else {
-                CPayOrderResult error  = (CPayOrderResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
+                CPayResult error  = (CPayResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
                 message = "this is merchant demo APP\n payment cancelled :\n" + error.getMessage()
                         + "-" + error.getCode();
             }

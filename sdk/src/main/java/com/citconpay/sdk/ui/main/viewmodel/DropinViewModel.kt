@@ -84,10 +84,6 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         }
     }
 
-    /*fun loadClientToken() : LiveData<Resource<CPayApiResponse<BrainTreeClientToken>>> {
-        return getClientToken()
-    }*/
-
     internal fun loadClientToken(): LiveData<Resource<CitconApiResponse<LoadedConfig>>> {
         return getClientToken()
     }

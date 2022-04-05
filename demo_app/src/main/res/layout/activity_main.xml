@@ -171,7 +171,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Reference ID:" />
+                android:text="@string/reference_id" />
 
             <TextView
                 android:id="@+id/tv_reference"
@@ -179,6 +179,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="5" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/button_inquire"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:onClick="inquire"
+            android:text="@string/inquire_ref" />
 
         <LinearLayout
             android:layout_width="match_parent"
