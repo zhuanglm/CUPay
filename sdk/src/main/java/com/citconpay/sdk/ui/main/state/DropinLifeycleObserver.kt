@@ -23,7 +23,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     private val mViewModel: DropinViewModel by lazy { viewModel }
     private val mLifecycleOwner: LifecycleOwner by lazy { activity }
     private val mActivity by lazy { activity }
-    private var mRunningFlag = false
+
     private var mGatewayType = "None"
     //private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
     /*private val mInquireReceiver = object : BroadcastReceiver() {
@@ -130,93 +130,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                         mActivity.launchDropIn()
                                     } else {
                                         // alipay,wechatpay,upop
-                                        val request = mViewModel.getDropInRequest()
-
-                                        val order = CPayUPIOrder.Builder()
-                                            .setLaunchType(CPayLaunchType.OTHERS)
-                                            .setReferenceId(request.getReference())
-                                            .setAmount(request.getAmount())
-                                            .setCurrency(request.getCurrency())
-                                            .setVendor(request.getPaymentMethod().type)
-                                            .setIpnUrl(request.getIpn())
-                                            .setCallbackUrl(request.getCallback())
-                                            .setMobileCallback(request.getMobileCallback())
-                                            .setCallbackFailUrl(request.getFailCallback())
-                                            .setCallbackCancelUrl(request.getCancelURL())
-                                            .setAllowDuplicate(request.isAllowDuplicate())
-                                            .setCountry(Locale.CANADA)
-                                            .setTimeout(request.getTimeout())
-                                            .enableCNPayAcceleration(false)
-                                            .build()
-
-                                        CPayUPISDK.initInstance(mActivity, request.getAccessToken())
-                                        when (request.getENVMode()) {
-                                            CPayENVMode.DEV -> CPayUPISDK.setMode("DEV")
-                                            CPayENVMode.UAT -> CPayUPISDK.setMode("UAT")
-                                            CPayENVMode.QA -> CPayUPISDK.setMode("QA")
-                                            CPayENVMode.PROD -> CPayUPISDK.setMode("PROD")
-                                        }
-
-                                        //CPayUPISDK.setToken(request.getAccessToken())
-                                        CPayUPISDK.mInquireResult.observe(owner) { inquireResponse ->
-                                            inquireResponse?.run {
-                                                val result = PlacedOrder("", mId, mReference,
-                                                        mAmount,
-                                                        amount_captured = mCaptureAmount > 0,
-                                                        amount_refunded = mRefundAmount > 0,
-                                                        currency = mCurrency,
-                                                        time_created = mTime,
-                                                        time_captured = mCaptureTime,
-                                                        status = mStatus ?: "",
-                                                        country = mCountry,
-                                                        payment = ConfirmChargePayment(
-                                                            mViewModel.getDropInRequest()
-                                                                .getPaymentMethod().type, ""
-                                                        )
-                                                )
-
-
-                                                if (mRunningFlag) {
-                                                    mActivity.finish(
-                                                        CPayResult(
-                                                            RESULT_OK,
-                                                            mViewModel.getDropInRequest()
-                                                                .getPaymentMethod(),
-                                                            result
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        }
-
-                                        CPayUPISDK.getInstance().requestOrder(mActivity, order,
-                                            upisdk.interfaces.OrderResponse { orderResult ->
-                                                if (orderResult == null || orderResult.mStatus != "0") {
-                                                    mActivity.finish(
-                                                            CPayResult(
-                                                                RESULT_CANCELED,
-                                                                mViewModel.getDropInRequest()
-                                                                    .getPaymentMethod(),
-                                                                orderResult?.run {
-                                                                    ErrorMessage(
-                                                                        mStatus,
-                                                                        mMessage,
-                                                                        mOrder.mReferenceId
-                                                                    )
-                                                                } ?: ErrorMessage(
-                                                                    "error",
-                                                                    "error",
-                                                                    "error"
-                                                                )
-                                                            )
-                                                        )
-
-                                                    mRunningFlag = false
-                                                    return@OrderResponse
-                                                } else {
-                                                    mRunningFlag = true
-                                                }
-                                            })
+                                        mViewModel.requestOrder(mActivity)
                                     }
                                 }
 
@@ -240,76 +154,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
             }
 
             CPayAPIType.UPI_INQUIRE -> {
-                val request = mViewModel.getDropInRequest()
-                if (CPayUPISDK.getInstance() == null) {
-                    CPayUPISDK.initInstance(mActivity, request.getAccessToken())
-                } else {
-                    CPayUPISDK.setToken(request.getAccessToken())
-                }
-
-                when (request.getENVMode()) {
-                    CPayENVMode.DEV -> CPayUPISDK.setMode("DEV")
-                    CPayENVMode.UAT -> CPayUPISDK.setMode("UAT")
-                    CPayENVMode.QA -> CPayUPISDK.setMode("QA")
-                    CPayENVMode.PROD -> CPayUPISDK.setMode("PROD")
-                }
-
-                CPayUPISDK.getInstance().inquireOrderByRef(
-                    request.getReference(),
-                    request.getPaymentMethod().type
-                ) { inquireResponse ->
-                    inquireResponse?.run {
-                        if (mStatus != "success") {
-                            mActivity.finish(
-                                CPayResult(
-                                    RESULT_CANCELED,
-                                    mViewModel.getDropInRequest()
-                                        .getPaymentMethod(),
-                                    ErrorMessage(
-                                        mStatus,
-                                        "error",
-                                        mNote
-                                    )
-                                )
-                            )
-                        } else {
-                            mActivity.finish(
-                                CPayResult(
-                                    RESULT_OK,
-                                    mViewModel.getDropInRequest()
-                                        .getPaymentMethod(),
-                                    PlacedOrder("", mId, mReference,
-                                        mAmount,
-                                        amount_captured = mCaptureAmount > 0,
-                                        amount_refunded = mRefundAmount > 0,
-                                        currency = mCurrency,
-                                        time_created = mTime,
-                                        time_captured = mCaptureTime,
-                                        status = mStatus ?: "",
-                                        country = mCountry,
-                                        payment = ConfirmChargePayment(
-                                            mViewModel.getDropInRequest()
-                                                .getPaymentMethod().type, ""
-                                        )
-                                    )
-                                )
-                            )
-                        }
-
-                    } ?: mActivity.finish(
-                        CPayResult(
-                            RESULT_CANCELED,
-                            mViewModel.getDropInRequest()
-                                .getPaymentMethod(),
-                            ErrorMessage(
-                                "-1",
-                                "error",
-                                "error"
-                            )
-                        )
-                    )
-
-                }
+                mViewModel.inquire(mActivity)
             }
 
             CPayAPIType.ONLINE_INQUIRE -> {

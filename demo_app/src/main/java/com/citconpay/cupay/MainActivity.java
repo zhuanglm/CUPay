@@ -222,7 +222,6 @@ public class MainActivity extends AppCompatActivity {
         device.setFingerprint("");
         Ext ext = new Ext(device);
 
-        //mAccessToken = "UPI_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiM0FENUIxNjVFQzY5NEZDRDhCNEQ4MTVFOTJEQTg2MkUiLCJpYXQiOjE2MjU4NTk2NzUsImV4cCI6MTYyOTA3MTkyMDIwNX0.EMnBqaAWikhmCbLzDdHah1EfjmPH-eeADruwKC_14tA";
         Call<CitconApiResponse<ChargeToken>> call = apiService.getChargeToken("Bearer " + mAccessToken,
                 CONTENT_TYPE, new RequestChargeToken().setTransaction(transaction).setUrls(urls).setExt(ext));
         call.enqueue(new Callback<CitconApiResponse<ChargeToken>>() {

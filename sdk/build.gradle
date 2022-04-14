@@ -48,7 +48,8 @@ android {
 
 dependencies {
     //compileOnly fileTree(dir: "libs", include: ["*.aar"])
-    implementation fileTree(dir: "libs", include: ["*.aar"])
+    //implementation fileTree(dir: "libs", include: ["*.aar"])
+    implementation 'com.citcon.sdk:cpay-upi:1.0.2-alpha'
     implementation 'com.android.volley:volley:1.2.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
     implementation 'androidx.core:core-ktx:1.7.0'

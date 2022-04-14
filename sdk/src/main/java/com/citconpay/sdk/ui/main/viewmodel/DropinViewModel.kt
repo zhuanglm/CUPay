@@ -1,28 +1,37 @@
 package com.citconpay.sdk.ui.main.viewmodel
 
+import android.app.Activity
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
-import com.citconpay.dropin.DropInRequest
-import com.citconpay.dropin.DropInResult
 import com.braintreepayments.api.models.BinData
 import com.braintreepayments.api.models.CardNonce
 import com.braintreepayments.api.models.PayPalAccountNonce
 import com.braintreepayments.api.models.PaymentMethodNonce
+import com.citconpay.dropin.DropInRequest
+import com.citconpay.dropin.DropInResult
 import com.citconpay.sdk.data.api.response.CitconApiResponse
-import com.citconpay.sdk.data.api.response.PlacedOrder
-import com.citconpay.sdk.data.model.ErrorMessage
+import com.citconpay.sdk.data.api.response.ConfirmChargePayment
 import com.citconpay.sdk.data.api.response.LoadedConfig
+import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.model.CPayRequest
+import com.citconpay.sdk.data.model.CPayResult
+import com.citconpay.sdk.data.model.ErrorMessage
 import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.data.repository.CPayENV
+import com.citconpay.sdk.data.repository.CPayENVMode
+import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import org.json.JSONObject
 import retrofit2.HttpException
+import upisdk.CPayLaunchType
+import upisdk.CPayUPISDK
+import upisdk.models.CPayUPIInquireResult
+import upisdk.models.CPayUPIOrder
 
 
 class DropinViewModel(request: CPayRequest, application: Application) :
@@ -32,6 +41,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     val mLoading = MutableLiveData<Boolean>()
     val mResult = MutableLiveData<DropInResult>()
     private val apiRepository = ApiRepository(CPayENV.getBaseURL(request.getENVMode()))
+    private var mRunningFlag = false
 
     fun getDropInRequest(): CPayRequest {
         return mRequest
@@ -39,6 +49,147 @@ class DropinViewModel(request: CPayRequest, application: Application) :
 
     fun setDropInResult(result: DropInResult) {
         mResult.postValue(result)
+    }
+
+    private fun inquireResponse2CPayResult(inquireResponse: CPayUPIInquireResult): CPayResult {
+        return inquireResponse.run{
+            CPayResult(
+                Activity.RESULT_OK,
+                mRequest.getPaymentMethod(),
+                PlacedOrder("", mId, mReference,
+                    mAmount,
+                    amount_captured = mCaptureAmount > 0,
+                    amount_refunded = mRefundAmount > 0,
+                    currency = mCurrency,
+                    time_created = mTime,
+                    time_captured = mCaptureTime,
+                    status = mStatus ?: "",
+                    country = mCountry,
+                    payment = ConfirmChargePayment(
+                        mRequest.getPaymentMethod().type, ""
+                    )
+                )
+            )
+        }
+    }
+
+    fun inquire(activity: CUPaySDKActivity) {
+        if (CPayUPISDK.getInstance() == null) {
+            CPayUPISDK.initInstance(activity, mRequest.getAccessToken())
+        } else {
+            CPayUPISDK.setToken(mRequest.getAccessToken())
+        }
+
+        when (mRequest.getENVMode()) {
+            CPayENVMode.DEV -> CPayUPISDK.setMode("DEV")
+            CPayENVMode.UAT -> CPayUPISDK.setMode("UAT")
+            CPayENVMode.QA -> CPayUPISDK.setMode("QA")
+            CPayENVMode.PROD -> CPayUPISDK.setMode("PROD")
+        }
+
+        CPayUPISDK.getInstance().inquireOrderByRef(
+            mRequest.getReference(),
+            mRequest.getPaymentMethod().type
+        ) { inquireResponse ->
+            inquireResponse?.run {
+                if (mStatus != "success") {
+                    activity.finish(
+                        CPayResult(
+                            Activity.RESULT_CANCELED,
+                            mRequest.getPaymentMethod(),
+                            ErrorMessage(
+                                mStatus,
+                                "error",
+                                mNote
+                            )
+                        )
+                    )
+                } else {
+                    activity.finish(
+                        inquireResponse2CPayResult(inquireResponse)
+                    )
+                }
+
+            } ?: activity.finish(
+                CPayResult(
+                    Activity.RESULT_CANCELED,
+                    mRequest.getPaymentMethod(),
+                    ErrorMessage(
+                        "-1",
+                        "error",
+                        "error"
+                    )
+                )
+            )
+
+        }
+    }
+
+    fun requestOrder(activity: CUPaySDKActivity) {
+
+        val order = CPayUPIOrder.Builder()
+            .setLaunchType(CPayLaunchType.OTHERS)
+            .setReferenceId(mRequest.getReference())
+            .setAmount(mRequest.getAmount())
+            .setCurrency(mRequest.getCurrency())
+            .setVendor(mRequest.getPaymentMethod().type)
+            .setIpnUrl(mRequest.getIpn())
+            .setCallbackUrl(mRequest.getCallback())
+            .setMobileCallback(mRequest.getMobileCallback())
+            .setCallbackFailUrl(mRequest.getFailCallback())
+            .setCallbackCancelUrl(mRequest.getCancelURL())
+            .setAllowDuplicate(mRequest.isAllowDuplicate())
+            .setCountry(mRequest.getCountry())
+            .setTimeout(mRequest.getTimeout())
+            .enableCNPayAcceleration(false)
+            .build()
+
+        CPayUPISDK.initInstance(activity, mRequest.getAccessToken())
+        when (mRequest.getENVMode()) {
+            CPayENVMode.DEV -> CPayUPISDK.setMode("DEV")
+            CPayENVMode.UAT -> CPayUPISDK.setMode("UAT")
+            CPayENVMode.QA -> CPayUPISDK.setMode("QA")
+            CPayENVMode.PROD -> CPayUPISDK.setMode("PROD")
+        }
+
+        //CPayUPISDK.setToken(request.getAccessToken())
+        CPayUPISDK.mInquireResult.observe(activity) { inquireResponse ->
+            inquireResponse?.run {
+                if (mRunningFlag) {
+                    activity.finish(
+                        inquireResponse2CPayResult(inquireResponse)
+                    )
+                }
+            }
+        }
+
+        CPayUPISDK.getInstance().requestOrder(activity, order,
+            upisdk.interfaces.OrderResponse { orderResult ->
+                if (orderResult == null || orderResult.mStatus != "0") {
+                    activity.finish(
+                        CPayResult(
+                            Activity.RESULT_CANCELED,
+                            mRequest.getPaymentMethod(),
+                            orderResult?.run {
+                                ErrorMessage(
+                                    mStatus,
+                                    mMessage,
+                                    mOrder.mReferenceId
+                                )
+                            } ?: ErrorMessage(
+                                "-1",
+                                "error",
+                                "error"
+                            )
+                        )
+                    )
+
+                    mRunningFlag = false
+                    return@OrderResponse
+                } else {
+                    mRunningFlag = true
+                }
+            })
     }
 
     private fun getClientToken() = liveData(Dispatchers.IO) {
