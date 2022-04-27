@@ -417,6 +417,7 @@ public class MainActivity extends AppCompatActivity {
             case PAY_WITH_VENMO:
             case GOOGLE_PAYMENT:
             case UNKNOWN:
+            case CREDIT:
             default:
                 return CPayRequest.PaymentBuilder.INSTANCE
                         .accessToken(mAccessToken)

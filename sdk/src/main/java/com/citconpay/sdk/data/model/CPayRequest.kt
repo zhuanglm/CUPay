@@ -568,6 +568,8 @@ open class CPayRequest() : Parcelable {
                 PaymentMethodType.PAYPAL)
             CPayMethodType.UNKNOWN -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.UNKNOWN)
+            CPayMethodType.CREDIT -> mBrainTreeDropInRequest.paymentMethodType(
+                PaymentMethodType.UNKNOWN)
             CPayMethodType.PAY_WITH_VENMO -> mBrainTreeDropInRequest.paymentMethodType(
                 PaymentMethodType.PAY_WITH_VENMO)
             CPayMethodType.AMEX -> mBrainTreeDropInRequest.paymentMethodType(

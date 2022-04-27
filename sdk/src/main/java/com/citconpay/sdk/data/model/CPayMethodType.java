@@ -17,6 +17,7 @@ public enum CPayMethodType {
     HIPER("card"),
     HIPERCARD("card"),
     UNKNOWN("card"),
+    CREDIT("card"),
     WECHAT("wechatpay"),
     KAKAO("kakaopay"),
     NONE("none");
