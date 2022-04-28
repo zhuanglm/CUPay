@@ -68,7 +68,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = "https://api.qa01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "kfc_upi_usd";
     private static final String BRAINTREE_BT_TEST = "braintree";
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
                 return CPayRequest.UPIOrderBuilder.INSTANCE
                         .accessToken(mAccessToken)
                         .reference(mReference)
-                        .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                        .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                         .currency(mCurrencySpinner.getSelectedItem().toString())
                         .amount(mEditTextAmount.getText().toString())
                         .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
@@ -423,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
                         .accessToken(mAccessToken)
                         .chargeToken(Objects.requireNonNull(mChargeToken.getValue()))
                         .reference(mReference)
-                        .customerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                        .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                         .request3DSecureVerification(mCheckBox3DS.isChecked())
                         .consumer(demo3DSsetup())
                         .citconPaymentRequest(getPaymentRequest())

@@ -1,23 +1,15 @@
 package com.citconpay.sdk.ui.main.state
 
 import android.app.Activity.RESULT_CANCELED
-import android.app.Activity.RESULT_OK
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.citconpay.cardform.view.CardForm
-import com.citconpay.sdk.data.api.response.ConfirmChargePayment
-import com.citconpay.sdk.data.api.response.PlacedOrder
 import com.citconpay.sdk.data.model.CPayAPIType
 import com.citconpay.sdk.data.model.CPayResult
-import com.citconpay.sdk.data.model.ErrorMessage
-import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Status
-import upisdk.CPayLaunchType
 import upisdk.CPayUPISDK
-import upisdk.models.CPayUPIOrder
-import java.util.*
 
 class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewModel) : DefaultLifecycleObserver {
     private val mViewModel: DropinViewModel by lazy { viewModel }
@@ -123,8 +115,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                     if (response.data.gateway == "braintree") {
                                         mViewModel.getDropInRequest().getBrainTreeDropInRequest()
                                             //.clientToken(SANDBOX_TOKENIZATION_KEY)
-                                            //.clientToken(response.data?.token)
-                                            .clientToken(response.data.client_token)
+                                            .clientToken(response.data.config.client_token)
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()

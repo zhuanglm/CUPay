@@ -4,5 +4,4 @@ import com.citconpay.sdk.data.api.RequestPayment
 import com.google.gson.annotations.SerializedName
 
 data class LoadedConfig(@SerializedName("object") val operation: String,
-                        val gateway: String, val client_token: String?,
-                        val publishable_key: String?, val payment: RequestPayment)
+                        val gateway: String, val config: Configuration, val payment: RequestPayment)

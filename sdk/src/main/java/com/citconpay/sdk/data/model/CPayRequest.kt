@@ -146,7 +146,7 @@ open class CPayRequest() : Parcelable {
 
     object UPIOrderBuilder {
         private lateinit var accessToken: String
-        private lateinit var customerID: String
+        private lateinit var consumerID: String
         private lateinit var reference: String
         private var amount: String = "0"
         private lateinit var currency: String
@@ -177,8 +177,8 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun customerID(id: String): UPIOrderBuilder {
-            this.customerID = id
+        fun consumerID(id: String): UPIOrderBuilder {
+            this.consumerID = id
             return this
         }
 
@@ -236,7 +236,7 @@ open class CPayRequest() : Parcelable {
             return CPayRequest().amount(amount)
                 .reference(reference)
                 .accessToken(accessToken)
-                .consumerID(customerID)
+                .consumerID(consumerID)
                 .currency(this.currency)
                 .paymentMethod(type)
                 .subject(subject)
@@ -337,7 +337,7 @@ open class CPayRequest() : Parcelable {
     object PaymentBuilder {
         private lateinit var accessToken: String
         private lateinit var chargeToken: String
-        private lateinit var customerID: String
+        private lateinit var consumerID: String
         private lateinit var reference: String
         private var paymentRequest: CitconPaymentRequest? = null
         //private var citcon3DSecureRequest: Citcon3DSecureRequest? = null
@@ -371,8 +371,8 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun customerID(id: String): PaymentBuilder {
-            customerID = id
+        fun consumerID(id: String): PaymentBuilder {
+            consumerID = id
             return this
         }
 
@@ -406,7 +406,7 @@ open class CPayRequest() : Parcelable {
                 .request3DSecureVerification(isRequest3DSecure)
                 .accessToken(accessToken)
                 .chargeToken(chargeToken)
-                .consumerID(customerID)
+                .consumerID(consumerID)
                 .reference(reference)
                 .paymentMethod(type)
                 .setENVMode(mode)
@@ -531,7 +531,7 @@ open class CPayRequest() : Parcelable {
     }
 
     /**
-     * This method is optional. customer id is used to set PaymentRequest.
+     * This method is optional. consumer id is used to set PaymentRequest.
      *
      * @param citconPaymentRequest [CitconPaymentRequest] is specify citcon PaymentRequest.
      */
@@ -654,7 +654,7 @@ open class CPayRequest() : Parcelable {
     /**
      * This method is optional. consumer id is used to vault payment methods.
      *
-     * @param id is current customer id.
+     * @param id is current consumer id.
      */
     private fun consumerID(id: String): CPayRequest {
         mConsumerID = id
@@ -678,7 +678,7 @@ open class CPayRequest() : Parcelable {
     }
 
     /**
-     * @param vaultManager `true` to allow customers to manage their vaulted payment methods.
+     * @param vaultManager `true` to allow consumers to manage their vaulted payment methods.
      * Defaults to `false`.
      */
     private fun vaultManager(vaultManager: Boolean): CPayRequest {
