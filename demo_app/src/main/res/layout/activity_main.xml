@@ -42,11 +42,20 @@
                 android:text="@string/three_DS" />
 
             <Spinner
+                android:id="@+id/system_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:background="@drawable/rect"
+                android:entries="@array/system_list"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp" />
+
+            <Spinner
                 android:id="@+id/mode_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="25dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/rect"
                 android:entries="@array/mode_list"
                 android:paddingLeft="5dp"
@@ -92,6 +101,18 @@
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp" />
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/token_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/rect"
+            android:entries="@array/token_list"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

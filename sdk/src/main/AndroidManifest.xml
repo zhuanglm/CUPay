@@ -21,11 +21,20 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".wxapi.SDKWXPayEntryActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+
         <!-- Wechat sdk and Citcon sdk call entry -->
+        <!--<activity-alias
+            android:name="${applicationId}.wxapi.WXPayEntryActivity"
+            android:exported="true"
+            android:targetActivity="upisdk.PaymentActivity" />-->
         <activity-alias
             android:name="${applicationId}.wxapi.WXPayEntryActivity"
             android:exported="true"
-            android:targetActivity="upisdk.PaymentActivity" />
+            android:targetActivity=".wxapi.SDKWXPayEntryActivity" />
 
     </application>
 </manifest>

@@ -14,6 +14,7 @@ import com.citconpay.dropin.DropInRequest
 import com.citconpay.dropin.utils.PaymentMethodType
 import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
+import com.citconpay.sdk.utils.Constant
 import java.util.*
 
 @Suppress("SameParameterValue")
@@ -30,6 +31,7 @@ open class CPayRequest() : Parcelable {
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
 
     //CPaySDK CPayOrder
+    private var  mToken: String = ""
     private var  mAmount: String = ""
     private var  mCurrency: String = ""
     private var  mSubject: String = ""
@@ -66,6 +68,7 @@ open class CPayRequest() : Parcelable {
 
     object CPayOrderBuilder {
         var referenceId: String = ""
+        private var token: String = ""
         private var amount: String = "0"
         private lateinit var currency: String
         private var subject: String = "cupay test subject"
@@ -77,6 +80,11 @@ open class CPayRequest() : Parcelable {
 
         fun reference(id: String):  CPayOrderBuilder {
             referenceId = id
+            return this
+        }
+
+        fun token(token: String):  CPayOrderBuilder {
+            this.token = token
             return this
         }
 
@@ -101,7 +109,9 @@ open class CPayRequest() : Parcelable {
         }
 
         fun build(mode: CPayENVMode): CPayRequest {
-            return CPayRequest().amount(amount)
+            Constant.SystemType = "ONLINE"
+            return CPayRequest().token(token)
+                .amount(amount)
                 .reference(referenceId)
                 .currency(this.currency)
                 .paymentMethod(type)
@@ -233,6 +243,7 @@ open class CPayRequest() : Parcelable {
         }
 
         fun build(mode: CPayENVMode): CPayRequest {
+            Constant.SystemType = "UPI"
             return CPayRequest().amount(amount)
                 .reference(reference)
                 .accessToken(accessToken)
@@ -458,6 +469,7 @@ open class CPayRequest() : Parcelable {
         mBrainTreeDropInRequest = parcel.readParcelable(DropInRequest::class.java.classLoader)!!
         mGooglePaymentRequest = parcel.readParcelable(GooglePaymentRequest::class.java.classLoader)
 
+        mToken = parcel.readString()!!
         mAmount = parcel.readString()!!
         mCurrency = parcel.readString()!!
         mSubject = parcel.readString()!!
@@ -487,6 +499,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeParcelable(mBrainTreeDropInRequest, 0)
         parcel.writeParcelable(mGooglePaymentRequest, 0)
 
+        parcel.writeString(mToken)
         parcel.writeString(mAmount)
         parcel.writeString(mCurrency)
         parcel.writeString(mSubject)
@@ -730,6 +743,15 @@ open class CPayRequest() : Parcelable {
     }
 
     //CPaySDK
+    private fun token(token: String): CPayRequest {
+        mToken = token
+        return this
+    }
+
+    fun getToken(): String {
+        return mToken
+    }
+
     private fun amount(amount: String): CPayRequest {
         mAmount = try {
             amount.toInt()

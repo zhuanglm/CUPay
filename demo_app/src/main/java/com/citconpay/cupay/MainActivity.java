@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -68,9 +70,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/";
+    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/"/*"https://api.dev01.citconpay.com/v1/"*/;
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = "kfc_upi_usd";
+    private static final String CITCON_BT_TEST = "kfc_upi_usd"/*"sk-development-ff4894740c55c92315b208715a65a501"*/;
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -83,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText mEditTextAmount;
     private TextInputEditText mEditTextConsumerID, mEditTextCallbackURL, mEditTextIPNURL;
     private CheckBox mCheckBox3DS;
-    private Spinner mModeSpinner, mCurrencySpinner;
+    private Spinner mModeSpinner, mCurrencySpinner, mSystemSpinner, mTokenSpinner;
+    private Button mBTToken, mNewToken;
     private View mLayoutPayments;
     CitconUPIAPIService mApiService;
     private final MutableLiveData<String> mChargeToken = new MutableLiveData<>();
@@ -108,8 +111,12 @@ public class MainActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar_loading);
         mCheckBox3DS = findViewById(R.id.checkBox_3DS);
         mModeSpinner = findViewById(R.id.mode_spinner);
+        mTokenSpinner = findViewById(R.id.token_spinner);
         mCurrencySpinner = findViewById(R.id.select_currency);
+        mSystemSpinner = findViewById(R.id.system_spinner);
         mLayoutPayments = findViewById(R.id.layout_payments);
+        mBTToken = findViewById(R.id.button_new_braintree);
+        mNewToken = findViewById(R.id.button_new_payment);
 
         mEditTextConsumerID.setText(DEFAULT_CONSUMER_ID);
         textViewVersion.setText(getVersion());
@@ -118,6 +125,29 @@ public class MainActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable());
         }
+
+        mSystemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    mTokenSpinner.setVisibility(View.GONE);
+                    mNewToken.setVisibility(View.VISIBLE);
+                    mBTToken.setVisibility(View.VISIBLE);
+                    mLayoutPayments.setVisibility(View.GONE);
+                } else if (position == 1) {
+                    mTokenSpinner.setVisibility(View.VISIBLE);
+                    mNewToken.setVisibility(View.GONE);
+                    mBTToken.setVisibility(View.GONE);
+                    mLayoutPayments.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -136,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mApiService = retrofit.create(CitconUPIAPIService.class);
+
     }
 
     public String getVersion() {
@@ -329,12 +360,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchCreditCard(View v) {
-        mMethodType = CPayMethodType.UNKNOWN;
-        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
-                .getIntent(this), DROP_IN_REQUEST);*/
+        /*mMethodType = CPayMethodType.UNKNOWN;
+        *//*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
+                .getIntent(this), DROP_IN_REQUEST);*//*
         getChargeToken(mApiService);
-        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));
+        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));*/
 
+        mMethodType = CPayMethodType.CREDIT;
+        buildDropInRequest(CPayMethodType.CREDIT).start(this, mStartForResult);
     }
 
     public void launchVenmo(View v) {
@@ -377,7 +410,38 @@ public class MainActivity extends AppCompatActivity {
             case ALI:
             case WECHAT:
             case UNIONPAY:
-                //return CPayRequest.CPayBuilder.INSTANCE
+                if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
+                    return CPayRequest.UPIOrderBuilder.INSTANCE
+                            .accessToken(mAccessToken)
+                            .reference(mReference)
+                            .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
+                            .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
+                            .mobileURL("https://exampe.com/mobile")
+                            .cancelURL("https://exampe.com/cancel")
+                            .failURL("https://exampe.com/fail")
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .country(Locale.CANADA)
+                            .setTimeout(600)
+                            .build(mode);
+                } else {
+                    if(mReference == null)
+                        mReference = RandomStringUtils.randomAlphanumeric(10);
+
+                    return CPayRequest.CPayOrderBuilder.INSTANCE
+                            .token(mTokenSpinner.getSelectedItem().toString())
+                            .reference(mReference)
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .build(mode);
+                }
+
+            case CREDIT:
                 return CPayRequest.UPIOrderBuilder.INSTANCE
                         .accessToken(mAccessToken)
                         .reference(mReference)
@@ -391,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
                         .failURL("https://exampe.com/fail")
                         .setAllowDuplicate(true)
                         .paymentMethod(type)
-                        .country(Locale.CANADA)
+                        .country(Locale.KOREA)
                         .setTimeout(600)
                         .build(mode);
 
@@ -417,7 +481,6 @@ public class MainActivity extends AppCompatActivity {
             case PAY_WITH_VENMO:
             case GOOGLE_PAYMENT:
             case UNKNOWN:
-            case CREDIT:
             default:
                 return CPayRequest.PaymentBuilder.INSTANCE
                         .accessToken(mAccessToken)

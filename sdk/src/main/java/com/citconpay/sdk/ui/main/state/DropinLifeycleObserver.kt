@@ -9,6 +9,7 @@ import com.citconpay.sdk.data.model.CPayResult
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
 import com.citconpay.sdk.utils.Status
+import sdk.CPaySDK
 import upisdk.CPayUPISDK
 
 class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewModel) : DefaultLifecycleObserver {
@@ -18,42 +19,6 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
     private var mGatewayType = "None"
     //private val SANDBOX_TOKENIZATION_KEY = "sandbox_tmxhyf7d_dcpspy2brwdjr3qn"
-    /*private val mInquireReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val response = intent.getSerializableExtra("inquire_result") as CPayInquireResult?
-
-            val result: PlacedOrder? = response?.run {
-                PlacedOrder("", mId, mReference,
-                        if (mAmount == "")  0 else mAmount.toInt(),
-                    amount_captured = true,
-                    amount_refunded = false,
-                    currency = mCurrency,
-                    time_created = 0,
-                    time_captured = 0,
-                    status = mStatus?:"",
-                    country = "",
-                    payment = ConfirmChargePayment(mViewModel.getDropInRequest().getPaymentMethod().type, "")
-                )
-            }
-
-            if (mRunningFlag) {
-                val resultIntent = Intent()
-                resultIntent.putExtra(Constant.PAYMENT_RESULT, result?.let {
-                    CPayOrderResult(RESULT_OK, mViewModel.getDropInRequest().getPaymentMethod(), it)
-                })
-                mActivity.finish(RESULT_OK, resultIntent)
-            }
-        }
-    }*/
-
-    /**
-     * Register BroadcastReceiver.
-     */
-    /*private fun registerInquireReceiver() {
-        val filter = IntentFilter()
-        filter.addAction("CPAY_INQUIRE_ORDER")
-        CPaySDK.getInstance().registerReceiver(mInquireReceiver, filter)
-    }*/
 
     //@OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     override fun onCreate(owner: LifecycleOwner) {
@@ -61,46 +26,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
         when (mViewModel.getDropInRequest().getApiType()) {
             CPayAPIType.ONLINE_ORDER -> {
-                /*val dropInRequest = mViewModel.getDropInRequest()
-                val order = CPayOrder(
-                        dropInRequest.getReference(),
-                        dropInRequest.getSubject(),
-                        dropInRequest.getBody(),
-                        dropInRequest.getAmount(),
-                        dropInRequest.getCurrency(),
-                        dropInRequest.getPaymentMethod().type,
-                        dropInRequest.getIpn(),
-                        dropInRequest.getCallback(),
-                        dropInRequest.isAllowDuplicate()
-                )
-
-                CPaySDK.initInstance(mActivity, null)
-                when (dropInRequest.getENVMode()) {
-                    CPayENVMode.DEV -> CPaySDK.setMode(CPayMode.DEV)
-                    CPayENVMode.UAT -> CPaySDK.setMode(CPayMode.UAT)
-                    CPayENVMode.PROD -> CPaySDK.setMode(CPayMode.PROD)
-                    else -> CPaySDK.setMode(CPayMode.UAT)
-                }
-
-                CPaySDK.setToken("XYIL2W9BCQSTNN1CXUQ6WEH9JQYZ3VLM")
-                CPaySDK.getInstance().requestOrder(mActivity, order, OrderResponse { orderResult ->
-                    if (orderResult == null || orderResult.mStatus != "0") {
-                        mActivity.finish(RESULT_CANCELED, Intent().putExtra(
-                                Constant.PAYMENT_RESULT, CPayOrderResult(
-                                RESULT_CANCELED,
-                                mViewModel.getDropInRequest().getPaymentMethod(),
-                                orderResult?.run {
-                                    ErrorMessage(mStatus, mMessage, mOrder.mReferenceId)
-                                } ?: ErrorMessage("error", "error", "error")
-                        )
-                        ))
-
-                        mRunningFlag = false
-                        return@OrderResponse
-                    } else {
-                        mRunningFlag = true
-                    }
-                })*/
+                mViewModel.requestOnlineOrder(mActivity,sdk.CPayLaunchType.OTHERS)
             }
             CPayAPIType.UPI_ORDER -> {
                 //UPI SDK
@@ -119,9 +45,11 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()
+                                    } else if (response.data.gateway == "toss") {
+                                        mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.URL)
                                     } else {
                                         // alipay,wechatpay,upop
-                                        mViewModel.requestOrder(mActivity)
+                                        mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.OTHERS)
                                     }
                                 }
 
@@ -161,21 +89,17 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
     override fun onResume(owner: LifecycleOwner) {
         when (mViewModel.getDropInRequest().getApiType()) {
             CPayAPIType.UPI_ORDER -> {
-                if(mGatewayType == "upop") {
+                if(mGatewayType == "upop" || mGatewayType == "toss") {
                     CPayUPISDK.getInstance()?.onResume()
                 }
             }
 
             CPayAPIType.ONLINE_ORDER -> {
-                //CPaySDK.getInstance().onResume()
+                CPaySDK.getInstance()?.onResume()
             }
 
             else -> {}
         }
     }
 
-    //@OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    /*override fun onPause(owner: LifecycleOwner) {
-            unregisterInquireReceiver()
-    }*/
 }

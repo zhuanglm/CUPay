@@ -58,8 +58,13 @@ class CUPaySDKActivity : BaseActivity() {
         super.finish()
     }
 
-    fun finish(result: CPayResult) {
-        finish(result.resultCode, Intent().putExtra(PAYMENT_RESULT, result))
+    fun finish(result: CPayResult?) {
+        result?.let {
+            finish(result.resultCode, Intent().putExtra(PAYMENT_RESULT, result))
+        }
+
+        setResult(RESULT_CANCELED)
+        finish()
     }
 
     private fun finish(resultCode: Int, resultIntent: Intent?) {

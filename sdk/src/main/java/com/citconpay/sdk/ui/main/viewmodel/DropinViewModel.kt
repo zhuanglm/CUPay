@@ -23,12 +23,17 @@ import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.data.repository.CPayENV
 import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
+import com.citconpay.sdk.utils.Constant
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import org.json.JSONObject
 import retrofit2.HttpException
-import upisdk.CPayLaunchType
+import sdk.CPayMode
+import sdk.CPaySDK
+import sdk.interfaces.OrderResponse
+import sdk.models.CPayInquireResult
+import sdk.models.CPayOrder
 import upisdk.CPayUPISDK
 import upisdk.models.CPayUPIInquireResult
 import upisdk.models.CPayUPIOrder
@@ -51,26 +56,53 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         mResult.postValue(result)
     }
 
-    private fun inquireResponse2CPayResult(inquireResponse: CPayUPIInquireResult): CPayResult {
-        return inquireResponse.run{
-            CPayResult(
-                Activity.RESULT_OK,
-                mRequest.getPaymentMethod(),
-                PlacedOrder("", mId, mReference,
-                    mAmount,
-                    amount_captured = mCaptureAmount > 0,
-                    amount_refunded = mRefundAmount > 0,
-                    currency = mCurrency,
-                    time_created = mTime,
-                    time_captured = mCaptureTime,
-                    status = mStatus ?: "",
-                    country = mCountry,
-                    payment = ConfirmChargePayment(
-                        mRequest.getPaymentMethod().type, ""
+    private fun <T> inquireResponse2CPayResult(inquireResponse: T): CPayResult? {
+        if (inquireResponse is CPayUPIInquireResult) {
+            return inquireResponse.run {
+                CPayResult(
+                    Activity.RESULT_OK,
+                    mRequest.getPaymentMethod(),
+
+                    PlacedOrder(
+                        "", mId, mReference,
+                        mAmount,
+                        amount_captured = mCaptureAmount > 0,
+                        amount_refunded = mRefundAmount > 0,
+                        currency = mCurrency,
+                        time_created = mTime,
+                        time_captured = mCaptureTime,
+                        status = mStatus ?: "",
+                        country = mCountry,
+                        payment = ConfirmChargePayment(
+                            mRequest.getPaymentMethod().type, ""
+                        )
                     )
+
                 )
-            )
+            }
+        } else if (inquireResponse is CPayInquireResult) {
+            return inquireResponse.run {
+                CPayResult(
+                    Activity.RESULT_OK,
+                    mRequest.getPaymentMethod(),
+
+                    PlacedOrder("", mId, mReference,
+                        if (mAmount == "")  0 else mAmount.toInt(),
+                        amount_captured = true,
+                        amount_refunded = false,
+                        currency = mCurrency,
+                        time_created = 0,
+                        time_captured = 0,
+                        status = mStatus?:"",
+                        country = "",
+                        payment = ConfirmChargePayment(mRequest.getPaymentMethod().type, "")
+                    )
+
+                )
+            }
         }
+
+        return null
     }
 
     fun inquire(activity: CUPaySDKActivity) {
@@ -125,10 +157,73 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         }
     }
 
-    fun requestOrder(activity: CUPaySDKActivity) {
+    fun requestOnlineOrder(activity: CUPaySDKActivity, launchType: sdk.CPayLaunchType) {
+        val order = CPayOrder.Builder()
+            .setLaunchType(launchType)
+            .setReferenceId(mRequest.getReference())
+            .setSubject(mRequest.getSubject())
+            .setBody(mRequest.getBody())
+            .setAmount(mRequest.getAmount())
+            .setCurrency(mRequest.getCurrency())
+            .setVendor(mRequest.getPaymentMethod().type)
+            .setIpnUrl(mRequest.getIpn())
+            .setCallbackUrl(mRequest.getCallback())
+            .setAllowDuplicate(mRequest.isAllowDuplicate())
+            .enableCNPayAcceleration(false)
+            .build()
+
+        CPaySDK.initInstance(activity, null)
+        when (mRequest.getENVMode()) {
+            CPayENVMode.DEV -> CPaySDK.setMode(CPayMode.DEV)
+            CPayENVMode.UAT -> CPaySDK.setMode(CPayMode.UAT)
+            CPayENVMode.PROD -> CPaySDK.setMode(CPayMode.PROD)
+            else -> CPaySDK.setMode(CPayMode.UAT)
+        }
+
+        CPaySDK.mInquireResult.observe(activity) { inquireResponse ->
+            inquireResponse?.run {
+                if (mRunningFlag) {
+                    activity.finish(
+                        inquireResponse2CPayResult(inquireResponse)
+                    )
+                }
+            }
+        }
+
+        CPaySDK.setToken(mRequest.getToken())
+        CPaySDK.getInstance().requestOrder(activity, order, OrderResponse { orderResult ->
+            if (orderResult == null || orderResult.mStatus != "0") {
+                activity.finish(
+                    CPayResult(
+                        Activity.RESULT_CANCELED,
+                        mRequest.getPaymentMethod(),
+                        orderResult?.run {
+                            ErrorMessage(
+                                mStatus,
+                                mMessage,
+                                mOrderId
+                            )
+                        } ?: ErrorMessage(
+                            "-1",
+                            "error",
+                            "error"
+                        )
+                    )
+                )
+
+                mRunningFlag = false
+                return@OrderResponse
+            } else {
+                mRunningFlag = true
+            }
+        })
+
+    }
+
+    fun requestUPIOrder(activity: CUPaySDKActivity, launchType: upisdk.CPayLaunchType) {
 
         val order = CPayUPIOrder.Builder()
-            .setLaunchType(CPayLaunchType.OTHERS)
+            .setLaunchType(launchType)
             .setReferenceId(mRequest.getReference())
             .setAmount(mRequest.getAmount())
             .setCurrency(mRequest.getCurrency())

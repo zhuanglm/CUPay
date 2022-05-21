@@ -7,6 +7,28 @@
         <item>PROD</item>
     </string-array>
 
+    <string-array name="system_list">
+        <item>UPI</item>
+        <item>ONLINE</item>
+    </string-array>
+
+    <string-array name="token_list">
+        <item>292DDDF4D30545EE81499C12C2A9F205</item>
+        <item>F75E9D7D40A5451D86701EEDD5C81E54</item>
+        <item>52A92BB2E055434DBAC0CC4585C242B2</item>
+        <item>XYIL2W9BCQSTNN1CXUQ6WEH9JQYZ3VLM</item>
+        <item>677406467A398E8B20634C1F3DE68EE2</item>
+        <item>FD941BD40AF00714484054302F243A09</item>
+        <item>0FE94760B1A641079E4A5B5866D0E2B3</item>
+        <item>9FBBA96E77D747659901CCBF787CDCF1</item>
+        <item>CNYAPPF6A0FE479A891BF45706A690AE</item>
+        <item>28C35A088F8BDD3F357D1A27DF065BA4</item>
+        <item>27EF9EF6C306D28D59F9B260875B8122</item>
+        <item>70348EDBB0384BDB9619890FA91642DD</item>
+        <item>E00B2E87D3BF4E79ADBFB2619BE856BC</item>
+        <item>RSMW7EF5M9BECTQGAU7JSHMLWGKAS6TM</item>
+    </string-array>
+
     <string-array name="currency_list">
         <item>USD</item>
         <item>CAD</item>
@@ -14,6 +36,7 @@
         <item>AUD</item>
         <item>NZD</item>
         <item>SGD</item>
+        <item>KRW</item>
     </string-array>
 
 </resources>
