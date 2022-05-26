@@ -5,6 +5,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.citconpay.cardform.view.CardForm
 import com.citconpay.sdk.data.model.CPayAPIType
+import com.citconpay.sdk.data.model.CPayMethodType
 import com.citconpay.sdk.data.model.CPayResult
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.ui.main.viewmodel.DropinViewModel
@@ -26,7 +27,15 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
         when (mViewModel.getDropInRequest().getApiType()) {
             CPayAPIType.ONLINE_ORDER -> {
-                mViewModel.requestOnlineOrder(mActivity,sdk.CPayLaunchType.OTHERS)
+                when (mViewModel.getDropInRequest().getPaymentMethod()) {
+                    CPayMethodType.ALI,CPayMethodType.WECHAT,CPayMethodType.UNIONPAY ->
+                        mViewModel.requestOnlineOrder(mActivity,sdk.CPayLaunchType.OTHERS)
+
+                    else -> {
+                        mViewModel.requestOnlineOrder(mActivity,sdk.CPayLaunchType.URL)
+                    }
+                }
+
             }
             CPayAPIType.UPI_ORDER -> {
                 //UPI SDK

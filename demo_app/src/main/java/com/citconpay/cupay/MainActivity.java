@@ -70,9 +70,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/"/*"https://api.dev01.citconpay.com/v1/"*/;
+    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*//*"https://api.sandbox.citconpay.com/v1/"*/"https://api.dev01.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = "kfc_upi_usd"/*"sk-development-ff4894740c55c92315b208715a65a501"*/;
+    private static final String CITCON_BT_TEST = /*"kfc_upi_usd"*/"sk-development-ff4894740c55c92315b208715a65a501";
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -428,8 +428,7 @@ public class MainActivity extends AppCompatActivity {
                             .setTimeout(600)
                             .build(mode);
                 } else {
-                    if(mReference == null)
-                        mReference = RandomStringUtils.randomAlphanumeric(10);
+                    mReference = RandomStringUtils.randomAlphanumeric(10);
 
                     return CPayRequest.CPayOrderBuilder.INSTANCE
                             .token(mTokenSpinner.getSelectedItem().toString())
@@ -442,22 +441,43 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             case CREDIT:
-                return CPayRequest.UPIOrderBuilder.INSTANCE
-                        .accessToken(mAccessToken)
-                        .reference(mReference)
-                        .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
-                        .currency(mCurrencySpinner.getSelectedItem().toString())
-                        .amount(mEditTextAmount.getText().toString())
-                        .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
-                        .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
-                        .mobileURL("https://exampe.com/mobile")
-                        .cancelURL("https://exampe.com/cancel")
-                        .failURL("https://exampe.com/fail")
-                        .setAllowDuplicate(true)
-                        .paymentMethod(type)
-                        .country(Locale.KOREA)
-                        .setTimeout(600)
-                        .build(mode);
+                if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
+                    return CPayRequest.UPIOrderBuilder.INSTANCE
+                            .accessToken(mAccessToken)
+                            .reference(mReference)
+                            .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
+                            .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
+                            .mobileURL("https://exampe.com/mobile")
+                            .cancelURL("https://exampe.com/cancel")
+                            .failURL("https://exampe.com/fail")
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .country(Locale.KOREA)
+                            .setTimeout(600)
+                            .build(mode);
+                } else {
+                    mReference = RandomStringUtils.randomAlphanumeric(10);
+
+                    return CPayRequest.CPayOrderBuilder.INSTANCE
+                            .token(mTokenSpinner.getSelectedItem().toString())
+                            .reference(mReference)
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .country(Locale.KOREA)
+                            .consumer("John","Doe","6145675309",
+                                    "test.sam@test.com","consumer-reference-000")
+                            .goods("Battery Power Pack", 0,0,0)
+                            .note("note")
+                            .source("app_h5")
+                            .cancelURL("https://exampe.com/cancel")
+                            .failURL("https://exampe.com/fail")
+                            .amount(mEditTextAmount.getText().toString())
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .build(mode);
+                }
 
             case ALI_HK:
                 return CPayRequest.CPayOrderBuilder.INSTANCE

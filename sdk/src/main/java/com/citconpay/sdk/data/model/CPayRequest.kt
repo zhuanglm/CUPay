@@ -15,6 +15,7 @@ import com.citconpay.dropin.utils.PaymentMethodType
 import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
 import com.citconpay.sdk.utils.Constant
+import sdk.models.Goods
 import java.util.*
 
 @Suppress("SameParameterValue")
@@ -44,6 +45,10 @@ open class CPayRequest() : Parcelable {
     private var mCallbackFailUrl: String? = null
     private var mCancelUrl: String? = null
     private var mCountry: Locale = Locale.CANADA
+    private var mConsumer: sdk.models.Consumer? = null
+    private var mGoods: Goods? = null
+    private var mNote: String? = null
+    private var mSource: String? = null
 
     private var mTimeout:Long = 60000
 
@@ -75,7 +80,14 @@ open class CPayRequest() : Parcelable {
         private var body: String = "cupay test body"
         private var ipnUrl: String = "https://cupay.test.ipn"
         private var callbackUrl: String = "https://cupay.test.ipn"
+        private var callbackFailUrl: String? = null
+        private var cancelUrl: String? = null
         private var allowDuplicate = true
+        private var country: Locale = Locale.CANADA
+        private var consumer: sdk.models.Consumer? = null
+        private var goods: Goods? = null
+        private var note: String = ""
+        private var source = "app_h5"
         private lateinit var type: CPayMethodType
 
         fun reference(id: String):  CPayOrderBuilder {
@@ -93,8 +105,45 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        fun note(note: String):  CPayOrderBuilder {
+            this.note = note
+            return this
+        }
+
+        fun source(source: String):  CPayOrderBuilder {
+            this.source = source
+            return this
+        }
+
         fun currency(currency: String):  CPayOrderBuilder {
             this.currency = currency
+            return this
+        }
+
+        fun country(country: Locale):  CPayOrderBuilder {
+            this.country = country
+            return this
+        }
+
+        fun consumer(first_name: String, last_name: String, phone: String,
+                     email: String, reference: String):  CPayOrderBuilder {
+            this.consumer = sdk.models.Consumer(first_name, last_name, phone,
+                email, reference)
+            return this
+        }
+
+        fun goods(name: String, taxable_amount: Int, tax_exempt_amount: Int, total_tax_amount: Int):  CPayOrderBuilder {
+            this.goods = Goods(name, taxable_amount, tax_exempt_amount, total_tax_amount)
+            return this
+        }
+
+        fun failURL(url: String): CPayOrderBuilder {
+            this.callbackFailUrl = url
+            return this
+        }
+
+        fun cancelURL(url: String): CPayOrderBuilder {
+            this.cancelUrl = url
             return this
         }
 
@@ -114,11 +163,18 @@ open class CPayRequest() : Parcelable {
                 .amount(amount)
                 .reference(referenceId)
                 .currency(this.currency)
+                .setCountry(country)
                 .paymentMethod(type)
                 .subject(subject)
                 .body(body)
                 .ipnURL(ipnUrl)
                 .callbackURL(callbackUrl)
+                .failCallbackURL(callbackFailUrl)
+                .cancelURL(cancelUrl)
+                .setConsumer(consumer)
+                .setGoods(goods)
+                .setNote(note)
+                .setSource(source)
                 .setAllowDuplicate(allowDuplicate)
                 .setENVMode(mode)
                 .setApiType(CPayAPIType.ONLINE_ORDER)
@@ -484,6 +540,10 @@ open class CPayRequest() : Parcelable {
         mCallbackFailUrl = parcel.readString()
         mCancelUrl = parcel.readString()
         mCountry = parcel.readSerializable() as Locale
+        mConsumer = parcel.readSerializable() as sdk.models.Consumer
+        mGoods = parcel.readSerializable() as Goods
+        mNote = parcel.readString()
+        mSource = parcel.readString()
         mTimeout = parcel.readLong()
 
         mApiType = parcel.readSerializable() as CPayAPIType
@@ -514,6 +574,10 @@ open class CPayRequest() : Parcelable {
         parcel.writeString(mCallbackFailUrl)
         parcel.writeString(mCancelUrl)
         parcel.writeSerializable(mCountry)
+        parcel.writeSerializable(mConsumer)
+        parcel.writeSerializable(mGoods)
+        parcel.writeString(mNote)
+        parcel.writeString(mSource)
         parcel.writeLong(mTimeout)
         parcel.writeSerializable(mApiType)
     }
@@ -838,13 +902,49 @@ open class CPayRequest() : Parcelable {
         return mCancelUrl
     }
 
+    fun setNote(note: String): CPayRequest{
+        mNote = note
+        return this
+    }
+
+    fun getNote(): String? {
+        return mNote
+    }
+
+    fun setSource(source: String): CPayRequest{
+        mSource = source
+        return this
+    }
+
+    fun getSource(): String? {
+        return mSource
+    }
+
     private fun setCountry(country: Locale): CPayRequest {
         mCountry = country
         return this
     }
 
-    fun getCountry(): Locale? {
+    fun getCountry(): Locale {
         return mCountry
+    }
+
+    private fun setConsumer(consumer: sdk.models.Consumer?): CPayRequest {
+        mConsumer = consumer
+        return this
+    }
+
+    fun getConsumer(): sdk.models.Consumer? {
+        return mConsumer
+    }
+
+    private fun setGoods(goods: Goods?): CPayRequest {
+        mGoods = goods
+        return this
+    }
+
+    fun getGoods(): Goods? {
+        return mGoods
     }
 
     private fun setTimeout(t: Long): CPayRequest {

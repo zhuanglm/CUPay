@@ -23,7 +23,6 @@ import com.citconpay.sdk.data.repository.ApiRepository
 import com.citconpay.sdk.data.repository.CPayENV
 import com.citconpay.sdk.data.repository.CPayENVMode
 import com.citconpay.sdk.ui.main.view.CUPaySDKActivity
-import com.citconpay.sdk.utils.Constant
 import com.citconpay.sdk.utils.Resource
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
@@ -165,9 +164,16 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .setBody(mRequest.getBody())
             .setAmount(mRequest.getAmount())
             .setCurrency(mRequest.getCurrency())
+            .setCountry(mRequest.getCountry())
             .setVendor(mRequest.getPaymentMethod().type)
             .setIpnUrl(mRequest.getIpn())
             .setCallbackUrl(mRequest.getCallback())
+            .setCallbackFailUrl(mRequest.getFailCallback())
+            .setCallbackCancelUrl(mRequest.getCancelURL())
+            .setConsumer(mRequest.getConsumer())
+            .setNote(mRequest.getNote())
+            .setSource(mRequest.getSource())
+            .setGoods(mRequest.getGoods())
             .setAllowDuplicate(mRequest.isAllowDuplicate())
             .enableCNPayAcceleration(false)
             .build()
