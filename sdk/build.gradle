@@ -48,11 +48,13 @@ android {
 
 dependencies {
     //compileOnly fileTree(dir: "libs", include: ["*.aar"])
-    implementation fileTree(dir: "libs", include: ["*.aar"])
-    //implementation 'com.citcon.sdk:cpay-upi:1.0.2-alpha'
-    implementation 'com.android.volley:volley:1.2.1'
+    //implementation fileTree(dir: "libs", include: ["*.aar"])
+    api 'com.citcon.sdk:upi:1.0.3-alpha'
+    api 'com.citcon.sdk:mobile:2.5.4-beta'
+
+    //implementation 'com.android.volley:volley:1.2.1'
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
-    implementation 'androidx.core:core-ktx:1.7.0'
+    implementation 'androidx.core:core-ktx:1.8.0'
     implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
@@ -73,8 +75,8 @@ dependencies {
 //    api('com.braintreepayments.api:braintree:3.17.4'){transitive = true}
 //    api 'com.braintreepayments.api:google-payment:3.5.0'
     //implementation('com.braintreepayments.api:drop-in:5.2.0')
-    api project(':BT-Drop-In')
-    //api 'com.citcon.sdk:cpay-upi:BT-Drop-In:1.0.1'
+    //api project(':BT-Drop-In')
+    api 'com.citcon.sdk:drop-in:1.0.1'
     //implementation project(':CardForm')
 
     // Google dependencies
@@ -107,61 +109,12 @@ dependencies {
 
 }
 
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
+ext {
+    PUBLISH_GROUP_ID = 'com.citcon.sdk'
+    PUBLISH_VERSION = rootProject.versionName
+    PUBLISH_ARTIFACT_ID = 'cpay'
 }
 
-artifacts {
-    //archives javadocsJar
-    archives sourcesJar
-}
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
 
-signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
-    sign publishing.publications
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                groupId = 'com.github.Citcon.upi_sdk_adnroid'
-                artifactId = 'upi_sdk'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'upi_sdk'
-                    packaging = 'aar'
-                    description = 'A ready-made card form layout that can be included in your Android app, making it easy to accept credit and debit cards.'
-                    url = 'https://github.com/Citcon/UPI_mobile_SDK_Android'
-
-                    scm {
-                        url = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                        connection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                        developerConnection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Citcon Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+tasks.withType(Javadoc).all { enabled = false }

@@ -540,8 +540,8 @@ open class CPayRequest() : Parcelable {
         mCallbackFailUrl = parcel.readString()
         mCancelUrl = parcel.readString()
         mCountry = parcel.readSerializable() as Locale
-        mConsumer = parcel.readSerializable() as sdk.models.Consumer
-        mGoods = parcel.readSerializable() as Goods
+        mConsumer = parcel.readSerializable() as? sdk.models.Consumer
+        mGoods = parcel.readSerializable() as? Goods
         mNote = parcel.readString()
         mSource = parcel.readString()
         mTimeout = parcel.readLong()

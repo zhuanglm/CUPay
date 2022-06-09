@@ -18,8 +18,8 @@ android {
     defaultConfig {
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode rootProject.versionCode
-        versionName rootProject.versionName
+        versionCode 1
+        versionName '1.0.1'
 
         consumerProguardFiles 'proguard.pro'
 
@@ -59,14 +59,14 @@ android {
 
 dependencies {
     api ('com.braintreepayments.api:braintree:3.17.4'){transitive = true}
-    api project(':CardForm')
-    //api 'com.citcon.sdk:cpay-upi:CardForm:1.0.1'
+    //api project(':CardForm')
+    api 'com.citcon.sdk:CardForm:1.0.1'
     api 'com.braintreepayments.api:three-d-secure:3.17.4'
 
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.google.android.material:material:1.5.0'
+    implementation 'com.google.android.material:material:1.6.1'
 
     testImplementation 'com.squareup.assertj:assertj-android:1.1.1'
     testImplementation 'org.powermock:powermock-module-junit4:1.6.6'
@@ -77,90 +77,19 @@ dependencies {
     testImplementation 'org.skyscreamer:jsonassert:1.4.0'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    testImplementation "androidx.core:core-ktx:1.7.0"
-    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
+    testImplementation "androidx.core:core-ktx:1.8.0"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21"
     testImplementation 'com.google.android.gms:play-services-wallet:19.1.0'
 
 }
 
-// region signing and publishing
-
-//task javadocs(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//    failOnError false
-//}
-//
-//task javadocsJar(type: Jar, dependsOn: javadocs) {
-//    archiveClassifier.set('javadoc')
-//    from javadocs.destinationDir
-//}
-
-task sourcesJar(type: Jar) {
-    archiveClassifier.set('sources')
-    from android.sourceSets.main.java.srcDirs
+ext {
+    PUBLISH_GROUP_ID = 'com.citcon.sdk'
+    PUBLISH_VERSION = '1.0.1'
+    PUBLISH_ARTIFACT_ID = 'drop-in'
 }
 
-artifacts {
-    //archives javadocsJar
-    archives sourcesJar
-}
+apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
 
-signing {
-    required {
-        !version.endsWith("SNAPSHOT") && !version.endsWith("DEVELOPMENT")
-    }
-    sign publishing.publications
-}
+tasks.withType(Javadoc).all { enabled = false }
 
-nexusPublishing {
-    // give nexus sonatype more time to initialize the staging repository
-    clientTimeout = Duration.ofMinutes(3)
-    repositories {
-        sonatype()
-    }
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-
-                groupId = 'com.citcon.api'
-                artifactId = 'drop-in'
-                version = rootProject.versionName
-
-                pom {
-                    name = 'drop-in'
-                    packaging = 'aar'
-                    description = 'Drop-in payment form for Citcon\'s Android SDK. Integrate this library to add a readymade UI for your payments.'
-                    url = 'https://github.com/Citcon/UPI_mobile_SDK_Android'
-
-                    scm {
-                        url = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                        connection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                        developerConnection = 'scm:git@github.com:Citcon/UPI_mobile_SDK_Android.git'
-                    }
-
-                    developers {
-                        developer {
-                            id = 'devs'
-                            name = 'Citcon Payments'
-                        }
-                    }
-
-                    licenses {
-                        license {
-                            name = 'MIT'
-                            url = 'http://opensource.org/licenses/MIT'
-                            distribution = 'repo'
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-// endregion
