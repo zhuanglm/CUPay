@@ -31,6 +31,8 @@ open class CPayRequest() : Parcelable {
         DropInRequest()
     private var mGooglePaymentRequest: GooglePaymentRequest? = null
 
+    private var mInstallmentPeriod: String? = null
+
     //CPaySDK CPayOrder
     private var  mToken: String = ""
     private var  mAmount: String = ""
@@ -89,6 +91,7 @@ open class CPayRequest() : Parcelable {
         private var note: String = ""
         private var source = "app_h5"
         private lateinit var type: CPayMethodType
+        private var installmentPeriod: String? = null
 
         fun reference(id: String):  CPayOrderBuilder {
             referenceId = id
@@ -132,8 +135,8 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun goods(name: String, taxable_amount: Int, tax_exempt_amount: Int, total_tax_amount: Int):  CPayOrderBuilder {
-            this.goods = Goods(name, taxable_amount, tax_exempt_amount, total_tax_amount)
+        fun goods(name: String, taxable_amount: Int, tax_exempt_amount: Int, total_tax_amount: Int, total_discount_code: String?):  CPayOrderBuilder {
+            this.goods = Goods(name, taxable_amount, tax_exempt_amount, total_tax_amount, total_discount_code)
             return this
         }
 
@@ -154,6 +157,11 @@ open class CPayRequest() : Parcelable {
 
         fun paymentMethod(type: CPayMethodType): CPayOrderBuilder {
             this.type = type
+            return this
+        }
+
+        fun installmentPeriod(period: String): CPayOrderBuilder {
+            this.installmentPeriod = period
             return this
         }
 
@@ -178,6 +186,7 @@ open class CPayRequest() : Parcelable {
                 .setAllowDuplicate(allowDuplicate)
                 .setENVMode(mode)
                 .setApiType(CPayAPIType.ONLINE_ORDER)
+                .setInstallment(this.installmentPeriod)
         }
     }
 
@@ -227,6 +236,7 @@ open class CPayRequest() : Parcelable {
         private var callbackFailUrl: String? = null
         private var cancelUrl: String? = null
         private var timeout: Long = 60000
+        private var installmentPeriod: String? = null
 
         fun setTimeout(t: Long): UPIOrderBuilder {
             this.timeout = t
@@ -298,6 +308,11 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        fun installmentPeriod(period: String): UPIOrderBuilder {
+            this.installmentPeriod = period
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             Constant.SystemType = "UPI"
             return CPayRequest().amount(amount)
@@ -317,6 +332,7 @@ open class CPayRequest() : Parcelable {
                 .setCountry(country)
                 .setENVMode(mode)
                 .setTimeout(timeout)
+                .setInstallment(this.installmentPeriod)
         }
     }
 
@@ -524,6 +540,7 @@ open class CPayRequest() : Parcelable {
         mConsumerID = parcel.readString()!!
         mBrainTreeDropInRequest = parcel.readParcelable(DropInRequest::class.java.classLoader)!!
         mGooglePaymentRequest = parcel.readParcelable(GooglePaymentRequest::class.java.classLoader)
+        mInstallmentPeriod = parcel.readString()
 
         mToken = parcel.readString()!!
         mAmount = parcel.readString()!!
@@ -558,6 +575,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeString(mConsumerID)
         parcel.writeParcelable(mBrainTreeDropInRequest, 0)
         parcel.writeParcelable(mGooglePaymentRequest, 0)
+        parcel.writeString(mInstallmentPeriod)
 
         parcel.writeString(mToken)
         parcel.writeString(mAmount)
@@ -684,6 +702,15 @@ open class CPayRequest() : Parcelable {
 
     fun getApiType(): CPayAPIType {
         return mApiType
+    }
+
+    fun setInstallment(period: String?): CPayRequest {
+        mInstallmentPeriod = period
+        return this
+    }
+
+    fun getInstallmentPeriod(): String? {
+        return mInstallmentPeriod
     }
 
     /**

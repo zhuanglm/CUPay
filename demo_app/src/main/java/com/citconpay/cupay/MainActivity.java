@@ -1,5 +1,6 @@
 package com.citconpay.cupay;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -70,9 +71,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = /*"https://api.qa01.citconpay.com/v1/"*//*"https://api.sandbox.citconpay.com/v1/"*/"https://api.dev01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = "https://api-eks.qa01.citconpay.com/v1/"/*"https://api.sandbox.citconpay.com/v1/"*//*"https://api.dev01.citconpay.com/v1/"*/;
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = /*"kfc_upi_usd"*/"sk-development-ff4894740c55c92315b208715a65a501";
+    private static final String CITCON_BT_TEST = /*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*/"sk-development-d8d29d70d600bc528d20834285ee8ebb";
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -82,12 +83,13 @@ public class MainActivity extends AppCompatActivity {
     private String mAccessToken, mReference;
     private CPayMethodType mMethodType = CPayMethodType.ALI;
     private ProgressBar mProgressBar;
-    private EditText mEditTextAmount;
+    private EditText mEditTextAmount, mEditTextInstallment, mEditTextToken;
     private TextInputEditText mEditTextConsumerID, mEditTextCallbackURL, mEditTextIPNURL;
     private CheckBox mCheckBox3DS;
     private Spinner mModeSpinner, mCurrencySpinner, mSystemSpinner, mTokenSpinner;
     private Button mBTToken, mNewToken;
-    private View mLayoutPayments;
+    private boolean mIsBraintree = false;
+    private View mLayoutPayments, mLayoutToken;
     CitconUPIAPIService mApiService;
     private final MutableLiveData<String> mChargeToken = new MutableLiveData<>();
 
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         mEditTextCallbackURL = findViewById(R.id.edit_callback_url);
         mEditTextIPNURL = findViewById(R.id.edit_ipn_url);
         mEditTextAmount = findViewById(R.id.amount_editText);
+        mEditTextInstallment = findViewById(R.id.installment_editText);
+        mEditTextToken = findViewById(R.id.token_editText);
         mTextViewAccessToken = findViewById(R.id.tv_access_token);
         mTextViewChargeToken = findViewById(R.id.tv_charge_token);
         mTextViewReference = findViewById(R.id.tv_reference);
@@ -115,10 +119,12 @@ public class MainActivity extends AppCompatActivity {
         mCurrencySpinner = findViewById(R.id.select_currency);
         mSystemSpinner = findViewById(R.id.system_spinner);
         mLayoutPayments = findViewById(R.id.layout_payments);
+        mLayoutToken = findViewById(R.id.token_layout);
         mBTToken = findViewById(R.id.button_new_braintree);
         mNewToken = findViewById(R.id.button_new_payment);
 
         mEditTextConsumerID.setText(DEFAULT_CONSUMER_ID);
+        mEditTextToken.setText(CITCON_BT_TEST);
         textViewVersion.setText(getVersion());
 
         ActionBar actionBar = getSupportActionBar();
@@ -134,11 +140,17 @@ public class MainActivity extends AppCompatActivity {
                     mTokenSpinner.setVisibility(View.GONE);
                     mNewToken.setVisibility(View.VISIBLE);
                     mBTToken.setVisibility(View.VISIBLE);
+                    mLayoutToken.setVisibility(View.VISIBLE);
+                    mTextViewAccessToken.setVisibility(View.VISIBLE);
+                    mTextViewReference.setVisibility(View.VISIBLE);
                     mLayoutPayments.setVisibility(View.GONE);
                 } else if (position == 1) {
                     mTokenSpinner.setVisibility(View.VISIBLE);
+                    mLayoutToken.setVisibility(View.GONE);
                     mNewToken.setVisibility(View.GONE);
                     mBTToken.setVisibility(View.GONE);
+                    mTextViewAccessToken.setVisibility(View.GONE);
+                    mTextViewReference.setVisibility(View.GONE);
                     mLayoutPayments.setVisibility(View.VISIBLE);
                 }
             }
@@ -298,13 +310,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void newBraintreeToken(View v) {
+        mIsBraintree = true;
         mProgressBar.setVisibility(View.VISIBLE);
         getAccessToken(mApiService, BRAINTREE_BT_TEST);
     }
 
     public void newToken(View v) {
+        mIsBraintree = false;
         mProgressBar.setVisibility(View.VISIBLE);
-        getAccessToken(mApiService, CITCON_BT_TEST);
+        getAccessToken(mApiService, mEditTextToken.getText().toString());
     }
 
     public void inquire(View v) {
@@ -334,6 +348,31 @@ public class MainActivity extends AppCompatActivity {
         buildDropInRequest(CPayMethodType.UNIONPAY).start(this, mStartForResult);
     }
 
+    @SuppressLint("NonConstantResourceId")
+    public void launchURLPay(View v) {
+        switch (v.getId()) {
+            case R.id.buttonB:
+                mMethodType = CPayMethodType.BANKTRANSFER;
+                break;
+            case R.id.buttonC:
+                mMethodType = CPayMethodType.TOSS;
+                break;
+            case R.id.buttonD:
+                mMethodType = CPayMethodType.LPAY;
+                break;
+            case R.id.buttonE:
+                mMethodType = CPayMethodType.LG;
+                break;
+            case R.id.buttonF:
+                mMethodType = CPayMethodType.SAMSUNG;
+                break;
+            default:
+                mMethodType = CPayMethodType.CREDIT;
+        }
+
+        buildDropInRequest(mMethodType).start(this, mStartForResult);
+    }
+
     public void launchAliPayHK(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI_HK)
                 .getIntent(this), DROP_IN_REQUEST);*/
@@ -360,14 +399,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchCreditCard(View v) {
-        /*mMethodType = CPayMethodType.UNKNOWN;
-        *//*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNKNOWN)
-                .getIntent(this), DROP_IN_REQUEST);*//*
-        getChargeToken(mApiService);
-        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));*/
-
-        mMethodType = CPayMethodType.CREDIT;
-        buildDropInRequest(CPayMethodType.CREDIT).start(this, mStartForResult);
+        if(mIsBraintree) {
+            mMethodType = CPayMethodType.UNKNOWN;
+            getChargeToken(mApiService);
+            mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));
+        } else {
+            mMethodType = CPayMethodType.CREDIT;
+            buildDropInRequest(CPayMethodType.CREDIT).start(this, mStartForResult);
+        }
     }
 
     public void launchVenmo(View v) {
@@ -441,6 +480,11 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             case CREDIT:
+            case BANKTRANSFER:
+            case TOSS:
+            case LPAY:
+            case LG:
+            case SAMSUNG:
                 if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
                     return CPayRequest.UPIOrderBuilder.INSTANCE
                             .accessToken(mAccessToken)
@@ -457,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
                             .paymentMethod(type)
                             .country(Locale.KOREA)
                             .setTimeout(600)
+                            .installmentPeriod(mEditTextInstallment.getText().toString())
                             .build(mode);
                 } else {
                     mReference = RandomStringUtils.randomAlphanumeric(10);
@@ -468,13 +513,14 @@ public class MainActivity extends AppCompatActivity {
                             .country(Locale.KOREA)
                             .consumer("John","Doe","6145675309",
                                     "test.sam@test.com","consumer-reference-000")
-                            .goods("Battery Power Pack", 0,0,0)
+                            .goods("Battery Power Pack", 0,0,0, "code")
                             .note("note")
                             .source("app_h5")
                             .cancelURL("https://exampe.com/cancel")
                             .failURL("https://exampe.com/fail")
                             .amount(mEditTextAmount.getText().toString())
                             .setAllowDuplicate(true)
+                            .installmentPeriod(mEditTextInstallment.getText().toString())
                             .paymentMethod(type)
                             .build(mode);
                 }

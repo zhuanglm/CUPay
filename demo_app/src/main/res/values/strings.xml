@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">CUPay</string>
     <string name="bt_checkout">Check Out</string>
-    <string name="credit_card">Credit</string>
+    <string name="credit_card">Card</string>
     <string name="paypal">Paypal</string>
     <string name="bt_venmo">Venmo</string>
     <string name="bt_google">Google Pay</string>
@@ -11,11 +11,18 @@
     <string name="bt_my_wallet">My Wallet</string>
     <string name="bt_upop">Union Pay</string>
     <string name="bt_kakao">Kakao Pay</string>
+    <string name="bt_banktransfer">Bank Transfer</string>
+    <string name="bt_toss">TOSS</string>
+    <string name="bt_lpay">LPay</string>
+    <string name="bt_lgpay">LG Pay</string>
+    <string name="bt_samsungpay">Samsung Pay</string>
     <string name="three_DS">3DSecure Verification</string>
     <string name="consumer_id">consumer ID</string>
     <string name="new_token">New Token</string>
     <string name="new_braintree_token">New Braintree Token</string>
     <string name="amount">AMOUNT</string>
+    <string name="installment">INSTALLMENT</string>
+    <string name="token">UPI TOKEN</string>
     <string name="callback_url">callback URL</string>
     <string name="ipn_url">IPN URL</string>
     <string name="default_ipn_url">https://merchant.com/ipn.php"</string>

@@ -176,6 +176,9 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .setGoods(mRequest.getGoods())
             .setAllowDuplicate(mRequest.isAllowDuplicate())
             .enableCNPayAcceleration(false)
+            .setInstallment(mRequest.getInstallmentPeriod())
+            .cardIssuer(null)
+            .receiptType(null)
             .build()
 
         CPaySDK.initInstance(activity, null)
@@ -183,7 +186,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             CPayENVMode.DEV -> CPaySDK.setMode(CPayMode.DEV)
             CPayENVMode.UAT -> CPaySDK.setMode(CPayMode.UAT)
             CPayENVMode.PROD -> CPaySDK.setMode(CPayMode.PROD)
-            else -> CPaySDK.setMode(CPayMode.UAT)
+            CPayENVMode.QA -> CPaySDK.setMode(CPayMode.QA)
         }
 
         CPaySDK.mInquireResult.observe(activity) { inquireResponse ->
@@ -243,6 +246,10 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .setCountry(mRequest.getCountry())
             .setTimeout(mRequest.getTimeout())
             .enableCNPayAcceleration(false)
+            .setInstallment(mRequest.getInstallmentPeriod())
+            .totalDiscountCode("code")
+            .cardIssuer(null)
+            .receiptType("expense_proof")
             .build()
 
         CPayUPISDK.initInstance(activity, mRequest.getAccessToken())
