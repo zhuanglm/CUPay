@@ -25,8 +25,8 @@
     <string name="token">UPI TOKEN</string>
     <string name="callback_url">callback URL</string>
     <string name="ipn_url">IPN URL</string>
-    <string name="default_ipn_url">https://merchant.com/ipn.php"</string>
-    <string name="default_callback_url">https://dev.citcon-inc.com"</string>
+    <string name="default_ipn_url">https://merchant.com/ipn.php</string>
+    <string name="default_callback_url">citcon://cpay.testapp</string>
     <string name="reference_id">Reference ID:</string>
     <string name="inquire_ref">Inquire By Reference</string>
 </resources>

@@ -178,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mApiService = retrofit.create(CitconUPIAPIService.class);
+        mChargeToken.observe(this, s -> buildDropInRequest(mMethodType).start(this, mStartForResult));
 
     }
 
@@ -290,7 +291,11 @@ public class MainActivity extends AppCompatActivity {
                             error = gson.fromJson(String.valueOf(jsonObject.getJSONObject("data")), ErrorMessage.class);
                         }
                         if (error != null) {
-                            mChargeToken.postValue(error.getMessage() + " (" + error.getDebug() + error.getCode() + ")");
+                            //mChargeToken.postValue(error.getMessage() + " (" + error.getDebug() + error.getCode() + ")");
+                            AlertDialog.Builder alertdialog = new AlertDialog.Builder(MainActivity.this)
+                                    .setPositiveButton("Quit", null);
+                            String message = error.getMessage() + " (" + error.getDebug() + error.getCode() + ")";
+                            alertdialog.setMessage(message).create().show();
                         }
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
@@ -402,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
         if(mIsBraintree) {
             mMethodType = CPayMethodType.UNKNOWN;
             getChargeToken(mApiService);
-            mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.UNKNOWN).start(this, mStartForResult));
+
         } else {
             mMethodType = CPayMethodType.CREDIT;
             buildDropInRequest(CPayMethodType.CREDIT).start(this, mStartForResult);
@@ -412,8 +417,8 @@ public class MainActivity extends AppCompatActivity {
     public void launchVenmo(View v) {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAY_WITH_VENMO)
                 .getIntent(this), DROP_IN_REQUEST);*/
+        mMethodType = CPayMethodType.PAY_WITH_VENMO;
         getChargeToken(mApiService);
-        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.PAY_WITH_VENMO).start(this, mStartForResult));
     }
 
     public void launchPaypal(View v) {
@@ -421,7 +426,6 @@ public class MainActivity extends AppCompatActivity {
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
                 .getIntent(this), DROP_IN_REQUEST);*/
         getChargeToken(mApiService);
-        mChargeToken.observe(this, s -> buildDropInRequest(CPayMethodType.PAYPAL).start(this, mStartForResult));
     }
 
     public void launchManagement(View v) {
@@ -661,8 +665,8 @@ public class MainActivity extends AppCompatActivity {
                 CPayResult orderResult = (CPayResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
                 alertdialog.setMessage(
                         String.format(
-                                Locale.CANADA, "this is merchant demo APP\n paid %s %d\ncreated at: %s",
-                                orderResult.getCurrency(), orderResult.getAmount(),
+                                Locale.CANADA, "this is merchant demo APP\n \nreference: %s\n transaction: %s\n paid %s %d\n created at: %s",
+                                orderResult.getReference(), orderResult.getTransactionId(), orderResult.getCurrency(), orderResult.getAmount(),
                                 DateFormat.format("MM/dd/yyyy hh:mm:ss a",
                                         new Date(orderResult.getTime())).toString()
                         )
