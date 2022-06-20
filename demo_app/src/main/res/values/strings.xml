@@ -23,8 +23,16 @@
     <string name="amount">AMOUNT</string>
     <string name="installment">INSTALLMENT</string>
     <string name="token">UPI TOKEN</string>
-    <string name="callback_url">callback URL</string>
+    <string name="callback_url">Callback URL</string>
     <string name="ipn_url">IPN URL</string>
+    <string name="mobile_url">Mobile Callback URL</string>
+    <string name="cancel_url">Cancel URL</string>
+    <string name="fail_url">Fail URL</string>
+    <string name="order_note">Note</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
     <string name="default_ipn_url">https://merchant.com/ipn.php</string>
     <string name="default_callback_url">citcon://cpay.testapp</string>
     <string name="reference_id">Reference ID:</string>

@@ -5,8 +5,8 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +26,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.MutableLiveData;
 
+import com.citconpay.cupay.databinding.ActivityMainBinding;
 import com.citconpay.cupay.model.Device;
 import com.citconpay.cupay.model.Ext;
 import com.citconpay.cupay.model.RequestAccessToken;
@@ -77,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
+    private ActivityMainBinding binding;
+
     private TextView mTextViewAccessToken;
     private TextView mTextViewChargeToken;
     private TextView mTextViewReference;
@@ -84,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private CPayMethodType mMethodType = CPayMethodType.ALI;
     private ProgressBar mProgressBar;
     private EditText mEditTextAmount, mEditTextInstallment, mEditTextToken;
-    private TextInputEditText mEditTextConsumerID, mEditTextCallbackURL, mEditTextIPNURL;
+    private TextInputEditText mEditTextConsumerID;
     private CheckBox mCheckBox3DS;
     private Spinner mModeSpinner, mCurrencySpinner, mSystemSpinner, mTokenSpinner;
     private Button mBTToken, mNewToken;
@@ -101,10 +104,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
         mEditTextConsumerID = findViewById(R.id.edit_consumer_id);
-        mEditTextCallbackURL = findViewById(R.id.edit_callback_url);
-        mEditTextIPNURL = findViewById(R.id.edit_ipn_url);
         mEditTextAmount = findViewById(R.id.amount_editText);
         mEditTextInstallment = findViewById(R.id.installment_editText);
         mEditTextToken = findViewById(R.id.token_editText);
@@ -129,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable());
+            //actionBar.setBackgroundDrawable(new ColorDrawable());
+            actionBar.hide();
         }
 
         mSystemSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -245,20 +250,33 @@ public class MainActivity extends AppCompatActivity {
 
     // Charge Token also should be applied from backend server. here we get it directly is just for demo
     void getChargeToken(CitconUPIAPIService apiService) {
+        Editable etCallback = binding.editCancelUrl.getText();
+        String callbackURL = etCallback == null || etCallback.toString().equals("") ? "null.callback" :  etCallback.toString();
+        Editable etIPN = binding.editMobileUrl.getText();
+        String ipnURL = etIPN == null || etIPN.toString().equals("") ? "null.ipn" : etIPN.toString();
+        Editable etCancel = binding.editCancelUrl.getText();
+        String cancelURL = etCancel == null || etCancel.toString().equals("") ? "null.mobile.callback" :  etCancel.toString();
+        Editable etMobile = binding.editMobileUrl.getText();
+        String mobileURL = etMobile == null || etMobile.toString().equals("") ? "null.mobile.callback" : etMobile.toString();
+        Editable etFail = binding.editFailUrl.getText();
+        String failURL = etFail == null || etFail.toString().equals("") ? "null.fail" : etFail.toString();
+        Editable etNote = binding.editNote.getText();
+        String note = etNote == null || etNote.toString().equals("") ? "null" : etNote.toString();
+
         Transaction transaction = new Transaction();
         transaction.setReference(mReference);
         transaction.setAmount(Integer.parseInt(mEditTextAmount.getText().toString()));
         transaction.setCurrency(mCurrencySpinner.getSelectedItem().toString());
         transaction.setCountry("US");
         transaction.setAutoCapture(false);
-        transaction.setNote("braintree test");
+        transaction.setNote(note);
 
         Urls urls = new Urls();
-        urls.setIpn("http://ipn.com");
-        urls.setSuccess("http://success.com");
-        urls.setFail("http://fail.com");
-        urls.setMobile("http//mobile.com");
-        urls.setCancel("http://cancel.com");
+        urls.setIpn(ipnURL);
+        urls.setSuccess(callbackURL);
+        urls.setFail(failURL);
+        urls.setMobile(mobileURL);
+        urls.setCancel(cancelURL);
 
         Device device = new Device();
         device.setId("");
@@ -326,6 +344,10 @@ public class MainActivity extends AppCompatActivity {
         getAccessToken(mApiService, mEditTextToken.getText().toString());
     }
 
+    public void moreInfo(View v) {
+        binding.drawerLayout.openDrawer(binding.rightLayout);
+    }
+
     public void inquire(View v) {
         //mProgressBar.setVisibility(View.VISIBLE);
 
@@ -342,14 +364,10 @@ public class MainActivity extends AppCompatActivity {
     public void launchWeChatPay(View v) {
         mMethodType = CPayMethodType.WECHAT;
         buildDropInRequest(CPayMethodType.WECHAT).start(this, mStartForResult);
-//        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.WECHAT)
-//                .getIntent(this), DROP_IN_REQUEST);
     }
 
     public void launchUnionPay(View v) {
         mMethodType = CPayMethodType.UNIONPAY;
-//        startActivityForResult(buildDropInRequest(CitconPaymentMethodType.UNIONPAY)
-//                .getIntent(this), DROP_IN_REQUEST);
         buildDropInRequest(CPayMethodType.UNIONPAY).start(this, mStartForResult);
     }
 
@@ -385,8 +403,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchKakaoPay(View v) {
-        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.KAKAO)
-                .getIntent(this), DROP_IN_REQUEST);*/
         buildDropInRequest(CPayMethodType.KAKAO).start(this, mStartForResult);
     }
 
@@ -398,8 +414,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchGooglePay(View v) {
-        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.GOOGLE_PAYMENT)
-                .getIntent(this), DROP_IN_REQUEST);*/
         buildDropInRequest(CPayMethodType.GOOGLE_PAYMENT).start(this, mStartForResult);
     }
 
@@ -423,17 +437,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void launchPaypal(View v) {
         mMethodType = CPayMethodType.PAYPAL;
-        /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.PAYPAL)
-                .getIntent(this), DROP_IN_REQUEST);*/
         getChargeToken(mApiService);
     }
 
     public void launchManagement(View v) {
-        /*startActivityForResult(CPayDropInRequest.ManagerBuilder.INSTANCE
-                        .accessToken(mAccessToken)
-                        .build()
-                        .getIntent(this),
-                DROP_IN_REQUEST);*/
         CPayRequest.ManagerBuilder.INSTANCE
                 .accessToken(mAccessToken)
                 .build(CPayENVMode.DEV)
@@ -449,6 +456,28 @@ public class MainActivity extends AppCompatActivity {
      */
     private CPayRequest buildDropInRequest(CPayMethodType type) {
         CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
+
+        Editable etCallback = binding.editCancelUrl.getText();
+        String callbackURL = etCallback == null || etCallback.toString().equals("") ? "null.callback" :  etCallback.toString();
+        Editable etIPN = binding.editMobileUrl.getText();
+        String ipnURL = etIPN == null || etIPN.toString().equals("") ? "null.ipn" : etIPN.toString();
+        Editable etCancel = binding.editCancelUrl.getText();
+        String cancelURL = etCancel == null || etCancel.toString().equals("") ? "null.cancel" :  etCancel.toString();
+        Editable etMobile = binding.editMobileUrl.getText();
+        String mobileURL = etMobile == null || etMobile.toString().equals("") ? "null.mobile.callback" : etMobile.toString();
+        Editable etFail = binding.editFailUrl.getText();
+        String failURL = etFail == null || etFail.toString().equals("") ? "null.fail" : etFail.toString();
+        Editable etFirstName = binding.editFailUrl.getText();
+        String firstName = etFirstName == null || etFirstName.toString().equals("") ? "null" : etFirstName.toString();
+        Editable etLastName = binding.editLastName.getText();
+        String lastName = etLastName == null || etLastName.toString().equals("") ? "null" : etLastName.toString();
+        Editable etEmail = binding.editEmail.getText();
+        String email = etEmail == null || etEmail.toString().equals("") ? "null@test.com" : etEmail.toString();
+        Editable etPhone = binding.editPhoneNumber.getText();
+        String phone = etPhone == null || etPhone.toString().equals("") ? "null" : etPhone.toString();
+        Editable etNote = binding.editNote.getText();
+        String note = etNote == null || etNote.toString().equals("") ? "null" : etNote.toString();
+
         switch (type) {
             case ALI:
             case WECHAT:
@@ -460,11 +489,11 @@ public class MainActivity extends AppCompatActivity {
                             .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                             .currency(mCurrencySpinner.getSelectedItem().toString())
                             .amount(mEditTextAmount.getText().toString())
-                            .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
-                            .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
-                            .mobileURL("https://exampe.com/mobile")
-                            .cancelURL("https://exampe.com/cancel")
-                            .failURL("https://exampe.com/fail")
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .mobileURL(mobileURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .country(Locale.CANADA)
@@ -496,11 +525,11 @@ public class MainActivity extends AppCompatActivity {
                             .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                             .currency(mCurrencySpinner.getSelectedItem().toString())
                             .amount(mEditTextAmount.getText().toString())
-                            .callbackURL(Objects.requireNonNull(mEditTextCallbackURL.getText()).toString())
-                            .ipnURL(Objects.requireNonNull(mEditTextIPNURL.getText()).toString())
-                            .mobileURL("https://exampe.com/mobile")
-                            .cancelURL("https://exampe.com/cancel")
-                            .failURL("https://exampe.com/fail")
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .mobileURL(mobileURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .country(Locale.KOREA)
@@ -515,13 +544,12 @@ public class MainActivity extends AppCompatActivity {
                             .reference(mReference)
                             .currency(mCurrencySpinner.getSelectedItem().toString())
                             .country(Locale.KOREA)
-                            .consumer("John","Doe","6145675309",
-                                    "test.sam@test.com","consumer-reference-000")
+                            .consumer(firstName, lastName, phone, email,"consumer-reference-000")
                             .goods("Battery Power Pack", 0,0,0, "code")
-                            .note("note")
+                            .note(note)
                             .source("app_h5")
-                            .cancelURL("https://exampe.com/cancel")
-                            .failURL("https://exampe.com/fail")
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
                             .amount(mEditTextAmount.getText().toString())
                             .setAllowDuplicate(true)
                             .installmentPeriod(mEditTextInstallment.getText().toString())

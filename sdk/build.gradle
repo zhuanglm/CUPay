@@ -48,10 +48,10 @@ android {
 
 dependencies {
     //compileOnly fileTree(dir: "libs", include: ["*.aar"])
-    implementation fileTree(dir: "libs", include: ["*.aar"])
-    implementation 'com.android.volley:volley:1.2.1'
-    //api 'com.citcon.sdk:upi:1.0.3-alpha'
-    //api 'com.citcon.sdk:mobile:2.5.4-beta'
+    //implementation fileTree(dir: "libs", include: ["*.aar"])
+    //implementation 'com.android.volley:volley:1.2.1'
+    api 'com.citcon.sdk:upi:1.0.3-beta'
+    api 'com.citcon.sdk:mobile:2.5.4-gamma'
 
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
     implementation 'androidx.core:core-ktx:1.8.0'
@@ -82,7 +82,6 @@ dependencies {
     // Google dependencies
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
 
-    //implementation 'com.citcon.sdk:mobile:2.5.2'
     // wechatpay
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.9'
     // alipay

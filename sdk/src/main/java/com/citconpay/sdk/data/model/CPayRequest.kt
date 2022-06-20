@@ -128,8 +128,8 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun consumer(first_name: String, last_name: String, phone: String,
-                     email: String, reference: String):  CPayOrderBuilder {
+        fun consumer(first_name: String?, last_name: String?, phone: String?,
+                     email: String?, reference: String?):  CPayOrderBuilder {
             this.consumer = sdk.models.Consumer(first_name, last_name, phone,
                 email, reference)
             return this
@@ -140,12 +140,12 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun failURL(url: String): CPayOrderBuilder {
+        fun failURL(url: String?): CPayOrderBuilder {
             this.callbackFailUrl = url
             return this
         }
 
-        fun cancelURL(url: String): CPayOrderBuilder {
+        fun cancelURL(url: String?): CPayOrderBuilder {
             this.cancelUrl = url
             return this
         }
@@ -293,17 +293,17 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun mobileURL(url: String): UPIOrderBuilder {
+        fun mobileURL(url: String?): UPIOrderBuilder {
             this.mobileCallback = url
             return this
         }
 
-        fun failURL(url: String): UPIOrderBuilder {
+        fun failURL(url: String?): UPIOrderBuilder {
             this.callbackFailUrl = url
             return this
         }
 
-        fun cancelURL(url: String): UPIOrderBuilder {
+        fun cancelURL(url: String?): UPIOrderBuilder {
             this.cancelUrl = url
             return this
         }
@@ -344,32 +344,32 @@ open class CPayRequest() : Parcelable {
         private var zip: String? = null
         private var country: String? = null
 
-        fun street(street: String): BillingAdressBuilder {
+        fun street(street: String?): BillingAdressBuilder {
             this.street = street
             return this
         }
 
-        fun street2(street: String): BillingAdressBuilder {
+        fun street2(street: String?): BillingAdressBuilder {
             this.street2 = street
             return this
         }
 
-        fun city(city: String): BillingAdressBuilder {
+        fun city(city: String?): BillingAdressBuilder {
             this.city = city
             return this
         }
 
-        fun state(state: String): BillingAdressBuilder {
+        fun state(state: String?): BillingAdressBuilder {
             this.state = state
             return this
         }
 
-        fun postCode(zip: String): BillingAdressBuilder {
+        fun postCode(zip: String?): BillingAdressBuilder {
             this.zip = zip
             return this
         }
 
-        fun country(country: String): BillingAdressBuilder {
+        fun country(country: String?): BillingAdressBuilder {
             this.country = country
             return this
         }
