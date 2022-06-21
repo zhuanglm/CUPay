@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,7 +144,7 @@
                 android:onClick="moreInfo"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
-                android:text="..."
+                android:text="...    ->"
                 android:textAlignment="center"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -166,7 +167,7 @@
                 <EditText
                     android:id="@+id/token_editText"
                     android:layout_width="250dp"
-                    android:layout_height="25dp"
+                    android:layout_height="wrap_content"
                     android:autofillHints=""
                     android:background="@drawable/rect"
                     android:paddingStart="5dp"
@@ -187,35 +188,6 @@
             android:entries="@array/token_list"
             android:paddingLeft="5dp"
             android:paddingRight="5dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_callback_url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/callback_url"
-                android:text="@string/default_callback_url"
-                android:textSize="12sp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_ipn_url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/ipn_url"
-                android:text="@string/default_ipn_url"
-                android:textSize="12sp" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -243,6 +215,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:id="@+id/access_token_layout"
             android:orientation="horizontal">
 
             <TextView
@@ -260,6 +233,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/reference_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
@@ -285,7 +259,7 @@
             android:layout_marginEnd="4dp"
             android:onClick="inquire"
             android:text="@string/inquire_ref"
-            android:visibility="gone"/>
+            android:visibility="invisible"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -511,6 +485,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_gravity="end">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_callback_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/callback_url"
+                android:text="@string/default_callback_url"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_ipn_url"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ipn_url"
+                android:text="@string/default_ipn_url"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

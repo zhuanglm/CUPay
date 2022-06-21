@@ -104,7 +104,61 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         return null
     }
 
-    fun inquire(activity: CUPaySDKActivity) {
+    fun onlineInquire(activity: CUPaySDKActivity) {
+        if (CPaySDK.getInstance() == null) {
+            CPaySDK.initInstance(activity, null)
+        } else {
+            CPaySDK.setToken(mRequest.getToken())
+        }
+
+        when (mRequest.getENVMode()) {
+            CPayENVMode.DEV -> CPaySDK.setMode(CPayMode.DEV)
+            CPayENVMode.UAT -> CPaySDK.setMode(CPayMode.UAT)
+            CPayENVMode.PROD -> CPaySDK.setMode(CPayMode.PROD)
+            CPayENVMode.QA -> CPaySDK.setMode(CPayMode.QA)
+        }
+
+        CPaySDK.getInstance().inquireOrderByRef(
+            mRequest.getReference(), mRequest.getCurrency(),
+            mRequest.getPaymentMethod().type, false
+        ) { inquireResponse ->
+            inquireResponse?.run {
+                if (mStatus != "success") {
+                    activity.finish(
+                        CPayResult(
+                            Activity.RESULT_CANCELED,
+                            mRequest.getPaymentMethod(),
+                            ErrorMessage(
+                                mStatus,
+                                "error",
+                                mNote
+                            )
+                        )
+                    )
+                } else {
+                    activity.finish(
+                        inquireResponse2CPayResult(inquireResponse)
+                    )
+                }
+
+            } ?: activity.finish(
+                CPayResult(
+                    Activity.RESULT_CANCELED,
+                    mRequest.getPaymentMethod(),
+                    ErrorMessage(
+                        "-1",
+                        "error",
+                        "error"
+                    )
+                )
+            )
+
+        }
+
+
+    }
+
+    fun upiInquire(activity: CUPaySDKActivity) {
         if (CPayUPISDK.getInstance() == null) {
             CPayUPISDK.initInstance(activity, mRequest.getAccessToken())
         } else {

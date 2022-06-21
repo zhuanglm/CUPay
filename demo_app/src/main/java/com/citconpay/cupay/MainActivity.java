@@ -146,16 +146,16 @@ public class MainActivity extends AppCompatActivity {
                     mNewToken.setVisibility(View.VISIBLE);
                     mBTToken.setVisibility(View.VISIBLE);
                     mLayoutToken.setVisibility(View.VISIBLE);
-                    mTextViewAccessToken.setVisibility(View.VISIBLE);
-                    mTextViewReference.setVisibility(View.VISIBLE);
+                    binding.accessTokenLayout.setVisibility(View.VISIBLE);
+                    binding.referenceLayout.setVisibility(View.VISIBLE);
                     mLayoutPayments.setVisibility(View.GONE);
                 } else if (position == 1) {
                     mTokenSpinner.setVisibility(View.VISIBLE);
                     mLayoutToken.setVisibility(View.GONE);
                     mNewToken.setVisibility(View.GONE);
                     mBTToken.setVisibility(View.GONE);
-                    mTextViewAccessToken.setVisibility(View.GONE);
-                    mTextViewReference.setVisibility(View.GONE);
+                    binding.accessTokenLayout.setVisibility(View.GONE);
+                    binding.referenceLayout.setVisibility(View.GONE);
                     mLayoutPayments.setVisibility(View.VISIBLE);
                 }
             }
@@ -353,12 +353,23 @@ public class MainActivity extends AppCompatActivity {
 
         CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
 
-        CPayRequest.UPIInquireBuilder.INSTANCE
-                .accessToken(mAccessToken)
-                .paymentMethod(mMethodType)
-                .reference(mReference)
-                .build(mode)
-                .start(this, mStartForResult);
+        if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
+            CPayRequest.UPIInquireBuilder.INSTANCE
+                    .accessToken(mAccessToken)
+                    .paymentMethod(mMethodType)
+                    .reference(mReference)
+                    .build(mode)
+                    .start(this, mStartForResult);
+        } else {
+            if(mReference != null) {
+                CPayRequest.OnlineInquireBuilder.INSTANCE
+                        .currency(mCurrencySpinner.getSelectedItem().toString())
+                        .paymentMethod(mMethodType)
+                        .reference(mReference)
+                        .build(mode)
+                        .start(this, mStartForResult);
+            }
+        }
     }
 
     public void launchWeChatPay(View v) {

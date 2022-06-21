@@ -82,11 +82,11 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
             }
 
             CPayAPIType.UPI_INQUIRE -> {
-                mViewModel.inquire(mActivity)
+                mViewModel.upiInquire(mActivity)
             }
 
             CPayAPIType.ONLINE_INQUIRE -> {
-                //TODO
+                mViewModel.onlineInquire(mActivity)
             }
         }
 

@@ -73,6 +73,35 @@ open class CPayRequest() : Parcelable {
 
     }
 
+    object OnlineInquireBuilder {
+        private lateinit var currency: String
+        private lateinit var reference: String
+        private lateinit var type: CPayMethodType
+
+        fun paymentMethod(type: CPayMethodType): OnlineInquireBuilder {
+            this.type = type
+            return this
+        }
+
+        fun reference(reference: String): OnlineInquireBuilder {
+            this.reference = reference
+            return this
+        }
+
+        fun currency(currency: String):  OnlineInquireBuilder {
+            this.currency = currency
+            return this
+        }
+
+        fun build(mode: CPayENVMode): CPayRequest {
+            return CPayRequest().reference(reference)
+                .currency(currency)
+                .paymentMethod(type)
+                .setENVMode(mode)
+                .setApiType(CPayAPIType.ONLINE_INQUIRE)
+        }
+    }
+
     object CPayOrderBuilder {
         var referenceId: String = ""
         private var token: String = ""
