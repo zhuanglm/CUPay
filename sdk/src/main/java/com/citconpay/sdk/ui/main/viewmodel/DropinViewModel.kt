@@ -211,6 +211,9 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     }
 
     fun requestOnlineOrder(activity: CUPaySDKActivity, launchType: sdk.CPayLaunchType) {
+        val consumer = mRequest.getConsumer()?.run {
+            sdk.models.Consumer(firstName, lastName, phone, email, reference)
+        }
         val order = CPayOrder.Builder()
             .setLaunchType(launchType)
             .setReferenceId(mRequest.getReference())
@@ -224,7 +227,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .setCallbackUrl(mRequest.getCallback())
             .setCallbackFailUrl(mRequest.getFailCallback())
             .setCallbackCancelUrl(mRequest.getCancelURL())
-            .setConsumer(mRequest.getConsumer())
+            .setConsumer(consumer)
             .setNote(mRequest.getNote())
             .setSource(mRequest.getSource())
             .setGoods(mRequest.getGoods())
@@ -284,6 +287,8 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     }
 
     fun requestUPIOrder(activity: CUPaySDKActivity, launchType: upisdk.CPayLaunchType) {
+        val consumer = mRequest.getConsumer()
+        val billingAddress = consumer?.billingAddress
 
         val order = CPayUPIOrder.Builder()
             .setLaunchType(launchType)
@@ -304,6 +309,9 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .totalDiscountCode("code")
             .cardIssuer(null)
             .receiptType("expense_proof")
+            .billingAddress(billingAddress?.street, billingAddress?.street2, billingAddress?.city,
+                billingAddress?.zip, billingAddress?.state, billingAddress?.country)
+            .consumer(consumer?.reference, consumer?.firstName, consumer?.lastName, consumer?.phone, consumer?.email)
             .build()
 
         CPayUPISDK.initInstance(activity, mRequest.getAccessToken())

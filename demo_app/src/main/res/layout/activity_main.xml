@@ -523,6 +523,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/mobile_url"
+                android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -536,6 +537,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/cancel_url"
+                android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -549,6 +551,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/fail_url"
+                android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>

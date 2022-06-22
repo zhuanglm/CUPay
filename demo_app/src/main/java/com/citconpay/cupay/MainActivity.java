@@ -468,9 +468,9 @@ public class MainActivity extends AppCompatActivity {
     private CPayRequest buildDropInRequest(CPayMethodType type) {
         CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
 
-        Editable etCallback = binding.editCancelUrl.getText();
+        Editable etCallback = binding.editCallbackUrl.getText();
         String callbackURL = etCallback == null || etCallback.toString().equals("") ? "null.callback" :  etCallback.toString();
-        Editable etIPN = binding.editMobileUrl.getText();
+        Editable etIPN = binding.editIpnUrl.getText();
         String ipnURL = etIPN == null || etIPN.toString().equals("") ? "null.ipn" : etIPN.toString();
         Editable etCancel = binding.editCancelUrl.getText();
         String cancelURL = etCancel == null || etCancel.toString().equals("") ? "null.cancel" :  etCancel.toString();
@@ -478,14 +478,6 @@ public class MainActivity extends AppCompatActivity {
         String mobileURL = etMobile == null || etMobile.toString().equals("") ? "null.mobile.callback" : etMobile.toString();
         Editable etFail = binding.editFailUrl.getText();
         String failURL = etFail == null || etFail.toString().equals("") ? "null.fail" : etFail.toString();
-        Editable etFirstName = binding.editFailUrl.getText();
-        String firstName = etFirstName == null || etFirstName.toString().equals("") ? "null" : etFirstName.toString();
-        Editable etLastName = binding.editLastName.getText();
-        String lastName = etLastName == null || etLastName.toString().equals("") ? "null" : etLastName.toString();
-        Editable etEmail = binding.editEmail.getText();
-        String email = etEmail == null || etEmail.toString().equals("") ? "null@test.com" : etEmail.toString();
-        Editable etPhone = binding.editPhoneNumber.getText();
-        String phone = etPhone == null || etPhone.toString().equals("") ? "null" : etPhone.toString();
         Editable etNote = binding.editNote.getText();
         String note = etNote == null || etNote.toString().equals("") ? "null" : etNote.toString();
 
@@ -518,6 +510,10 @@ public class MainActivity extends AppCompatActivity {
                             .reference(mReference)
                             .currency(mCurrencySpinner.getSelectedItem().toString())
                             .amount(mEditTextAmount.getText().toString())
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .build(mode);
@@ -544,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .country(Locale.KOREA)
+                            .consumer(consumerSetup())
                             .setTimeout(600)
                             .installmentPeriod(mEditTextInstallment.getText().toString())
                             .build(mode);
@@ -555,10 +552,12 @@ public class MainActivity extends AppCompatActivity {
                             .reference(mReference)
                             .currency(mCurrencySpinner.getSelectedItem().toString())
                             .country(Locale.KOREA)
-                            .consumer(firstName, lastName, phone, email,"consumer-reference-000")
+                            .consumer(consumerSetup())
                             .goods("Battery Power Pack", 0,0,0, "code")
                             .note(note)
                             .source("app_h5")
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
                             .cancelURL(cancelURL)
                             .failURL(failURL)
                             .amount(mEditTextAmount.getText().toString())
@@ -597,7 +596,7 @@ public class MainActivity extends AppCompatActivity {
                         .reference(mReference)
                         .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
                         .request3DSecureVerification(mCheckBox3DS.isChecked())
-                        .consumer(demo3DSsetup())
+                        .consumer(consumerSetup())
                         .citconPaymentRequest(getPaymentRequest())
                         .paymentMethod(type)
                         .build(mode);
@@ -643,7 +642,16 @@ public class MainActivity extends AppCompatActivity {
                 .additionalInformation(additionalInformation);
     }*/
 
-    private CPayConsumer demo3DSsetup() {
+    private CPayConsumer consumerSetup() {
+        Editable etFirstName = binding.editFirstName.getText();
+        String firstName = etFirstName == null || etFirstName.toString().equals("") ? "null" : etFirstName.toString();
+        Editable etLastName = binding.editLastName.getText();
+        String lastName = etLastName == null || etLastName.toString().equals("") ? "null" : etLastName.toString();
+        Editable etEmail = binding.editEmail.getText();
+        String email = etEmail == null || etEmail.toString().equals("") ? "null@test.com" : etEmail.toString();
+        Editable etPhone = binding.editPhoneNumber.getText();
+        String phone = etPhone == null || etPhone.toString().equals("") ? "null" : etPhone.toString();
+
         CPayBillingAddr billingAddr = CPayRequest.BillingAdressBuilder.INSTANCE
                 .city("Chicago")
                 .state("IL")
@@ -653,10 +661,11 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         return CPayRequest.ConsumerBuilder.INSTANCE
-                .firstName("Alex")
-                .lastName("Smith")
-                .email("google@gmal.com")
-                .phone("1112223344")
+                .reference("consumer-reference-000")
+                .firstName(firstName)
+                .lastName(lastName)
+                .email(email)
+                .phone(phone)
                 .billingAddress(billingAddr)
                 .build();
     }

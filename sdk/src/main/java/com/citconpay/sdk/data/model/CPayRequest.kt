@@ -47,7 +47,7 @@ open class CPayRequest() : Parcelable {
     private var mCallbackFailUrl: String? = null
     private var mCancelUrl: String? = null
     private var mCountry: Locale = Locale.CANADA
-    private var mConsumer: sdk.models.Consumer? = null
+    private var mConsumer: CPayConsumer? = null
     private var mGoods: Goods? = null
     private var mNote: String? = null
     private var mSource: String? = null
@@ -103,7 +103,7 @@ open class CPayRequest() : Parcelable {
     }
 
     object CPayOrderBuilder {
-        var referenceId: String = ""
+        private var referenceId: String = ""
         private var token: String = ""
         private var amount: String = "0"
         private lateinit var currency: String
@@ -115,7 +115,7 @@ open class CPayRequest() : Parcelable {
         private var cancelUrl: String? = null
         private var allowDuplicate = true
         private var country: Locale = Locale.CANADA
-        private var consumer: sdk.models.Consumer? = null
+        private var consumer: CPayConsumer? = null
         private var goods: Goods? = null
         private var note: String = ""
         private var source = "app_h5"
@@ -157,15 +157,23 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
-        fun consumer(first_name: String?, last_name: String?, phone: String?,
-                     email: String?, reference: String?):  CPayOrderBuilder {
-            this.consumer = sdk.models.Consumer(first_name, last_name, phone,
-                email, reference)
+        fun consumer(consumer: CPayConsumer): CPayOrderBuilder {
+            this.consumer = consumer
             return this
         }
 
         fun goods(name: String, taxable_amount: Int, tax_exempt_amount: Int, total_tax_amount: Int, total_discount_code: String?):  CPayOrderBuilder {
             this.goods = Goods(name, taxable_amount, tax_exempt_amount, total_tax_amount, total_discount_code)
+            return this
+        }
+
+        fun callbackURL(url: String): CPayOrderBuilder {
+            this.callbackUrl = url
+            return this
+        }
+
+        fun ipnURL(url: String): CPayOrderBuilder {
+            this.ipnUrl = url
             return this
         }
 
@@ -266,6 +274,7 @@ open class CPayRequest() : Parcelable {
         private var cancelUrl: String? = null
         private var timeout: Long = 60000
         private var installmentPeriod: String? = null
+        private var consumer: CPayConsumer? = null
 
         fun setTimeout(t: Long): UPIOrderBuilder {
             this.timeout = t
@@ -342,6 +351,11 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        fun consumer(consumer: CPayConsumer?): UPIOrderBuilder {
+            this.consumer = consumer
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             Constant.SystemType = "UPI"
             return CPayRequest().amount(amount)
@@ -358,6 +372,7 @@ open class CPayRequest() : Parcelable {
                 .mobileCallbackURL(mobileCallback)
                 .failCallbackURL(callbackFailUrl)
                 .cancelURL(cancelUrl)
+                .setConsumer(consumer)
                 .setCountry(country)
                 .setENVMode(mode)
                 .setTimeout(timeout)
@@ -378,6 +393,7 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        @Suppress("unused")
         fun street2(street: String?): BillingAdressBuilder {
             this.street2 = street
             return this
@@ -415,6 +431,11 @@ open class CPayRequest() : Parcelable {
         private var phone: String? = null
         private var email: String? = null
         private var billingAddress: CPayBillingAddr? = null
+
+        fun reference(ref: String): ConsumerBuilder {
+            this.reference = ref
+            return this
+        }
 
         fun firstName(name: String): ConsumerBuilder {
             this.firstName = name
@@ -586,7 +607,7 @@ open class CPayRequest() : Parcelable {
         mCallbackFailUrl = parcel.readString()
         mCancelUrl = parcel.readString()
         mCountry = parcel.readSerializable() as Locale
-        mConsumer = parcel.readSerializable() as? sdk.models.Consumer
+        mConsumer = parcel.readSerializable() as? CPayConsumer
         mGoods = parcel.readSerializable() as? Goods
         mNote = parcel.readString()
         mSource = parcel.readString()
@@ -644,7 +665,7 @@ open class CPayRequest() : Parcelable {
      * @param context
      * @return [Intent] containing all of the options set in [CPayRequest].
      */
-    fun getIntent(context: Context?): Intent {
+    private fun getIntent(context: Context?): Intent {
         return Intent(context, CUPaySDKActivity::class.java)
                 .putExtra(EXTRA_CHECKOUT_REQUEST, this)
     }
@@ -985,12 +1006,12 @@ open class CPayRequest() : Parcelable {
         return mCountry
     }
 
-    private fun setConsumer(consumer: sdk.models.Consumer?): CPayRequest {
+    private fun setConsumer(consumer: CPayConsumer?): CPayRequest {
         mConsumer = consumer
         return this
     }
 
-    fun getConsumer(): sdk.models.Consumer? {
+    fun getConsumer(): CPayConsumer? {
         return mConsumer
     }
 
