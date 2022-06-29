@@ -61,7 +61,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     private fun <T> inquireResponse2CPayResult(inquireResponse: T): CPayResult? {
         if (inquireResponse is CPayUPIInquireResult) {
             return inquireResponse.run {
-                if (mStatus == "authorized" || mStatus == "0") {
+                if (mStatus == "authorized" || mStatus == "0" || mStatus == "success") {
                     CPayResult(
                         Activity.RESULT_OK,
                         mRequest.getPaymentMethod(),
@@ -95,7 +95,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             }
         } else if (inquireResponse is CPayInquireResult) {
             return inquireResponse.run {
-                if (mStatus == "authorized" || mStatus == "0") {
+                if (mStatus == "authorized" || mStatus == "0" || mStatus == "success") {
                     val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
                     sdf.timeZone = TimeZone.getTimeZone("UTC")
                     val time = sdf.parse(mTime)?.time
