@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> mStartForResult =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResult);
 
+    private final Locale[] mCountries = {Locale.US, Locale.CANADA, Locale.CHINA, Locale.KOREA, Locale.JAPAN};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -267,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.setReference(mReference);
         transaction.setAmount(Integer.parseInt(mEditTextAmount.getText().toString()));
         transaction.setCurrency(mCurrencySpinner.getSelectedItem().toString());
-        transaction.setCountry("US");
+        transaction.setCountry(binding.selectCountry.getSelectedItem().toString());
         transaction.setAutoCapture(false);
         transaction.setNote(note);
 
@@ -467,6 +469,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private CPayRequest buildDropInRequest(CPayMethodType type) {
         CPayENVMode mode = CPayENVMode.valueOf(mModeSpinner.getSelectedItem().toString());
+        Locale country = mCountries[binding.selectCountry.getSelectedItemPosition()];
 
         Editable etCallback = binding.editCallbackUrl.getText();
         String callbackURL = etCallback == null || etCallback.toString().equals("") ? "null.callback" :  etCallback.toString();
@@ -499,7 +502,7 @@ public class MainActivity extends AppCompatActivity {
                             .failURL(failURL)
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
-                            .country(Locale.CANADA)
+                            .country(country)
                             .setTimeout(600)
                             .build(mode);
                 } else {
@@ -509,6 +512,7 @@ public class MainActivity extends AppCompatActivity {
                             .token(mTokenSpinner.getSelectedItem().toString())
                             .reference(mReference)
                             .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .country(country)
                             .amount(mEditTextAmount.getText().toString())
                             .callbackURL(callbackURL)
                             .ipnURL(ipnURL)
@@ -539,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
                             .failURL(failURL)
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
-                            .country(Locale.KOREA)
+                            .country(country)
                             .consumer(consumerSetup())
                             .setTimeout(600)
                             .installmentPeriod(mEditTextInstallment.getText().toString())
@@ -551,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
                             .token(mTokenSpinner.getSelectedItem().toString())
                             .reference(mReference)
                             .currency(mCurrencySpinner.getSelectedItem().toString())
-                            .country(Locale.KOREA)
+                            .country(country)
                             .consumer(consumerSetup())
                             .goods("Battery Power Pack", 0,0,0, "code")
                             .note(note)
@@ -617,30 +621,6 @@ public class MainActivity extends AppCompatActivity {
                         .addAllowedCountryCode("US"))
                 .googleMerchantId("18278000977346790994");
     }
-
-    /*private Citcon3DSecureRequest demoThreeDSecureRequest() {
-        CPay3DSecurePostalAddress billingAddress = new CPay3DSecurePostalAddress()
-                .givenName("Jill")
-                .surname("Doe")
-                .phoneNumber("5551234567")
-                .streetAddress("555 Smith St")
-                .extendedAddress("#2")
-                .locality("Chicago")
-                .region("IL")
-                .postalCode("12345")
-                .countryCodeAlpha2("US");
-
-        CPay3DSecureAdditionalInfo additionalInformation = new CPay3DSecureAdditionalInfo()
-                .accountId("account-id");
-
-        return new Citcon3DSecureRequest()
-                .amount("1.00")
-                .versionRequested(Citcon3DSecureRequest.VERSION_2)
-                .email("test@email.com")
-                .mobilePhoneNumber("3125551234")
-                .billingAddress(billingAddress)
-                .additionalInformation(additionalInformation);
-    }*/
 
     private CPayConsumer consumerSetup() {
         Editable etFirstName = binding.editFirstName.getText();

@@ -39,6 +39,18 @@
         <item>NZD</item>
         <item>SGD</item>
         <item>KRW</item>
+        <item>JPY</item>
+    </string-array>
+
+    <string-array name="country_list">
+        <item>US</item>
+        <item>CANADA</item>
+        <item>CHINA</item>
+        <item>KOREAN</item>
+        <item>JAPAN</item>
+        <item>AUSTRALIA</item>
+        <item>NEW ZEALAND</item>
+        <item>SINGAPORE</item>
     </string-array>
 
 </resources>

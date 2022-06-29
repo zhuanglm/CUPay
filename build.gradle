@@ -5,7 +5,7 @@ buildscript {
         minSdkVersion = 21
         targetSdkVersion = 31
         versionCode = 4
-        version = '4.22.06-gamma'
+        version = '4.22.06-delta'
         versionName = version
         kotlin_version = '1.7.0'
     }

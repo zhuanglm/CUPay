@@ -40,7 +40,7 @@ open class CPayRequest() : Parcelable {
     private var  mSubject: String = ""
     private var  mBody: String = ""
     private var  mIpnUrl: String = ""
-    private var  mCallbackUrl: String = ""
+    private var  mCallbackUrl: String = "citcon://cpay.sdk"
     private var  mAllowDuplicate = true
 
     private var mMobileCallback: String? = null
@@ -110,7 +110,7 @@ open class CPayRequest() : Parcelable {
         private var subject: String = "cupay test subject"
         private var body: String = "cupay test body"
         private var ipnUrl: String = "https://cupay.test.ipn"
-        private var callbackUrl: String = "https://cupay.test.ipn"
+        private var callbackUrl: String = "citcon://cpay.sdk"
         private var callbackFailUrl: String? = null
         private var cancelUrl: String? = null
         private var allowDuplicate = true
@@ -265,7 +265,7 @@ open class CPayRequest() : Parcelable {
         private var subject: String = "cupay test subject"
         private var body: String = "cupay test body"
         private var ipnUrl: String = "https://cupay.test.ipn"
-        private var callbackUrl: String = "https://cupay.test.ipn"
+        private var callbackUrl: String = "citcon://cpay.sdk"
         private var allowDuplicate = true
         private lateinit var type: CPayMethodType
         private var country: Locale = Locale.CANADA

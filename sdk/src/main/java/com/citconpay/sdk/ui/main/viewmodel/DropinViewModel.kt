@@ -36,6 +36,8 @@ import sdk.models.CPayOrder
 import upisdk.CPayUPISDK
 import upisdk.models.CPayUPIInquireResult
 import upisdk.models.CPayUPIOrder
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class DropinViewModel(request: CPayRequest, application: Application) :
@@ -46,6 +48,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     val mResult = MutableLiveData<DropInResult>()
     private val apiRepository = ApiRepository(CPayENV.getBaseURL(request.getENVMode()))
     private var mRunningFlag = false
+    var mInitFlag = false
 
     fun getDropInRequest(): CPayRequest {
         return mRequest
@@ -58,46 +61,73 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     private fun <T> inquireResponse2CPayResult(inquireResponse: T): CPayResult? {
         if (inquireResponse is CPayUPIInquireResult) {
             return inquireResponse.run {
-                CPayResult(
-                    Activity.RESULT_OK,
-                    mRequest.getPaymentMethod(),
+                if (mStatus == "authorized" || mStatus == "0") {
+                    CPayResult(
+                        Activity.RESULT_OK,
+                        mRequest.getPaymentMethod(),
 
-                    PlacedOrder(
-                        "", mId, mReference,
-                        mAmount,
-                        amount_captured = mCaptureAmount > 0,
-                        amount_refunded = mRefundAmount > 0,
-                        currency = mCurrency,
-                        time_created = mTime,
-                        time_captured = mCaptureTime,
-                        status = mStatus ?: "",
-                        country = mCountry,
-                        payment = ConfirmChargePayment(
-                            mRequest.getPaymentMethod().type, ""
+                        PlacedOrder(
+                            "", mId, mReference,
+                            mAmount,
+                            amount_captured = mCaptureAmount > 0,
+                            amount_refunded = mRefundAmount > 0,
+                            currency = mCurrency,
+                            time_created = mTime,
+                            time_captured = mCaptureTime,
+                            status = mStatus ?: "",
+                            country = mCountry,
+                            payment = ConfirmChargePayment(
+                                mRequest.getPaymentMethod().type, ""
+                            )
                         )
                     )
-
-                )
+                } else {
+                    CPayResult(
+                        Activity.RESULT_CANCELED,
+                        mRequest.getPaymentMethod(),
+                        ErrorMessage(
+                            mStatus,
+                            "error",
+                            mNote
+                        )
+                    )
+                }
             }
         } else if (inquireResponse is CPayInquireResult) {
             return inquireResponse.run {
-                CPayResult(
-                    Activity.RESULT_OK,
-                    mRequest.getPaymentMethod(),
+                if (mStatus == "authorized" || mStatus == "0") {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+                    sdf.timeZone = TimeZone.getTimeZone("UTC")
+                    val time = sdf.parse(mTime)?.time
+                    CPayResult(
+                        Activity.RESULT_OK,
+                        mRequest.getPaymentMethod(),
 
-                    PlacedOrder("", mId, mReference,
-                        if (mAmount == "")  0 else mAmount.toInt(),
-                        amount_captured = true,
-                        amount_refunded = false,
-                        currency = mCurrency,
-                        time_created = 0,
-                        time_captured = 0,
-                        status = mStatus?:"",
-                        country = "",
-                        payment = ConfirmChargePayment(mRequest.getPaymentMethod().type, "")
+                        PlacedOrder(
+                            "", mId, mReference,
+                            if (mAmount == "") 0 else mAmount.toInt(),
+                            amount_captured = true,
+                            amount_refunded = false,
+                            currency = mCurrency,
+                            time_created = time ?: 0,
+                            time_captured = 0,
+                            status = mStatus ?: "",
+                            country = "",
+                            payment = ConfirmChargePayment(mRequest.getPaymentMethod().type, "")
+                        )
+
                     )
-
-                )
+                } else {
+                    CPayResult(
+                        Activity.RESULT_CANCELED,
+                        mRequest.getPaymentMethod(),
+                        ErrorMessage(
+                            mStatus,
+                            "error",
+                            mNote
+                        )
+                    )
+                }
             }
         }
 
@@ -258,26 +288,32 @@ class DropinViewModel(request: CPayRequest, application: Application) :
 
         CPaySDK.setToken(mRequest.getToken())
         CPaySDK.getInstance().requestOrder(activity, order, OrderResponse { orderResult ->
+
             if (orderResult == null || orderResult.mStatus != "0") {
-                activity.finish(
-                    CPayResult(
-                        Activity.RESULT_CANCELED,
-                        mRequest.getPaymentMethod(),
-                        orderResult?.run {
-                            ErrorMessage(
-                                mStatus,
-                                mMessage,
-                                mOrderId
+                if(orderResult.mStatus == "initiated") {
+                    //allow inquire to detect the transaction status
+                    mRunningFlag = true
+                } else {
+                    activity.finish(
+                        CPayResult(
+                            Activity.RESULT_CANCELED,
+                            mRequest.getPaymentMethod(),
+                            orderResult?.run {
+                                ErrorMessage(
+                                    mStatus,
+                                    mMessage,
+                                    mOrderId
+                                )
+                            } ?: ErrorMessage(
+                                "-1",
+                                "error",
+                                "error"
                             )
-                        } ?: ErrorMessage(
-                            "-1",
-                            "error",
-                            "error"
                         )
                     )
-                )
 
-                mRunningFlag = false
+                    mRunningFlag = false
+                }
                 return@OrderResponse
             } else {
                 mRunningFlag = true
@@ -336,25 +372,30 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         CPayUPISDK.getInstance().requestOrder(activity, order,
             upisdk.interfaces.OrderResponse { orderResult ->
                 if (orderResult == null || orderResult.mStatus != "0") {
-                    activity.finish(
-                        CPayResult(
-                            Activity.RESULT_CANCELED,
-                            mRequest.getPaymentMethod(),
-                            orderResult?.run {
-                                ErrorMessage(
-                                    mStatus,
-                                    mMessage,
-                                    mOrder.mReferenceId
+                    if(orderResult.mStatus == "initiated") {
+                        //allow inquire to detect the transaction status
+                        mRunningFlag = true
+                    } else {
+                        activity.finish(
+                            CPayResult(
+                                Activity.RESULT_CANCELED,
+                                mRequest.getPaymentMethod(),
+                                orderResult?.run {
+                                    ErrorMessage(
+                                        mStatus,
+                                        mMessage,
+                                        mOrder.mReferenceId
+                                    )
+                                } ?: ErrorMessage(
+                                    "-1",
+                                    "error",
+                                    "error"
                                 )
-                            } ?: ErrorMessage(
-                                "-1",
-                                "error",
-                                "error"
                             )
                         )
-                    )
 
-                    mRunningFlag = false
+                        mRunningFlag = false
+                    }
                     return@OrderResponse
                 } else {
                     mRunningFlag = true

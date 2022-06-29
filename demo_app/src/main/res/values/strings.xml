@@ -34,9 +34,9 @@
     <string name="email">Email</string>
     <string name="phone_number">Phone Number</string>
     <string name="default_ipn_url">https://ipn-receive.qa01.citconpay.com/notify</string>
-    <string name="default_callback_url">citcon://cpay.testapp</string>
-    <string name="default_cancel_url">citcon://cpay.testapp</string>
-    <string name="default_fail_url">citcon://cpay.testapp</string>
+    <string name="default_callback_url">citcon://cpay.sdk</string>
+    <string name="default_cancel_url">citcon://cpay.sdk</string>
+    <string name="default_fail_url">citcon://cpay.sdk</string>
     <string name="reference_id">Reference ID:</string>
     <string name="inquire_ref">Inquire By Reference</string>
 </resources>

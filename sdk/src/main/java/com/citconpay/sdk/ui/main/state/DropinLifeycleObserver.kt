@@ -27,6 +27,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
         when (mViewModel.getDropInRequest().getApiType()) {
             CPayAPIType.ONLINE_ORDER -> {
+                mGatewayType = mViewModel.getDropInRequest().getPaymentMethod().type
                 when (mViewModel.getDropInRequest().getPaymentMethod()) {
                     CPayMethodType.ALI,CPayMethodType.WECHAT,CPayMethodType.UNIONPAY ->
                         mViewModel.requestOnlineOrder(mActivity,sdk.CPayLaunchType.OTHERS)
@@ -42,19 +43,17 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                 mViewModel.loadClientToken().observe(mLifecycleOwner) {
                     it?.let {
                         when (it.status) {
-                            //Todo: load config to fill up related Request by payment method type
                             Status.SUCCESS -> {
                                 it.data?.let { response ->
-                                    //todo: setup and launch dropin according to gateway
                                     mGatewayType = response.data.gateway
-                                    if (response.data.gateway == "braintree") {
+                                    if (mGatewayType == "braintree") {
                                         mViewModel.getDropInRequest().getBrainTreeDropInRequest()
                                             //.clientToken(SANDBOX_TOKENIZATION_KEY)
                                             .clientToken(response.data.config.client_token)
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()
-                                    } else if (response.data.gateway == "toss") {
+                                    } else if (mGatewayType == "toss" || mGatewayType == "sbps" ) {
                                         mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.URL)
                                     } else {
                                         // alipay,wechatpay,upop
@@ -96,18 +95,24 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
 
     //@OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onResume(owner: LifecycleOwner) {
-        when (mViewModel.getDropInRequest().getApiType()) {
-            CPayAPIType.UPI_ORDER -> {
-                if(mGatewayType == "upop" || mGatewayType == "toss") {
-                    CPayUPISDK.getInstance()?.onResume()
+        if (mViewModel.mInitFlag) {
+            //alipay and wxpay have call inquire internally
+            if (mGatewayType != "alipay" && mGatewayType != "wechatpay") {
+                when (mViewModel.getDropInRequest().getApiType()) {
+                    CPayAPIType.UPI_ORDER -> {
+                        CPayUPISDK.getInstance()?.onResume()
+                    }
+
+                    CPayAPIType.ONLINE_ORDER -> {
+                        CPaySDK.getInstance()?.onResume()
+                    }
+
+                    else -> {}
                 }
             }
-
-            CPayAPIType.ONLINE_ORDER -> {
-                CPaySDK.getInstance()?.onResume()
-            }
-
-            else -> {}
+        } else {
+            //1st onResume
+            mViewModel.mInitFlag = true
         }
     }
 
