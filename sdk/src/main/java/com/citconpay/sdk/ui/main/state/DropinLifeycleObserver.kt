@@ -53,7 +53,7 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()
-                                    } else if (mGatewayType == "toss" || mGatewayType == "sbps" ) {
+                                    } else if (mGatewayType == "toss" || mGatewayType == "sbps" || mGatewayType == "fomo" ) {
                                         mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.URL)
                                     } else {
                                         // alipay,wechatpay,upop

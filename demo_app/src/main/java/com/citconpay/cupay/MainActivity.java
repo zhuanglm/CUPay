@@ -72,9 +72,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = "https://api-eks.qa01.citconpay.com/v1/"/*"https://api.sandbox.citconpay.com/v1/"*//*"https://api.dev01.citconpay.com/v1/"*/;
+    private static final String CITCON_SERVER = /*"https://api-eks.qa01.citconpay.com/v1/"*//*"https://api.sandbox.citconpay.com/v1/"*/"https://api.dev01.citconpay.com/v1/";
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = /*"fomo_test"*//*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*/"sk-development-d8d29d70d600bc528d20834285ee8ebb";
+    private static final String CITCON_BT_TEST = "fomo_test"/*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*//*"sk-development-d8d29d70d600bc528d20834285ee8ebb"*/;
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> mStartForResult =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), activityResult);
 
-    private final Locale[] mCountries = {Locale.US, Locale.CANADA, Locale.CHINA, Locale.KOREA, Locale.JAPAN};
+    private final Locale[] mCountries = {Locale.US, Locale.CANADA, Locale.CHINA, Locale.KOREA, Locale.JAPAN, new Locale("zh_sg","SG")};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -402,6 +402,21 @@ public class MainActivity extends AppCompatActivity {
             case R.id.buttonF:
                 mMethodType = CPayMethodType.SAMSUNG;
                 break;
+            case R.id.buttonG:
+                mMethodType = CPayMethodType.GRABPAY;
+                break;
+            case R.id.buttonH:
+                mMethodType = CPayMethodType.SHOPEEPAY;
+                break;
+            case R.id.buttonI:
+                mMethodType = CPayMethodType.ATOME;
+                break;
+            case R.id.buttonJ:
+                mMethodType = CPayMethodType.PAYNOW;
+                break;
+            case R.id.buttonK:
+                mMethodType = CPayMethodType.NETSPAY;
+                break;
             default:
                 mMethodType = CPayMethodType.CREDIT;
         }
@@ -488,6 +503,11 @@ public class MainActivity extends AppCompatActivity {
             case ALI:
             case WECHAT:
             case UNIONPAY:
+            case ATOME:
+            case GRABPAY:
+            case SHOPEEPAY:
+            case PAYNOW:
+            case NETSPAY:
                 if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
                     return CPayRequest.UPIOrderBuilder.INSTANCE
                             .accessToken(mAccessToken)
@@ -503,7 +523,7 @@ public class MainActivity extends AppCompatActivity {
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .country(country)
-                            .setTimeout(600)
+                            //.setExpiry(600)
                             .build(mode);
                 } else {
                     mReference = RandomStringUtils.randomAlphanumeric(10);
@@ -545,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
                             .paymentMethod(type)
                             .country(country)
                             .consumer(consumerSetup())
-                            .setTimeout(600)
+                            .setExpiry(600)
                             .installmentPeriod(mEditTextInstallment.getText().toString())
                             .build(mode);
                 } else {

@@ -52,7 +52,7 @@ open class CPayRequest() : Parcelable {
     private var mNote: String? = null
     private var mSource: String? = null
 
-    private var mTimeout:Long = 60000
+    private var mExpiry:Long = 0
 
     private var  mApiType = CPayAPIType.UPI_ORDER
 
@@ -272,12 +272,13 @@ open class CPayRequest() : Parcelable {
         private var mobileCallback: String? = null
         private var callbackFailUrl: String? = null
         private var cancelUrl: String? = null
-        private var timeout: Long = 60000
+        private var expiry: Long = 0
         private var installmentPeriod: String? = null
         private var consumer: CPayConsumer? = null
+        private var note: String? = null
 
-        fun setTimeout(t: Long): UPIOrderBuilder {
-            this.timeout = t
+        fun setExpiry(t: Long): UPIOrderBuilder {
+            this.expiry = t
             return this
         }
 
@@ -356,6 +357,12 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        @Suppress("unused")
+        fun note(note: String):  UPIOrderBuilder {
+            this.note = note
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             Constant.SystemType = "UPI"
             return CPayRequest().amount(amount)
@@ -375,7 +382,8 @@ open class CPayRequest() : Parcelable {
                 .setConsumer(consumer)
                 .setCountry(country)
                 .setENVMode(mode)
-                .setTimeout(timeout)
+                .setExpiry(expiry)
+                .setNote(note)
                 .setInstallment(this.installmentPeriod)
         }
     }
@@ -611,7 +619,7 @@ open class CPayRequest() : Parcelable {
         mGoods = parcel.readSerializable() as? Goods
         mNote = parcel.readString()
         mSource = parcel.readString()
-        mTimeout = parcel.readLong()
+        mExpiry = parcel.readLong()
 
         mApiType = parcel.readSerializable() as CPayAPIType
     }
@@ -646,7 +654,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeSerializable(mGoods)
         parcel.writeString(mNote)
         parcel.writeString(mSource)
-        parcel.writeLong(mTimeout)
+        parcel.writeLong(mExpiry)
         parcel.writeSerializable(mApiType)
     }
 
@@ -979,7 +987,7 @@ open class CPayRequest() : Parcelable {
         return mCancelUrl
     }
 
-    fun setNote(note: String): CPayRequest{
+    fun setNote(note: String?): CPayRequest{
         mNote = note
         return this
     }
@@ -1024,13 +1032,13 @@ open class CPayRequest() : Parcelable {
         return mGoods
     }
 
-    private fun setTimeout(t: Long): CPayRequest {
-        mTimeout = t
+    private fun setExpiry(t: Long): CPayRequest {
+        mExpiry = t
         return this
     }
 
-    fun getTimeout(): Long {
-        return mTimeout
+    fun getExpiry(): Long {
+        return mExpiry
     }
 
     private fun setAllowDuplicate(flag: Boolean): CPayRequest {

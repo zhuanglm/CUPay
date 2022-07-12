@@ -365,8 +365,8 @@
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchGooglePay"
-                android:text="@string/bt_google"
+                android:onClick="launchUnionPay"
+                android:text="@string/bt_upop"
                 android:visibility="visible" />
 
             <Button
@@ -379,26 +379,28 @@
                 android:visibility="visible" />
 
             <Button
-                android:id="@+id/button5"
+                android:id="@+id/buttonA"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchKakaoPay"
-                android:text="@string/bt_kakao"
+                android:onClick="launchWeChatPay"
+                android:text="@string/bt_wx"
                 android:visibility="visible" />
+
         </TableRow>
 
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <Button
                 android:id="@+id/button8"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchUnionPay"
-                android:text="@string/bt_upop"
+                android:onClick="launchGooglePay"
+                android:text="@string/bt_google"
                 android:visibility="visible" />
 
             <Button
@@ -411,13 +413,14 @@
                 android:visibility="visible" />
 
             <Button
-                android:id="@+id/buttonA"
+                android:id="@+id/button5"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="launchWeChatPay"
-                android:text="@string/bt_wx"
+                android:onClick="launchKakaoPay"
+                android:text="@string/bt_kakao"
                 android:visibility="visible" />
+
         </TableRow>
 
         <TableRow
@@ -450,11 +453,6 @@
                 android:onClick="launchURLPay"
                 android:text="@string/bt_lpay"
                 android:visibility="visible" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
             <Button
                 android:id="@+id/buttonE"
@@ -465,6 +463,12 @@
                 android:text="@string/bt_lgpay"
                 android:visibility="visible" />
 
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <Button
                 android:id="@+id/buttonF"
                 style="?android:attr/buttonBarButtonStyle"
@@ -472,6 +476,57 @@
                 android:layout_height="wrap_content"
                 android:onClick="launchURLPay"
                 android:text="@string/bt_samsungpay"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/buttonK"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchURLPay"
+                android:text="@string/bt_netspay"
+                android:visibility="visible" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/buttonG"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchURLPay"
+                android:text="@string/bt_grabpay"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/buttonH"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchURLPay"
+                android:text="@string/bt_shopeepay"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/buttonI"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchURLPay"
+                android:text="@string/bt_atome"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/buttonJ"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="launchURLPay"
+                android:text="@string/bt_paynow"
                 android:visibility="visible" />
 
         </TableRow>
