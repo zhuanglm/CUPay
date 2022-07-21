@@ -37,6 +37,7 @@ import com.citconpay.cupay.response.AccessToken;
 import com.citconpay.cupay.response.ChargeToken;
 import com.citconpay.sdk.data.api.response.CitconApiResponse;
 import com.citconpay.sdk.data.model.CPayBillingAddr;
+import com.citconpay.sdk.data.model.CPayCardInfo;
 import com.citconpay.sdk.data.model.CPayConsumer;
 import com.citconpay.sdk.data.model.CPayMethodType;
 import com.citconpay.sdk.data.model.CPayRequest;
@@ -72,7 +73,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = /*"https://api-eks.qa01.citconpay.com/v1/"*//*"https://api.sandbox.citconpay.com/v1/"*/"https://api.dev01.citconpay.com/v1/";
+    private static final String CITCON_SERVER = "https://api-eks.qa01.citconpay.com/v1/"/*"https://api.sandbox.citconpay.com/v1/"*//*"https://api.dev01.citconpay.com/v1/"*/;
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "fomo_test"/*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*//*"sk-development-d8d29d70d600bc528d20834285ee8ebb"*/;
     private static final String BRAINTREE_BT_TEST = "braintree";
@@ -350,6 +351,10 @@ public class MainActivity extends AppCompatActivity {
         binding.drawerLayout.openDrawer(binding.rightLayout);
     }
 
+    public void cardInfo(View v) {
+        binding.drawerLayout.openDrawer(binding.leftLayout);
+    }
+
     public void inquire(View v) {
         //mProgressBar.setVisibility(View.VISIBLE);
 
@@ -452,6 +457,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else {
             mMethodType = CPayMethodType.CREDIT;
+            binding.drawerLayout.closeDrawer(binding.leftLayout);
             buildDropInRequest(CPayMethodType.CREDIT).start(this, mStartForResult);
         }
     }
@@ -499,7 +505,63 @@ public class MainActivity extends AppCompatActivity {
         Editable etNote = binding.editNote.getText();
         String note = etNote == null || etNote.toString().equals("") ? "null" : etNote.toString();
 
+        Editable etCardNumber = binding.editCardNumber.getText();
+        String cardNumber = etCardNumber == null || etCardNumber.toString().equals("") ? "null" : etCardNumber.toString();
+        Editable etCardFirstName = binding.editCardFirstName.getText();
+        String firstName = etCardFirstName == null || etCardFirstName.toString().equals("") ? "null" : etCardFirstName.toString();
+        Editable etCardLastName = binding.editCardLastName.getText();
+        String lastName = etCardLastName == null || etCardLastName.toString().equals("") ? "null" : etCardLastName.toString();
+        Editable etCardCVV = binding.editCardCvv.getText();
+        String cardCVV = etCardCVV == null || etCardCVV.toString().equals("") ? "null" : etCardCVV.toString();
+        Editable etCardExpiry = binding.editCardExpiry.getText();
+        String cardExpiry = etCardExpiry == null || etCardExpiry.toString().equals("") ? "null" : etCardExpiry.toString();
+
+
         switch (type) {
+            case CREDIT:
+                if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
+                    return CPayRequest.UPIOrderBuilder.INSTANCE
+                            .accessToken(mAccessToken)
+                            .reference(mReference)
+                            .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .mobileURL(mobileURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .country(country)
+                            .consumer(consumerSetup())
+                            //.cardInfo(new CPayCardInfo("4380883331605767", "sun", "mingming", "123", "12/29", null)) //FOMO card
+                            .cardInfo(new CPayCardInfo(cardNumber, firstName, lastName, cardCVV, cardExpiry, null))
+                            .deviceInfo("8.8.8.8")
+                            .installmentPeriod(mEditTextInstallment.getText().toString())
+                            .build(mode);
+                } else {
+                    mReference = RandomStringUtils.randomAlphanumeric(10);
+
+                    return CPayRequest.CPayOrderBuilder.INSTANCE
+                            .token(mTokenSpinner.getSelectedItem().toString())
+                            .reference(mReference)
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .country(country)
+                            .consumer(consumerSetup())
+                            .goods("Battery Power Pack", 0,0,0, "code")
+                            .note(note)
+                            .source("app_h5")
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
+                            .amount(mEditTextAmount.getText().toString())
+                            .setAllowDuplicate(true)
+                            .installmentPeriod(mEditTextInstallment.getText().toString())
+                            .paymentMethod(type)
+                            .build(mode);
+                }
             case ALI:
             case WECHAT:
             case UNIONPAY:
@@ -543,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
                             .build(mode);
                 }
 
-            case CREDIT:
+            //case CREDIT:
             case BANKTRANSFER:
             case TOSS:
             case LPAY:
@@ -728,7 +790,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 CPayResult error  = (CPayResult) result.getData().getSerializableExtra(Constant.PAYMENT_RESULT);
                 message = "this is merchant demo APP\n payment cancelled :\n" + error.getMessage()
-                        + "-" + error.getCode();
+                        + "-" + error.getCode(); /* code is return status*/
             }
             alertdialog.setMessage(message).create().show();
         }

@@ -33,7 +33,6 @@ open class CPayRequest() : Parcelable {
 
     private var mInstallmentPeriod: String? = null
 
-    //CPaySDK CPayOrder
     private var  mToken: String = ""
     private var  mAmount: String = ""
     private var  mCurrency: String = ""
@@ -52,7 +51,9 @@ open class CPayRequest() : Parcelable {
     private var mNote: String? = null
     private var mSource: String? = null
 
-    private var mExpiry:Long = 0
+    private var mCardInfo: CPayCardInfo? = null
+    private var mDeviceInfo: CPayDeviceInfo? = null
+    private var mExpiry: Long = 0
 
     private var  mApiType = CPayAPIType.UPI_ORDER
 
@@ -276,6 +277,8 @@ open class CPayRequest() : Parcelable {
         private var installmentPeriod: String? = null
         private var consumer: CPayConsumer? = null
         private var note: String? = null
+        private var cardInfo: CPayCardInfo? = null
+        private var deviceInfo: CPayDeviceInfo? = null
 
         fun setExpiry(t: Long): UPIOrderBuilder {
             this.expiry = t
@@ -363,6 +366,16 @@ open class CPayRequest() : Parcelable {
             return this
         }
 
+        fun cardInfo(info: CPayCardInfo?) :UPIOrderBuilder {
+            this.cardInfo = info
+            return this
+        }
+
+        fun deviceInfo(ip: String) :UPIOrderBuilder {
+            this.deviceInfo = CPayDeviceInfo(null, ip, null, null)
+            return this
+        }
+
         fun build(mode: CPayENVMode): CPayRequest {
             Constant.SystemType = "UPI"
             return CPayRequest().amount(amount)
@@ -385,6 +398,8 @@ open class CPayRequest() : Parcelable {
                 .setExpiry(expiry)
                 .setNote(note)
                 .setInstallment(this.installmentPeriod)
+                .setCardInfo(cardInfo)
+                .setDeviceInfo(deviceInfo)
         }
     }
 
@@ -619,6 +634,8 @@ open class CPayRequest() : Parcelable {
         mGoods = parcel.readSerializable() as? Goods
         mNote = parcel.readString()
         mSource = parcel.readString()
+        mCardInfo = parcel.readSerializable() as? CPayCardInfo
+        mDeviceInfo = parcel.readSerializable() as? CPayDeviceInfo
         mExpiry = parcel.readLong()
 
         mApiType = parcel.readSerializable() as CPayAPIType
@@ -654,6 +671,8 @@ open class CPayRequest() : Parcelable {
         parcel.writeSerializable(mGoods)
         parcel.writeString(mNote)
         parcel.writeString(mSource)
+        parcel.writeSerializable(mCardInfo)
+        parcel.writeSerializable(mDeviceInfo)
         parcel.writeLong(mExpiry)
         parcel.writeSerializable(mApiType)
     }
@@ -1021,6 +1040,32 @@ open class CPayRequest() : Parcelable {
 
     fun getConsumer(): CPayConsumer? {
         return mConsumer
+    }
+
+    /**
+     * This method is optional.
+     *
+     */
+    private fun setCardInfo(info: CPayCardInfo?): CPayRequest {
+        mCardInfo = info
+        return this
+    }
+
+    fun getCardInfo(): CPayCardInfo? {
+        return mCardInfo
+    }
+
+    /**
+     * This method is optional.
+     *
+     */
+    private fun setDeviceInfo(info: CPayDeviceInfo?): CPayRequest {
+        mDeviceInfo = info
+        return this
+    }
+
+    fun getDeviceInfo(): CPayDeviceInfo? {
+        return mDeviceInfo
     }
 
     private fun setGoods(goods: Goods?): CPayRequest {

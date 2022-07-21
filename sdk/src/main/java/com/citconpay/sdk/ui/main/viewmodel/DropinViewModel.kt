@@ -36,6 +36,7 @@ import sdk.models.CPayOrder
 import upisdk.CPayUPISDK
 import upisdk.models.CPayUPIInquireResult
 import upisdk.models.CPayUPIOrder
+import upisdk.models.CardInfo
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -61,7 +62,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
     private fun <T> inquireResponse2CPayResult(inquireResponse: T): CPayResult? {
         if (inquireResponse is CPayUPIInquireResult) {
             return inquireResponse.run {
-                if (mStatus == "authorized" || mStatus == "0" || mStatus == "success") {
+                if (mStatus == "authorized" || mStatus == "0" || mStatus == "success" || mStatus == "succeeded") {
                     CPayResult(
                         Activity.RESULT_OK,
                         mRequest.getPaymentMethod(),
@@ -344,11 +345,13 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .setInstallment(mRequest.getInstallmentPeriod())
             .setAutoCapture(true)
             .totalDiscountCode("code")
-            .cardIssuer(null)
+            .cardIssuer(mRequest.getCardInfo()?.issuer)
+            .cardInfo(mRequest.getCardInfo()?.run { CardInfo(pan, firstName, lastName, cvv, expiry) })
             .receiptType("expense_proof")
             .billingAddress(billingAddress?.street, billingAddress?.street2, billingAddress?.city,
                 billingAddress?.zip, billingAddress?.state, billingAddress?.country)
             .consumer(consumer?.reference, consumer?.firstName, consumer?.lastName, consumer?.phone, consumer?.email)
+            .deviceIP(mRequest.getDeviceInfo()?.ipAddress)
             .build()
 
         CPayUPISDK.initInstance(activity, mRequest.getAccessToken())

@@ -44,4 +44,10 @@
     <string name="default_fail_url">citcon://cpay.sdk</string>
     <string name="reference_id">Reference ID:</string>
     <string name="inquire_ref">Inquire By Reference</string>
+    <string name="card_number">Card Number</string>
+    <string name="card_first_name">First Name</string>
+    <string name="card_last_name">Last Name</string>
+    <string name="card_cvv">CVV</string>
+    <string name="card_expiry">Expiry(mm/yy)</string>
+    <string name="card_pay">Pay with card</string>
 </resources>
