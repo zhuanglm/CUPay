@@ -563,8 +563,8 @@
                 android:id="@+id/edit_callback_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
                 android:hint="@string/callback_url"
+                android:inputType="textUri"
                 android:text="@string/default_callback_url"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -578,8 +578,8 @@
                 android:id="@+id/edit_ipn_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
                 android:hint="@string/ipn_url"
+                android:inputType="textUri"
                 android:text="@string/default_ipn_url"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -592,8 +592,8 @@
                 android:id="@+id/edit_mobile_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
                 android:hint="@string/mobile_url"
+                android:inputType="textUri"
                 android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
@@ -607,8 +607,8 @@
                 android:id="@+id/edit_cancel_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
                 android:hint="@string/cancel_url"
+                android:inputType="textUri"
                 android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
@@ -622,8 +622,8 @@
                 android:id="@+id/edit_fail_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textUri"
                 android:hint="@string/fail_url"
+                android:inputType="textUri"
                 android:text="@string/default_callback_url"
                 android:textSize="12sp" />
 
@@ -650,8 +650,8 @@
                 android:id="@+id/edit_first_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:hint="@string/first_name"
+                android:inputType="textPersonName"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -664,8 +664,8 @@
                 android:id="@+id/edit_last_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:hint="@string/last_name"
+                android:inputType="textPersonName"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -678,8 +678,8 @@
                 android:id="@+id/edit_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
                 android:hint="@string/email"
+                android:inputType="textEmailAddress"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -692,11 +692,53 @@
                 android:id="@+id/edit_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="phone"
                 android:hint="@string/phone_number"
+                android:inputType="phone"
                 android:textSize="12sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_timeout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/timeout"
+                android:text="60"
+                android:inputType="number"
+                android:textSize="12sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:text="@string/payment_format"
+                android:textSize="12sp" />
+
+            <Spinner
+                android:id="@+id/format_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="25dp"
+                android:background="@drawable/rect"
+                android:entries="@array/format_list"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -718,72 +760,68 @@
                 android:id="@+id/edit_card_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:hint="@string/card_number"
+                android:inputType="number"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_card_first_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:hint="@string/card_first_name"
+                android:inputType="textPersonName"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_card_last_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
                 android:hint="@string/card_last_name"
+                android:inputType="textPersonName"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_card_cvv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:hint="@string/card_cvv"
+                android:inputType="number"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_card_expiry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="date"
                 android:hint="@string/card_expiry"
+                android:inputType="date"
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/button_pay"
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:onClick="launchCreditCard"
             android:text="@string/card_pay" />
 

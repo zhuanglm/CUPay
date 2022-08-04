@@ -12,6 +12,11 @@
         <item>ONLINE</item>
     </string-array>
 
+    <string-array name="format_list">
+        <item>REDIRECT</item>
+        <item>QR</item>
+    </string-array>
+
     <string-array name="token_list">
         <item>292DDDF4D30545EE81499C12C2A9F205</item>
         <item>F75E9D7D40A5451D86701EEDD5C81E54</item>

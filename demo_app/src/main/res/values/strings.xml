@@ -50,4 +50,6 @@
     <string name="card_cvv">CVV</string>
     <string name="card_expiry">Expiry(mm/yy)</string>
     <string name="card_pay">Pay with card</string>
+    <string name="payment_format">Payment Format</string>
+    <string name="timeout">Timeout(s)</string>
 </resources>

@@ -73,7 +73,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = "https://api-eks.qa01.citconpay.com/v1/"/*"https://api.sandbox.citconpay.com/v1/"*//*"https://api.dev01.citconpay.com/v1/"*/;
+    private static final String CITCON_SERVER = /*"https://api-eks.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/"/*"https://api.dev01.citconpay.com/v1/"*/;
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
     private static final String CITCON_BT_TEST = "fomo_test"/*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*//*"sk-development-d8d29d70d600bc528d20834285ee8ebb"*/;
     private static final String BRAINTREE_BT_TEST = "braintree";
@@ -515,6 +515,8 @@ public class MainActivity extends AppCompatActivity {
         String cardCVV = etCardCVV == null || etCardCVV.toString().equals("") ? "null" : etCardCVV.toString();
         Editable etCardExpiry = binding.editCardExpiry.getText();
         String cardExpiry = etCardExpiry == null || etCardExpiry.toString().equals("") ? "null" : etCardExpiry.toString();
+        Editable etTimeout = binding.editTimeout.getText();
+        long timeout = etTimeout == null || etTimeout.toString().equals("") ? 0 : Long.parseUnsignedLong(etTimeout.toString()) * 1000;
 
 
         switch (type) {
@@ -539,6 +541,8 @@ public class MainActivity extends AppCompatActivity {
                             .cardInfo(new CPayCardInfo(cardNumber, firstName, lastName, cardCVV, cardExpiry, null))
                             .deviceInfo("8.8.8.8")
                             .installmentPeriod(mEditTextInstallment.getText().toString())
+                            .paymentFormat(binding.formatSpinner.getSelectedItem().toString())
+                            .setExpiry(System.currentTimeMillis()+timeout)
                             .build(mode);
                 } else {
                     mReference = RandomStringUtils.randomAlphanumeric(10);
@@ -585,7 +589,8 @@ public class MainActivity extends AppCompatActivity {
                             .setAllowDuplicate(true)
                             .paymentMethod(type)
                             .country(country)
-                            //.setExpiry(600)
+                            .paymentFormat(binding.formatSpinner.getSelectedItem().toString())
+                            .setExpiry(System.currentTimeMillis()+timeout)
                             .build(mode);
                 } else {
                     mReference = RandomStringUtils.randomAlphanumeric(10);

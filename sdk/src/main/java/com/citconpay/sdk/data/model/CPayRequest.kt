@@ -56,6 +56,7 @@ open class CPayRequest() : Parcelable {
     private var mExpiry: Long = 0
 
     private var  mApiType = CPayAPIType.UPI_ORDER
+    private var mPaymentFormat: String? = "redirect"
 
     object ManagerBuilder {
         private lateinit var accessToken: String
@@ -279,9 +280,15 @@ open class CPayRequest() : Parcelable {
         private var note: String? = null
         private var cardInfo: CPayCardInfo? = null
         private var deviceInfo: CPayDeviceInfo? = null
+        private var paymentFormat: String? = null
 
         fun setExpiry(t: Long): UPIOrderBuilder {
             this.expiry = t
+            return this
+        }
+
+        fun paymentFormat(format: String?): UPIOrderBuilder {
+            this.paymentFormat = format
             return this
         }
 
@@ -400,6 +407,7 @@ open class CPayRequest() : Parcelable {
                 .setInstallment(this.installmentPeriod)
                 .setCardInfo(cardInfo)
                 .setDeviceInfo(deviceInfo)
+                .setPaymentFormat(paymentFormat)
         }
     }
 
@@ -639,6 +647,7 @@ open class CPayRequest() : Parcelable {
         mExpiry = parcel.readLong()
 
         mApiType = parcel.readSerializable() as CPayAPIType
+        mPaymentFormat = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -675,6 +684,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeSerializable(mDeviceInfo)
         parcel.writeLong(mExpiry)
         parcel.writeSerializable(mApiType)
+        parcel.writeString(mPaymentFormat)
     }
 
     override fun describeContents(): Int {
@@ -1066,6 +1076,19 @@ open class CPayRequest() : Parcelable {
 
     fun getDeviceInfo(): CPayDeviceInfo? {
         return mDeviceInfo
+    }
+
+    /**
+     * This method is optional.
+     *
+     */
+    private fun setPaymentFormat(format: String?): CPayRequest {
+        mPaymentFormat = format?: "redirect"
+        return this
+    }
+
+    fun getPaymentFormat(): String {
+        return mPaymentFormat?:"null"
     }
 
     private fun setGoods(goods: Goods?): CPayRequest {

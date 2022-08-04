@@ -352,6 +352,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
                 billingAddress?.zip, billingAddress?.state, billingAddress?.country)
             .consumer(consumer?.reference, consumer?.firstName, consumer?.lastName, consumer?.phone, consumer?.email)
             .deviceIP(mRequest.getDeviceInfo()?.ipAddress)
+            //.format(mRequest.getPaymentFormat())
             .build()
 
         CPayUPISDK.initInstance(activity, mRequest.getAccessToken())
