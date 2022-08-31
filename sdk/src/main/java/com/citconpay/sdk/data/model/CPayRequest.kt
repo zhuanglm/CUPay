@@ -57,6 +57,7 @@ open class CPayRequest() : Parcelable {
 
     private var  mApiType = CPayAPIType.UPI_ORDER
     private var mPaymentFormat: String? = "redirect"
+    private var mReceiptType: String? = "expense_proof"
 
     object ManagerBuilder {
         private lateinit var accessToken: String
@@ -281,6 +282,7 @@ open class CPayRequest() : Parcelable {
         private var cardInfo: CPayCardInfo? = null
         private var deviceInfo: CPayDeviceInfo? = null
         private var paymentFormat: String? = null
+        private var receiptType: String? = null
 
         fun setExpiry(t: Long): UPIOrderBuilder {
             this.expiry = t
@@ -289,6 +291,11 @@ open class CPayRequest() : Parcelable {
 
         fun paymentFormat(format: String?): UPIOrderBuilder {
             this.paymentFormat = format
+            return this
+        }
+
+        fun receiptType(type: String?): UPIOrderBuilder {
+            this.receiptType = type
             return this
         }
 
@@ -408,6 +415,7 @@ open class CPayRequest() : Parcelable {
                 .setCardInfo(cardInfo)
                 .setDeviceInfo(deviceInfo)
                 .setPaymentFormat(paymentFormat)
+                .setReceiptType(receiptType)
         }
     }
 
@@ -648,6 +656,7 @@ open class CPayRequest() : Parcelable {
 
         mApiType = parcel.readSerializable() as CPayAPIType
         mPaymentFormat = parcel.readString()
+        mReceiptType = parcel.readString()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -685,6 +694,7 @@ open class CPayRequest() : Parcelable {
         parcel.writeLong(mExpiry)
         parcel.writeSerializable(mApiType)
         parcel.writeString(mPaymentFormat)
+        parcel.writeString(mReceiptType)
     }
 
     override fun describeContents(): Int {
@@ -1089,6 +1099,19 @@ open class CPayRequest() : Parcelable {
 
     fun getPaymentFormat(): String {
         return mPaymentFormat?:"null"
+    }
+
+    /**
+     * This method is optional.
+     *
+     */
+    private fun setReceiptType(type: String?): CPayRequest {
+        mReceiptType = type?: "expense_proof"
+        return this
+    }
+
+    fun getReceiptType(): String {
+        return mReceiptType?:"null"
     }
 
     private fun setGoods(goods: Goods?): CPayRequest {

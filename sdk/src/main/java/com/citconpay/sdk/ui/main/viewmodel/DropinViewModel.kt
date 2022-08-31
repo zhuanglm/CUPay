@@ -347,7 +347,7 @@ class DropinViewModel(request: CPayRequest, application: Application) :
             .totalDiscountCode("code")
             .cardIssuer(mRequest.getCardInfo()?.issuer)
             .cardInfo(mRequest.getCardInfo()?.run { CardInfo(pan, firstName, lastName, cvv, expiry) })
-            .receiptType("expense_proof")
+            .receiptType(mRequest.getReceiptType())
             .billingAddress(billingAddress?.street, billingAddress?.street2, billingAddress?.city,
                 billingAddress?.zip, billingAddress?.state, billingAddress?.country)
             .consumer(consumer?.reference, consumer?.firstName, consumer?.lastName, consumer?.phone, consumer?.email)
