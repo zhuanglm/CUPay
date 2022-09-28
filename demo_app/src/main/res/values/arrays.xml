@@ -17,6 +17,11 @@
         <item>QR</item>
     </string-array>
 
+    <string-array name="receipt_list">
+        <item>income_deduction</item>
+        <item>expense_proof</item>
+    </string-array>
+
     <string-array name="token_list">
         <item>292DDDF4D30545EE81499C12C2A9F205</item>
         <item>F75E9D7D40A5451D86701EEDD5C81E54</item>
@@ -46,6 +51,7 @@
         <item>SGD</item>
         <item>KRW</item>
         <item>JPY</item>
+        <item>HKD</item>
     </string-array>
 
     <string-array name="country_list">

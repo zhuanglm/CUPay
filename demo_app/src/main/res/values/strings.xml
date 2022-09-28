@@ -21,6 +21,12 @@
     <string name="bt_atome">ATOME</string>
     <string name="bt_paynow">PayNow</string>
     <string name="bt_netspay">NetsPay</string>
+    <string name="bt_dana">Dana</string>
+    <string name="bt_gcash">GCash</string>
+    <string name="bt_tng">TNG</string>
+    <string name="bt_truemoney">TrueMoney</string>
+    <string name="bt_bpi">BPI</string>
+    <string name="bt_rabbit_line_pay">R Line Pay</string>
     <string name="three_DS">3DSecure Verification</string>
     <string name="consumer_id">consumer ID</string>
     <string name="new_token">New Token</string>
@@ -51,5 +57,6 @@
     <string name="card_expiry">Expiry(mm/yy)</string>
     <string name="card_pay">Pay with card</string>
     <string name="payment_format">Payment Format</string>
+    <string name="receipt_type">Receipt Type</string>
     <string name="timeout">Timeout(s)</string>
 </resources>

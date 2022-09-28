@@ -261,6 +261,7 @@ open class CPayRequest() : Parcelable {
 
     object UPIOrderBuilder {
         private lateinit var accessToken: String
+        private var chargeToken: String = ""
         private lateinit var consumerID: String
         private lateinit var reference: String
         private var amount: String = "0"
@@ -301,6 +302,11 @@ open class CPayRequest() : Parcelable {
 
         fun accessToken(token: String): UPIOrderBuilder {
             this.accessToken = token
+            return this
+        }
+
+        fun chargeToken(token: String): UPIOrderBuilder {
+            this.chargeToken = token
             return this
         }
 
@@ -395,6 +401,7 @@ open class CPayRequest() : Parcelable {
             return CPayRequest().amount(amount)
                 .reference(reference)
                 .accessToken(accessToken)
+                .chargeToken(chargeToken)
                 .consumerID(consumerID)
                 .currency(this.currency)
                 .paymentMethod(type)

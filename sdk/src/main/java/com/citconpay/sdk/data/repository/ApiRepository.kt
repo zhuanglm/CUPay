@@ -1,9 +1,9 @@
 package com.citconpay.sdk.data.repository
 
-import com.citconpay.sdk.data.api.RequestData
-import com.citconpay.sdk.data.api.RequestExt
-import com.citconpay.sdk.data.api.RequestExtClient
-import com.citconpay.sdk.data.api.RequestPayment
+import com.citconpay.sdk.data.api.request.RequestData
+import com.citconpay.sdk.data.api.request.RequestExt
+import com.citconpay.sdk.data.api.request.RequestExtClient
+import com.citconpay.sdk.data.api.request.RequestPayment
 import com.citconpay.sdk.data.api.RetrofitBuilder.apiService
 import com.citconpay.sdk.data.api.request.RequestCharge
 import com.citconpay.sdk.data.api.request.RequestChargePayment
@@ -25,8 +25,10 @@ class ApiRepository(private val baseURL: String) {
     ): CitconApiResponse<LoadedConfig> {
         return apiService(baseURL).loadConfig(
             "Bearer $accessToken", contentType,
-            RequestConfig(RequestPayment(paymentMethod), RequestData(consumerID),
-                RequestExt(RequestExtClient("android","v1.0.0")))
+            RequestConfig(
+                RequestPayment(paymentMethod), RequestData(consumerID),
+                RequestExt(RequestExtClient("android","v1.0.0"))
+            )
         )
     }
 
@@ -35,7 +37,7 @@ class ApiRepository(private val baseURL: String) {
         chargeToken: String,
         reference: String,
         method: String,
-        nonce: String
+        nonce: String?
     ): CitconApiResponse<PlacedOrder> {
         return apiService(baseURL).confirmCharge(
             "Bearer $accessToken", contentType, chargeToken,

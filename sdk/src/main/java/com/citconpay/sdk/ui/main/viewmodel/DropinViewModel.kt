@@ -459,6 +459,28 @@ class DropinViewModel(request: CPayRequest, application: Application) :
         return sendNonceToServer(nonce)
     }
 
+    internal fun requestCharge() = liveData(Dispatchers.IO) {
+        mLoading.postValue(true)
+        emit(Resource.loading(data = null))
+        try {
+            emit(
+                Resource.success(
+                    data = apiRepository.confirmCharge(
+                        mRequest.getAccessToken(),
+                        mRequest.getChargeToken(),
+                        mRequest.getReference(),
+                        mRequest.getPaymentMethod().type,
+                        null
+                    )
+                )
+            )
+            mLoading.postValue(false)
+        } catch (exception: Exception) {
+            mLoading.postValue(false)
+            emit(Resource.error(data = null, message = handleErrorMsg(exception)))
+        }
+    }
+
     fun getBTDropInRequest(): DropInRequest {
         return mRequest.getBrainTreeDropInRequest()
     }

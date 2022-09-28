@@ -1,6 +1,8 @@
 package com.citconpay.sdk.ui.main.state
 
+import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.citconpay.cardform.view.CardForm
@@ -53,9 +55,39 @@ class DropinLifecycleObserver(activity: CUPaySDKActivity, viewModel: DropinViewM
                                             .cardholderNameStatus(CardForm.FIELD_REQUIRED)
 
                                         mActivity.launchDropIn()
-                                    } else if (mGatewayType == "toss" || mGatewayType == "sbps" || mGatewayType == "fomo" ) {
+                                    } else if (mGatewayType == "toss" || mGatewayType == "sbps" || mGatewayType == "fomo") {
+                                        // no charge token
                                         mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.URL)
+                                    } else if (mGatewayType == "aps") {
+                                        // charge token has been created
+                                        mViewModel.requestCharge().observe(owner) { result ->
+                                            result?.let { resource ->
+                                                when (resource.status) {
+                                                    Status.SUCCESS -> {
+                                                        result.data?.let { response ->
+                                                        }
+                                                    }
+                                                    Status.ERROR -> {
+                                                        result.message?.let { errorMessage ->
+                                                            mActivity.finish(
+                                                                CPayResult(
+                                                                    RESULT_CANCELED,
+                                                                    mViewModel.getDropInRequest().getPaymentMethod(),
+                                                                    errorMessage
+                                                                )
+                                                            )
+                                                        }
+
+                                                    }
+                                                    Status.LOADING -> {
+
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                     } else {
+                                        // no charge token
                                         // alipay,wechatpay,upop
                                         mViewModel.requestUPIOrder(mActivity, upisdk.CPayLaunchType.OTHERS)
                                     }

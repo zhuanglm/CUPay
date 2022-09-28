@@ -73,9 +73,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MainActivity extends AppCompatActivity {
-    private static final String CITCON_SERVER = /*"https://api-eks.qa01.citconpay.com/v1/"*/"https://api.sandbox.citconpay.com/v1/"/*"https://api.dev01.citconpay.com/v1/"*/;
+    private static final String CITCON_SERVER = "https://api-eks.qa01.citconpay.com/v1/"/*"https://api.sandbox.citconpay.com/v1/"*//*"https://api.dev01.citconpay.com/v1/"*/;
     //private static final String CITCON_SERVER_AUTH = "3AD5B165EC694FCD8B4D815E92DA862E";
-    private static final String CITCON_BT_TEST = "fomo_test"/*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*//*"sk-development-d8d29d70d600bc528d20834285ee8ebb"*/;
+    private static final String CITCON_BT_TEST = "aps_sandbox"/*"fomo_test"*//*"kfc_upi_usd"*//*"sk-development-ff4894740c55c92315b208715a65a501"*//*"sk-development-d8d29d70d600bc528d20834285ee8ebb"*/;
     private static final String BRAINTREE_BT_TEST = "braintree";
     private static final String CONTENT_TYPE = "application/json";
     private static final String DEFAULT_CONSUMER_ID = "115646448";
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
         Device device = new Device();
         device.setId("");
-        device.setIp("172.0.0.1");
+        device.setIp("8.8.8.8");
         device.setFingerprint("");
         Ext ext = new Ext(device);
 
@@ -422,6 +422,27 @@ public class MainActivity extends AppCompatActivity {
             case R.id.buttonK:
                 mMethodType = CPayMethodType.NETSPAY;
                 break;
+            case R.id.buttonL:
+                mMethodType = CPayMethodType.DANA;
+                break;
+            case R.id.button9:
+                mMethodType = CPayMethodType.ALI_HK;
+                break;
+            case R.id.buttonM:
+                mMethodType = CPayMethodType.GCASH;
+                break;
+            case R.id.buttonN:
+                mMethodType = CPayMethodType.RABBIT_LINE_PAY;
+                break;
+            case R.id.buttonO:
+                mMethodType = CPayMethodType.TNG;
+                break;
+            case R.id.buttonP:
+                mMethodType = CPayMethodType.BPI;
+                break;
+            case R.id.buttonQ:
+                mMethodType = CPayMethodType.TRUE_MONEY;
+                break;
             default:
                 mMethodType = CPayMethodType.CREDIT;
         }
@@ -430,6 +451,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void launchAliPayHK(View v) {
+        mMethodType = CPayMethodType.ALI_HK;
         /*startActivityForResult(buildDropInRequest(CitconPaymentMethodType.ALI_HK)
                 .getIntent(this), DROP_IN_REQUEST);*/
         buildDropInRequest(CPayMethodType.ALI_HK).start(this, mStartForResult);
@@ -472,6 +494,13 @@ public class MainActivity extends AppCompatActivity {
     public void launchPaypal(View v) {
         mMethodType = CPayMethodType.PAYPAL;
         getChargeToken(mApiService);
+    }
+
+    public void launchAPS(View v) {
+        mMethodType = CPayMethodType.APS;
+        //mMethodType = CPayMethodType.TNG;
+        getChargeToken(mApiService);
+        //buildDropInRequest(mMethodType).start(this, mStartForResult);
     }
 
     public void launchManagement(View v) {
@@ -542,6 +571,7 @@ public class MainActivity extends AppCompatActivity {
                             .deviceInfo("8.8.8.8")
                             .installmentPeriod(mEditTextInstallment.getText().toString())
                             .paymentFormat(binding.formatSpinner.getSelectedItem().toString())
+                            .receiptType(binding.receiptSpinner.getSelectedItem().toString())
                             .setExpiry(System.currentTimeMillis()+timeout)
                             .build(mode);
                 } else {
@@ -658,23 +688,44 @@ public class MainActivity extends AppCompatActivity {
                             .build(mode);
                 }
 
+            case APS:
             case ALI_HK:
-                return CPayRequest.CPayOrderBuilder.INSTANCE
-                        .reference(mReference)
-                        .currency("HKD")
-                        .amount("10")
-                        .setAllowDuplicate(true)
-                        .paymentMethod(type)
-                        .build(mode);
-
+            case BPI:
             case KAKAO:
-                return CPayRequest.CPayOrderBuilder.INSTANCE
-                        .reference(mReference)
-                        .currency("KRW")
-                        .amount("100")
-                        .setAllowDuplicate(true)
-                        .paymentMethod(type)
-                        .build(mode);
+            case TNG:
+            case DANA:
+            case GCASH:
+            case TRUE_MONEY:
+            case RABBIT_LINE_PAY:
+                if(mSystemSpinner.getSelectedItem().toString().equalsIgnoreCase("UPI")) {
+                    return CPayRequest.UPIOrderBuilder.INSTANCE
+                            .accessToken(mAccessToken)
+                            .chargeToken(Objects.requireNonNull(mChargeToken.getValue()))
+                            .reference(mReference)
+                            .consumerID(Objects.requireNonNull(mEditTextConsumerID.getText()).toString())
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .callbackURL(callbackURL)
+                            .ipnURL(ipnURL)
+                            .mobileURL(mobileURL)
+                            .cancelURL(cancelURL)
+                            .failURL(failURL)
+                            .setAllowDuplicate(true)
+                            .paymentMethod(CPayMethodType.APS)
+                            //.country(country)
+                            .consumer(consumerSetup())
+                            .setExpiry(600)
+                            .build(mode);
+                } else {
+                    mReference = RandomStringUtils.randomAlphanumeric(10);
+                    return CPayRequest.CPayOrderBuilder.INSTANCE
+                            .reference(mReference)
+                            .currency(mCurrencySpinner.getSelectedItem().toString())
+                            .amount(mEditTextAmount.getText().toString())
+                            .setAllowDuplicate(true)
+                            .paymentMethod(type)
+                            .build(mode);
+                }
 
             case PAYPAL:
             case PAY_WITH_VENMO:

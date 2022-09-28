@@ -4,6 +4,7 @@ public class Device {
     String id;
     String ip;
     String fingerprint;
+    String os = "android";
 
     public void setId(String id) {
         this.id = id;
